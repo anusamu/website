@@ -1,0 +1,73 @@
+.panel-workspace-container {
+  display: flex;
+  min-height: 85vh;
+  background-color: #f8f9fa;
+  gap: 24px;
+  padding: 10px 20px 20px 20px;
+  box-sizing: border-box;
+}
+
+.workspace-action-nav {
+  width: 280px;
+  min-width: 280px;
+  background-color: #ffffff;
+  border-right: 1px solid #edf2f7;
+  border-radius: 12px;
+  padding: 24px 14px;
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.015);
+}
+
+.nav-group-header {
+  font-weight: 700 !important;
+  color: #a0aec0;
+  letter-spacing: 1.2px;
+  padding-left: 12px;
+  margin-bottom: 18px !important;
+  display: block;
+  font-size: 0.72rem !important;
+}
+
+.nav-buttons-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 0 !important;
+}
+
+.nav-panel-big-btn {
+  border-radius: 10px !important;
+  padding: 14px 16px !important;
+  border: 1px solid transparent !important;
+  transition: all 0.2s ease-in-out !important;
+  background-color: #fafafa !important;
+}
+
+.nav-panel-big-btn:hover {
+  background-color: #f1f3f5 !important;
+  border-color: #e2e8f0 !important;
+}
+
+.nav-panel-big-btn.Mui-selected {
+  background-color: #ecfdf5 !important;
+  border-color: #a7f3d0 !important;
+}
+
+.nav-panel-big-btn.Mui-selected .action-panel-icon {
+  color: #059669 !important;
+}
+
+.nav-panel-big-btn.Mui-selected .MuiListItemText-primary {
+  color: #047857 !important;
+  font-weight: 600 !important;
+}
+
+.action-panel-icon {
+  color: #718096;
+  font-size: 1.85rem !important;
+}
+
+.workspace-dynamic-viewport {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+}

@@ -1,0 +1,188 @@
+/* ==========================================================================
+   Main Layout & Wrappers
+   ========================================================================== */
+.main-wrapper {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
+    Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+  background-color: #ffffff;
+padding: 40px 0 0 0;
+margin-bottom: -10px;
+
+}
+
+/* Status Loading / Error Fallbacks */
+.status-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 300px;
+  background-color: #f4f1f1;
+}
+
+.status-text {
+  font-size: 1rem;
+  color: #71717a;
+  letter-spacing: 0.05em;
+}
+
+.status-text.error {
+  color: #ef4444;
+}
+
+/* ==========================================================================
+   Infinite Marquee Scroller (Horizontal Trail)
+   ========================================================================== */
+.scroll-container {
+  overflow: hidden;
+  width: 100%;
+  background-color: #ffffff;
+  padding: 20px 0;
+}
+
+.scroll-track {
+  display: flex;
+  width: max-content;
+}
+
+.scroll-marquee {
+  display: flex;
+  gap: 24px; /* Even spacing between cards */
+  padding-left: 12px;
+  animation: marquee 8s linear infinite;
+}
+
+.scroll-marquee:hover {
+  animation-play-state: paused; /* Pauses slightly on hover for smooth interaction */
+}
+
+@keyframes marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+/* ==========================================================================
+   Category Card Item (Matches Screenshot Perfectly)
+   ========================================================================== */
+.card-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  width: 270px;
+  height: 300px;
+  background-color: #f1efea; /* Exact warm ivory/cream background */
+  border-radius: 12px;
+  padding: 16px;
+  cursor: pointer;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02); /* Extremely faint shadow */
+}
+
+.card-item:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.05);
+}
+
+.card-image-wrapper {
+  width: 100%;
+  height: 3000px; /* Forces a neat frame around the visual */
+  border-radius: 16px;
+  overflow: hidden;
+  background-color: #f4f4f5;
+}
+
+.card-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.card-title {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #27272a;
+  text-align: center;
+  margin: 0;
+  padding-top: 12px;
+  letter-spacing: 0.06em; /* Elegant text spacing */
+  text-transform: capitalize;
+}
+
+/* ==========================================================================
+   Variants Grid Area (Drill down view)
+   ========================================================================== */
+.variants-section {
+  max-width: 1200px;
+  margin: 60px auto 0 auto;
+  padding: 0 24px;
+}
+
+.variants-header {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.variants-header h2 {
+  font-size: 1.8rem;
+  font-weight: 500;
+  color: #18181b;
+  letter-spacing: 0.05em;
+  margin-bottom: 8px;
+}
+
+.variants-header p {
+  font-size: 0.95rem;
+  color: #71717a;
+}
+
+.variants-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 32px 24px;
+}
+
+/* Individual Variant Cards */
+.variant-card {
+  display: flex;
+  flex-direction: column;
+  background-color: #fcfbf7; /* Shared uniform background */
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+}
+
+.variant-image-wrapper {
+  width: 100%;
+  height: 240px;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.variant-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.variant-details {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding-top: 14px;
+}
+
+.variant-name {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #27272a;
+  margin: 0;
+  letter-spacing: 0.04em;
+}
+
+.variant-price {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #71717a;
+  margin: 0;
+}

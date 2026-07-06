@@ -1,0 +1,165 @@
+/* ==========================================================================
+   Design System Canvas & Dimensions
+   ========================================================================== */
+:root {
+  --bg-oatmeal-gradient: radial-gradient(circle at center, #f5f2eb 0%, #eae5da 100%);
+  --card-bg: #ffffff;
+  --text-dark: #111111;
+  --text-muted: #5e5a51;
+  
+  /* Definitive layout widths to achieve exactly 2 cards on screen with gaps */
+  --card-width: 620px; 
+  --card-gap: 28px;
+}
+
+.testimonial-section {
+  width: 100%;
+  padding: 100px 0;
+  background: var(--bg-oatmeal-gradient);
+  box-sizing: border-box;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.testimonial-section-title {
+  font-family: "Playfair Display", "Didot", "Georgia", serif;
+  font-size: 2.8rem;
+  font-weight: 400;
+  color: var(--text-dark);
+  margin: 0 0 60px 0;
+  text-align: center;
+  letter-spacing: 0.02em;
+}
+
+/* ==========================================================================
+   Slider Masking Viewport Frame
+   ========================================================================== */
+.slider-container-window {
+  width: calc((var(--card-width) * 2) + var(--card-gap));
+  overflow: hidden; /* Hides elements that slide past the screen bounds */
+  padding: 15px 0;
+}
+
+/* ==========================================================================
+   Infinite Linear Shifting Track 
+   ========================================================================== */
+.testimonial-slider-track {
+  display: flex;
+  gap: var(--card-gap);
+  width: max-content;
+  transform: translateX(0);
+}
+
+/* Triggers shift to the left by exactly one element size */
+.testimonial-slider-track.is-shifting {
+  transform: translateX(calc(-1 * (var(--card-width) + var(--card-gap))));
+  transition: transform 0.7s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+/* ==========================================================================
+   The Enlarged Card Layout
+   ========================================================================== */
+.testimonial-card {
+  flex: 0 0 var(--card-width);
+  width: var(--card-width);
+  display: flex;
+  background-color: var(--card-bg);
+  box-shadow: 0 20px 45px rgba(56, 49, 42, 0.06);
+  box-sizing: border-box;
+  overflow: hidden;
+  opacity: 1;
+  transition: opacity 0.5s ease;
+}
+
+/* Optional soft opacity for the upcoming card peeking onto screen */
+.testimonial-card.is-peek {
+  opacity: 0.85; 
+}
+
+/* Left Media Frame - Increased layout size proportions */
+.testimonial-image-wrapper {
+  flex: 0 0 46%;
+  height: 440px; /* Enhanced larger presentation height */
+  overflow: hidden;
+}
+
+.testimonial-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Right Text content platform */
+.testimonial-content {
+  flex: 1;
+  padding: 48px 40px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  box-sizing: border-box;
+}
+
+.testimonial-stars {
+  font-size: 0.95rem;
+  letter-spacing: 0.15em;
+  color: #222222;
+  margin-bottom: 16px;
+}
+
+.testimonial-card-title {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-size: 1.25rem;
+  font-weight: 500;
+  color: var(--text-dark);
+  margin: 0 0 16px 0;
+  letter-spacing: 0.01em;
+}
+
+.testimonial-text {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-size: 0.92rem;
+  line-height: 1.75;
+  color: var(--text-muted);
+  margin: 0;
+}
+
+/* ==========================================================================
+   Mobile Responsive Reflow Mechanics
+   ========================================================================== */
+@media (max-width: 1300px) {
+  :root {
+    --card-width: 460px; /* Fits desktop layouts downscale comfortably */
+  }
+  .slider-container-window {
+    width: calc((var(--card-width) * 2) + var(--card-gap));
+  }
+  .testimonial-image-wrapper {
+    height: 380px;
+  }
+  .testimonial-content {
+    padding: 30px;
+  }
+}
+
+@media (max-width: 980px) {
+  /* Dynamic conversion down to 1 active larger center card view on tablet frames */
+  .slider-container-window {
+    width: 90%;
+    max-width: 500px;
+  }
+  .testimonial-card {
+    flex: 0 0 100%;
+    width: 100%;
+    flex-direction: column;
+  }
+  .testimonial-slider-track.is-shifting {
+    transform: translateX(calc(-100% - var(--card-gap)));
+  }
+  .testimonial-image-wrapper {
+    flex: 0 0 280px;
+    width: 100%;
+  }
+}

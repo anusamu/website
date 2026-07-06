@@ -1,0 +1,85 @@
+.dialog-title {
+  font-weight: bold !important;
+  color: var(--text-dark);
+}
+
+.section-label {
+  font-weight: 600 !important;
+  margin-bottom: 8px !important;
+}
+
+.sizes-group {
+  gap: 10px;
+}
+
+.gallery-container {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 8px;
+}
+
+.image-preview-thumb {
+  width: 80px;
+  height: 80px;
+  border-radius: 8px;
+  object-fit: cover;
+}
+
+.old-thumb {
+  border: 1px solid #e0e0e0;
+}
+
+.new-thumb {
+  border: 2px dashed var(--pastel-primary);
+}
+
+.upload-btn {
+  border-color: var(--pastel-primary) !important;
+  color: var(--pastel-primary) !important;
+  text-transform: none !important;
+  border-radius: 8px !important;
+}
+
+.upload-btn:hover {
+  background: rgba(127,169,155,.08) !important;
+}
+
+.dialog-actions-area {
+  padding: 16px 24px !important;
+}
+
+.cancel-btn {
+  color: var(--text-light) !important;
+}
+
+.submit-btn {
+  background: var(--pastel-primary) !important;
+  text-transform: none !important;
+  border-radius: 8px !important;
+}
+
+.submit-btn:hover {
+  background: var(--pastel-primary-hover) !important;
+}
+
+.modal-grid-layout {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 24px;
+  margin-top: 12px;
+}
+
+.grid-span-6 {
+  grid-column: span 6;
+}
+
+.grid-span-12 {
+  grid-column: span 12;
+}
+
+@media (max-width:600px) {
+  .grid-span-6 {
+    grid-column: span 12;
+  }
+}

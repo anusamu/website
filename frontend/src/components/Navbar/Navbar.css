@@ -1,0 +1,172 @@
+/* --- Global Theme & Navigation Token Variables --- */
+:root {
+  --color-primary-accent: #99ce80;
+  --color-dark-accent: #899d6e;
+  --color-text-main: #000000;
+  --color-admin-blue: #bec4d3;
+  --color-danger: #7f1d1d;
+  --color-border-light: rgba(0, 0, 0, 0.06);
+}
+
+/* --- Structural Base Elements --- */
+.nav-top-accent-line {
+ 
+  width: 100%;
+  height: 40px;
+background-color: var(--color-dark-accent);
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1201;
+}
+
+/* Master AppBar Reset Setup Styles */
+.navbar-appbar {
+  top: 40px !important;
+  left: 0;
+  width: 100%;
+  height: 70px;
+  box-shadow: none !important;
+  /* Premium Hardware Accelerated Transition Properties */
+  transition: background-color 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+              backdrop-filter 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+              border-color 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+              box-shadow 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) !important;
+}
+
+/* ==========================================================================
+   STATE A: TOP OF PAGE STATE (Transparent Layer Style Over Hero Image)
+   ========================================================================== */
+.navbar-appbar.nav-transparent {
+  background-color: transparent !important;
+  border-bottom: 1px solid rgba(83, 21, 21, 0.08) !important;
+}
+
+/* Dark subtle contrast anchors for default links when sitting on the cream page layout top */
+.navbar-appbar.nav-transparent .nav-item-link {
+  color: var(--color-text-main);
+}
+
+.navbar-appbar.nav-transparent .nav-icon-button {
+  color: var(--color-text-main) !important;
+}
+
+.navbar-appbar.nav-transparent .nav-auth-login-btn {
+  color: var(--color-text-main);
+}
+
+/* ==========================================================================
+   STATE B: ACTIVE SCROLLED STATE (Solid Blur Sheet Floating Layer)
+   ========================================================================== */
+.navbar-appbar.nav-scrolled {
+  background-color: rgba(255, 255, 255, 0.92) !important;
+  backdrop-filter: blur(12px); /* Delivers deep translucent modern appearance */
+  border-bottom: 1px solid var(--color-border-light) !important;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.03) !important;
+}
+
+.navbar-appbar.nav-scrolled .nav-item-link {
+  color: #000000;
+}
+
+.navbar-appbar.nav-scrolled .nav-icon-button {
+  color: #000000 !important;
+}
+
+.navbar-appbar.nav-scrolled .nav-auth-login-btn {
+  color: #000000;
+}
+
+/* --- Central Navigation Route Link Items --- */
+.nav-links-container {
+  flex: 3;
+  display: flex;
+  justify-content: center;
+  gap: 3.5rem;
+  align-items: center;
+}
+
+.nav-item-link {
+  text-decoration: none;
+  font-size: 0.85rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding-bottom: 3px;
+   padding-top: 12px;
+  border-bottom: 2px solid transparent;
+  transition: color 0.25s ease, border-color 0.25s ease;
+}
+
+.nav-item-link:hover {
+  color: var(--color-primary-accent) !important;
+}
+
+/* Active Page Highlights */
+.nav-item-link.link-active {
+  color: var(--color-primary-accent) !important;
+  border-bottom: 2px solid var(--color-primary-accent);
+}
+
+.nav-admin-dashboard {
+  color: var(--color-admin-blue) !important;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* --- Right Action Tray Tools --- */
+.nav-action-tray {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.nav-icon-button {
+  transition: transform 0.2s ease, color 0.2s ease !important;
+}
+
+.nav-icon-button:hover {
+  transform: scale(1.05);
+  color: var(--color-primary-accent) !important;
+}
+
+.nav-logout-button {
+  color: var(--color-danger) !important;
+  transition: transform 0.2s ease !important;
+}
+
+.nav-logout-button:hover {
+  transform: scale(1.05);
+}
+
+.nav-badge-override .MuiBadge-badge {
+  background-color: var(--color-primary-accent) !important;
+  color: #ffffff !important;
+  font-size: 0.65rem !important;
+  height: 16px !important;
+  min-width: 16px !important;
+}
+
+.nav-auth-login-btn {
+  background: none;
+  border: none;
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  cursor: pointer;
+  padding: 0 8px;
+  font-weight: 500;
+  transition: color 0.2s ease;
+}
+
+.nav-auth-login-btn:hover {
+  color: var(--color-primary-accent);
+}
+
+/* --- Mobile Viewport Breakpoint Adjustments --- */
+@media (max-width: 900px) {
+  .nav-links-container {
+    display: none !important;
+  }
+}

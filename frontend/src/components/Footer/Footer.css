@@ -1,0 +1,253 @@
+/* ==========================================================================
+   1. FOOTER WORKSPACE STRUCTURE (TV, Desktop, Laptop, Mobile Scaling)
+   ========================================================================== */
+.site-footer {
+  width: 100%;
+  background-color: #FDFBF7;
+  color: #4A4A4A;
+  padding-top: 3rem;       /* pt-12 */
+  padding-bottom: 2rem;    /* pb-8 */
+  padding-left: 1.25rem;   /* Fluid padding defaults for mobile targets */
+  padding-right: 1.25rem;
+  border-top: 1px solid rgba(231, 229, 225, 0.6); /* border-stone-200/60 */
+  font-family: sans-serif;
+  box-sizing: border-box;
+}
+
+/* --- Responsive Layout Padding Adjustments --- */
+@media (min-width: 640px) {
+  .site-footer {
+    padding-left: 2.5vw;  /* Scales layout buffers smoothly based on viewport widths */
+    padding-right: 2.5vw;
+  }
+}
+
+@media (min-width: 1200px) {
+  .site-footer {
+    padding-left: 5vw;    /* Perfectly lines up alongside standard container tracks */
+    padding-right: 5vw;
+  }
+}
+
+/* --- Fluid Content Structural Frame --- */
+.footer-container {
+  width: 100%;
+  max-width: 100%;        /* Allows content to expand across 4K displays or ultra-wides */
+  margin-left: auto;
+  margin-right: auto;
+  box-sizing: border-box;
+}
+
+/* ==========================================================================
+   2. TOP ROW AREA: NEWSLETTER SUBSCRIPTION
+   ========================================================================== */
+.footer-newsletter-row {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 2.5rem; /* pb-10 */
+  border-bottom: 1px solid #e7e5e4;
+}
+
+@media (min-width: 768px) {
+  .footer-newsletter-row {
+    flex-direction: row; /* Horizontal side-by-side spacing structure */
+  }
+}
+
+.newsletter-title-box {
+  margin-bottom: 1.5rem; /* mb-6 */
+  width: 100%;
+  text-align: center;
+}
+
+@media (min-width: 768px) {
+  .newsletter-title-box {
+    margin-bottom: 0;
+    width: auto;
+    text-align: left;
+  }
+}
+
+.newsletter-heading {
+  font-family: serif;
+  font-style: italic;
+  font-size: clamp(1.25rem, 1.2vw + 0.5rem, 1.75rem); /* Fluid typography */
+  color: #8ba181;
+  letter-spacing: 0.025em;
+  margin: 0;
+}
+
+.newsletter-form {
+  position: relative;
+  width: 100%;
+  max-width: 28rem; /* Keeps form element comfortably readable on big viewports */
+}
+
+.newsletter-input {
+  width: 100%;
+  background-color: transparent;
+  border: 1px solid #a8a29e;
+  padding: 0.75rem 1rem;
+  padding-right: 3rem; /* Space reservation preventing typing into submission arrow */
+  font-size: 0.875rem;
+  color: #1c1917;
+  letter-spacing: 0.025em;
+  transition: border-color 0.15s ease-in-out;
+  box-sizing: border-box;
+}
+
+.newsletter-input:focus {
+  outline: 2px solid transparent;
+  outline-offset: 2px;
+  border-color: #57534e;
+}
+
+.newsletter-submit-btn {
+  position: absolute;
+  right: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #57534e;
+  background: none;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  transition: color 0.15s ease-in-out;
+}
+
+.newsletter-submit-btn:hover {
+  color: #1c1917;
+}
+
+/* ==========================================================================
+   3. MIDDLE SECTION: DYNAMIC GRID COLUMNS
+   ========================================================================== */
+.footer-links-grid {
+  display: grid;
+  /* Compact 2-column pattern applied to mobile viewports natively */
+  grid-template-columns: repeat(2, minmax(0, 1fr)); 
+  gap: 2.5rem 1.5rem;
+  padding-top: 3rem;   /* py-12 */
+  padding-bottom: 3rem;
+  font-size: 0.875rem;
+}
+
+/* Large Displays / Televisions / Standard Desktops */
+@media (min-width: 992px) {
+  .footer-links-grid {
+    grid-template-columns: repeat(5, minmax(0, 1fr)); /* 5-column grid track distribution */
+    gap: 2rem;
+  }
+}
+
+.footer-column-title {
+  font-family: serif;
+  font-weight: 600;
+  color: #1c1917;
+  margin-top: 0;
+  margin-bottom: 1.25rem;
+  font-size: 1rem;
+}
+
+.footer-links-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem; /* Item listing row gap */
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  color: #57534e;
+}
+
+.footer-links-list a {
+  text-decoration: none;
+  color: inherit;
+  transition: color 0.15s ease-in-out;
+}
+
+.footer-links-list a:hover {
+  color: #8ba181;
+}
+
+/* Layout exceptions dealing with span widths on contact text boxes */
+.contact-column-special {
+  grid-column: span 2 / span 2;
+}
+
+@media (min-width: 992px) {
+  .contact-column-special {
+    grid-column: span 1 / span 1;
+  }
+}
+
+.contact-list-special {
+  gap: 0.85rem;
+}
+
+.contact-hours-text {
+  color: #78716c;
+  line-height: 1.6;
+  font-size: 0.8rem;
+}
+
+/* ==========================================================================
+   4. BOTTOM BAR AREA: COPYRIGHT & SOCIAL LINK TRIMS
+   ========================================================================== */
+.footer-bottom-row {
+  padding-top: 1.75rem; /* pt-6 */
+  border-top: 1px solid #e7e5e4;
+  display: flex;
+  flex-direction: column-reverse; /* Stacks links beautifully over details on phones */
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.75rem;
+  color: #78716c;
+  gap: 1.25rem;
+}
+
+@media (min-width: 768px) {
+  .footer-bottom-row {
+    flex-direction: row; /* Restores flat split view style on larger displays */
+    gap: 2rem;
+  }
+}
+
+.footer-bottom-row > div {
+  text-align: center;
+}
+
+@media (min-width: 768px) {
+  .footer-bottom-row > div {
+    text-align: left;
+  }
+}
+
+.footer-bottom-row p {
+  margin: 0;
+  line-height: 1.6;
+}
+
+.social-media-tray {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  color: #1c1917;
+}
+
+.social-link-item {
+  color: inherit;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.15s ease-in-out, transform 0.2s ease;
+}
+
+.social-link-item:hover {
+  color: #8ba181;
+  transform: translateY(-2px); /* Premium interactive hover lift trick */
+}

@@ -1,0 +1,235 @@
+/* ==========================================================================
+   Design Systems & Canvas Variables
+   ========================================================================== */
+:root {
+  --bg-editorial-cream: #f6f3eb;
+  --text-watermark: rgba(211, 203, 187, 0.4);
+  --text-dark-coffee: #38312a;
+  --white: #ffffff;
+  --overlay-matte: rgba(0, 0, 0, 0.45);
+}
+
+.stories-section {
+  position: relative;
+  width: 100%;
+  background-color: var(--bg-editorial-cream);
+  padding: 120px 4% 60px 4%;
+  box-sizing: border-box;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Big Editorial Elegant Backdrop Text Alignment */
+.stories-watermark-bg {
+  position: absolute;
+  top: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: "Playfair Display", "Didot", "Georgia", serif;
+  font-size: clamp(3rem, 7.5vw, 7.5rem);
+  font-weight: 400;
+  color: var(--text-watermark);
+  white-space: nowrap;
+  letter-spacing: 0.12em;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* ==========================================================================
+   The 5x2 Modular Symmetric Photo Grid Layout
+   ========================================================================== */
+.stories-grid-container {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 1px; /* Emulating ultra-sharp minimal layout lines */
+  background-color: var(--white); /* Forms clean 1px lines automatically */
+  width: 100%;
+  max-width: 1440px;
+  border: 1px solid var(--white);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.03);
+}
+
+/* Individual Grid Card Frames */
+.story-card {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 0.76 / 1; /* Retaining vertical portrait rules for high-end fashion/textiles */
+  cursor: pointer;
+  overflow: hidden;
+  background-color: #e5e0d5;
+}
+
+.story-image-frame {
+  width: 100%;
+  height: 100%;
+}
+
+.story-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+/* Scale effect on hover */
+.story-card:hover .story-img {
+  transform: scale(1.04);
+}
+
+/* ==========================================================================
+   Interactive Hover & Click Elements
+   ========================================================================== */
+
+/* Standard Instagram Hide/Reveal Overlay on Desktop Hover */
+.story-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: var(--overlay-matte);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: 3;
+}
+
+.story-card:hover .story-overlay {
+  opacity: 1;
+}
+
+.story-like-stats {
+  color: var(--white);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-size: 0.95rem;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  letter-spacing: 0.05em;
+}
+
+.heart-icon-static {
+  color: #ff4b65;
+  font-size: 1.1rem;
+}
+
+/* Micro-burst Heart Animation Overlay triggered on click */
+.click-burst-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.15);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 4;
+  pointer-events: none;
+}
+
+.burst-heart {
+  font-size: 4rem;
+  color: var(--white);
+  filter: drop-shadow(0 4px 12px rgba(0,0,0,0.3));
+  animation: heartPulseBurst 0.75s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+@keyframes heartPulseBurst {
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+  30% {
+    transform: scale(1.2);
+    opacity: 0.9;
+  }
+  50% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1.4);
+    opacity: 0;
+  }
+}
+
+/* ==========================================================================
+   Editorial Branding Footer Area
+   ========================================================================== */
+.stories-footer {
+  margin-top: 50px;
+  z-index: 2;
+}
+
+.instagram-link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+  color: var(--text-dark-coffee);
+  transition: opacity 0.2s ease;
+}
+
+.instagram-link:hover {
+  opacity: 0.7;
+}
+
+/* Elegant CSS Gradient representation of the custom social icon wrapper */
+.instagram-icon-mock {
+  font-size: 1.2rem;
+  background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+  
+  /* 1. Clips the background layout to the text boundaries */
+  -webkit-background-clip: text;
+  background-clip: text; /* Standard syntax for modern updates */
+
+  /* 2. CRITICAL: Makes the text fill transparent so the background gradient shows through */
+  -webkit-text-fill-color: transparent; 
+  color: transparent; /* Fallback */
+}
+
+.instagram-handle {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-size: 0.95rem;
+  letter-spacing: 0.08em;
+  font-weight: 400;
+}
+
+/* ==========================================================================
+   Responsive Viewport Reflow Matrix
+   ========================================================================== */
+@media (max-width: 1024px) {
+  .stories-grid-container {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  .stories-section {
+    padding-top: 100px;
+  }
+}
+
+@media (max-width: 640px) {
+  .stories-grid-container {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .stories-section {
+    padding-top: 80px;
+  }
+  .story-overlay {
+    opacity: 1; /* Keeps context details readable directly without touch gestures on mobile devices */
+    background: linear-gradient(to top, rgba(0,0,0,0.6) 0%, transparent 40%);
+    align-items: flex-end;
+    padding: 12px;
+  }
+  .story-like-stats {
+    font-size: 0.8rem;
+  }
+}

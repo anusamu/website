@@ -1,0 +1,149 @@
+/* Base Layout Drawer Overrides */
+.admin-sidebar-drawer {
+  overflow: visible !important; /* Crucial to let the toggle button overflow cleanly past the border edge */
+}
+
+/* Outer Border Floating Toggle Switch Button */
+.admin-floating-toggle-btn {
+  position: absolute !important;
+  top: 20px;
+  right: 5px; 
+  transform: translateX(50%); /* Centers the button perfectly half-way across the right-side layout boundary */
+  width: 18px !important; 
+  height: 38px !important; /* Slightly shorter for a sleeker, more modern aesthetic */
+  background-color: #1a4d66 !important; 
+  color: #ffffff !important;
+  border: 1px solid #10384d !important;
+  border-radius: 4px !important; /* Unified clean rounded look */
+  z-index: 1201;
+  padding: 0 !important;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+  transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.2s !important;
+  cursor: pointer;
+}
+
+.admin-floating-toggle-btn:hover {
+  background-color: #245d7a !important;
+  transform: translateX(50%) scale(1.05) !important;
+}
+
+/* Header Info Panel Components */
+.admin-sidebar-header {
+  border-bottom: 1px solid #acb6ba;
+  background: linear-gradient(
+    135deg,
+    #a8e6cf 0%,
+    #7fcdcd 50%,
+    #81d4fa 100%
+  ) !important;
+}
+
+.admin-sidebar-avatar {
+  background-color: #f0f4f8 !important;
+  color: #4a5568 !important;
+  font-weight: 600;
+  font-size: 0.95rem !important;
+  border: 1px solid #e2e8f0;
+}
+
+.admin-profile-text-wrapper {
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.admin-profile-name {
+  color: #1a202c !important;
+  font-size: 0.9rem !important;
+}
+
+.admin-profile-email {
+  color: #718096 !important;
+  font-size: 0.75rem !important;
+}
+
+/* SCROLLABLE CONTAINER FOR MENU ITEMS - HIDING SCROLLBARS Completely */
+.admin-sidebar-scrollable-content {
+  flex-grow: 1;
+  overflow-y: auto;
+  padding-left: 12px;
+  padding-right: 12px;
+  padding-top: 16px;
+  padding-bottom: 16px;
+  
+  /* Hide scrollbar for Chrome, Safari and Opera */
+  &::-webkit-scrollbar {
+    display: none;
+  }
+  /* Hide scrollbar for IE, Edge and Firefox */
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+
+/* Light-Green Action Selected States */
+.admin-menu-item-row {
+  color: #4a5568 !important;
+  transition: all 0.15s ease-in-out !important;
+}
+
+.admin-menu-item-icon {
+  color: #718096 !important;
+  transition: color 0.15s ease-in-out !important;
+}
+
+.admin-menu-item-text {
+  font-size: 0.875rem !important;
+  font-weight: 500 !important;
+}
+
+/* Active Highlight Matching Row Configuration (Soft Pastel Green Theme) */
+.admin-menu-item-row.item-active {
+  background-color: #e8f5e9 !important; 
+  color: #2e7d32 !important;            
+}
+
+.admin-menu-item-row.item-active .admin-menu-item-icon {
+  color: #2e7d32 !important;
+}
+
+.admin-menu-item-row.item-active .admin-menu-item-text {
+  font-weight: 600 !important;
+}
+
+/* Hover Adjustments */
+.admin-menu-item-row:hover {
+  background-color: #f7fafc !important;
+}
+
+.admin-menu-item-row.item-active:hover {
+  background-color: #e8f5e9 !important;
+}
+
+/* Logout Actions Configurations */
+.admin-menu-item-logout-row {
+  color: #e53e3e !important;
+}
+
+.admin-menu-item-logout-icon {
+  color: #e53e3e !important;
+}
+
+.admin-menu-item-logout-text {
+  font-size: 0.875rem !important;
+  font-weight: 500 !important;
+}
+
+.admin-menu-item-logout-row:hover {
+  background-color: #fff5f5 !important;
+}
+
+.admin-menu-item-logo {
+  padding-top: 16px;
+  padding-bottom: 10px;
+}
+
+/* Mobile Layout Navbar Wrapper Settings */
+.admin-mobile-appbar {
+  background-color: #ffffff !important;
+  border-bottom: 1px solid #e2e8f0 !important;
+}

@@ -1,0 +1,284 @@
+/* ==========================================================================
+   1. CORE CONTAINER WORKSPACE (TV, Desktop, Laptop, Mobile Scaling)
+   ========================================================================== */
+.hero-banner-container {
+  position: relative;
+  padding-top:55%;
+  width: 100%;
+  height: 85vh; /* Standard desktop immersive viewport height scale */
+  min-height: 600px;
+  background-color: #fbf9f6;
+  overflow: hidden;
+}
+
+/* Base slide layer mechanics for transition engine cross-fades */
+.hero-slide {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94), 
+              visibility 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  z-index: 1;
+}
+
+.hero-slide.slide-active {
+  opacity: 1;
+  visibility: visible;
+  z-index: 2;
+}
+
+/* --- Unconstrained Fluid Layout Wrapper --- */
+.hero-grid {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+/* ==========================================================================
+   2. DESKTOP COLUMN RATIOS & CONTENT TYPOGRAPHY
+   ========================================================================== */
+
+/* Left Column: Fluidly consumes 45% of total screen layout workspace */
+.hero-content-col {
+  flex: 45; 
+  padding: 0 5vw; /* Scales spacing dynamically relative to screen width */
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+/* Right Column: Fluidly consumes 55% of total screen layout workspace */
+.hero-image-col {
+  flex: 55;
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.hero-image-wrapper {
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+.hero-raw-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center center;
+}
+
+/* Seamless feather blend effect cutting over into the text panel area */
+.hero-image-wrapper::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -2px;
+  bottom: 0;
+  width: 30%;
+  background: linear-gradient(to right, #fbf9f6 0%, rgba(251, 249, 246, 0.7) 30%, rgba(251, 249, 246, 0) 100%);
+  z-index: 3;
+  pointer-events: none;
+}
+
+/* --- Typography Scaling Tokens --- */
+.hero-subtitle {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  text-transform: uppercase;
+  font-size: clamp(0.75rem, 0.7vw + 0.5rem, 1.1rem); /* Fluid responsive font scaling */
+  letter-spacing: 0.3em;
+  color: #a3a19e;
+  margin-bottom: 1.5rem;
+  opacity: 0;
+  transform: translateY(15px);
+  transition: all 0.8s ease 0.3s;
+}
+
+.hero-title {
+  font-family: 'Playfair Display', serif;
+  font-weight: 400;
+  font-size: clamp(2.5rem, 3.2vw + 1rem, 5.5rem); /* Prevents truncation or overlap on text blocks */
+  line-height: 1.15;
+  color: #1a1a1a;
+  margin-bottom: 1.5rem;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: all 0.9s ease 0.5s;
+}
+
+.hero-description {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: clamp(0.85rem, 0.4vw + 0.7rem, 1.15rem);
+  line-height: 1.65;
+  color: #666666;
+  max-width: 500px;
+  margin-bottom: 2.5rem;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: all 0.9s ease 0.7s;
+}
+
+.hero-btn-group {
+  display: flex;
+  gap: 1.5rem;
+  opacity: 0;
+  transform: translateY(15px);
+  transition: all 0.8s ease 0.9s;
+}
+
+/* Entrance Animation Bindings */
+.slide-active .hero-subtitle,
+.slide-active .hero-title,
+.slide-active .hero-description,
+.slide-active .hero-btn-group {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* --- Buttons --- */
+.btn-shop-collection {
+  background-color: #88a069;
+  color: #ffffff;
+  border: 1px solid #8b967d;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  padding: 1rem 2.2rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+.btn-shop-collection:hover {
+  background-color: #768169;
+  border-color: hsl(87, 10%, 46%);
+}
+
+.btn-explore-lookbook {
+  background-color: transparent;
+  color: #1a1a1a;
+  border: 1px solid #1a1a1a;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  padding: 1rem 2.2rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.btn-explore-lookbook:hover {
+  background-color: #1a1a1a;
+  color: #ffffff;
+}
+
+/* ==========================================================================
+   3. GLOBAL RESPONSIVE MEDIA BREAKPOINTS
+   ========================================================================== */
+
+/* Ultra Large Displays & Smart TVs (4K / 1440p / Immersive Layouts) */
+@media (min-width: 1920px) {
+  .hero-banner-container {
+    height: 70vh; /* Adjusts viewport distribution proportion nicely on huge screens */
+  }
+  .hero-description {
+    max-width: 650px; /* Expands paragraph reading line text lengths on TVs */
+  }
+}
+
+/* Medium Tablets & Laptops (e.g., iPad Pro / Macbook Air viewports) */
+@media (max-width: 1199px) {
+  .hero-content-col {
+    padding: 0 3.5rem;
+  }
+}
+
+/* Small Tablets & Standard Portrait Screens (Stacked Layout Fallbacks) */
+@media (max-width: 991px) {
+  .hero-banner-container {
+    height: auto;
+    min-height: auto;
+    overflow: visible;
+  }
+
+  /* Swaps rendering model from side-by-side flex grids to structural blocks */
+  .hero-slide {
+    position: relative;
+    width: 100%;
+    height: auto;
+    display: none;
+  }
+
+  .hero-slide.slide-active {
+    display: block;
+    opacity: 1;
+    visibility: visible;
+  }
+
+  .hero-grid {
+    flex-direction: column-reverse; /* Flips the element stack configuration */
+    height: auto;
+  }
+
+  .hero-image-col {
+    width: 100%;
+    height: 50vh; /* Image area safely takes half the standard device screens */
+    min-height: 350px;
+  }
+
+  /* Blends the bottom section of the hero graphic panel into the background container color */
+  .hero-image-wrapper::before {
+    width: 100%;
+    height: 35%;
+    background: linear-gradient(to top, #fbf9f6 0%, rgba(251, 249, 246, 0.3) 60%, rgba(251, 249, 246, 0) 100%);
+    top: auto;
+    bottom: 0;
+    left: 0;
+  }
+
+  .hero-content-col {
+    width: 100%;
+    padding: 4rem 2rem;
+    align-items: center;
+    text-align: center;
+  }
+
+  .hero-description {
+    max-width: 100%;
+    margin-bottom: 2rem;
+  }
+}
+
+/* Smartphones (Standard Mobile Screen Viewports) */
+@media (max-width: 575px) {
+  .hero-title {
+    line-height: 1.2;
+  }
+
+  .hero-content-col {
+    padding: 3rem 1.25rem;
+  }
+
+  .hero-btn-group {
+    flex-direction: column; /* Vertical block layout stacking for tiny buttons */
+    width: 100%;
+    gap: 0.85rem;
+  }
+
+  .btn-shop-collection,
+  .btn-explore-lookbook {
+    width: 100%;
+    padding: 0.9rem 0;
+    text-align: center;
+  }
+}

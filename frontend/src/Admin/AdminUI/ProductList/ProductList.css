@@ -1,0 +1,138 @@
+:root {
+  --pastel-bg: #f9fbfd;
+  --pastel-primary: #7fa99b;
+  --pastel-primary-hover: #6b9487;
+  --pastel-accent: #f3eae1;
+  --text-dark: #3a4750;
+  --text-light: #707c80;
+
+  --pastel-success: #e1f2e2;
+  --pastel-success-text: #4e8054;
+  --pastel-warning: #fff3cd;
+  --pastel-warning-text: #856404;
+  --pastel-danger: #fce8e6;
+  --pastel-danger-text: #a83a32;
+  --pastel-info: #e3f2fd;
+  --pastel-info-text: #1d6fa5;
+}
+
+.product-paper {
+  padding: 24px;
+  border-radius: 16px !important;
+  background-color: var(--pastel-bg) !important;
+  box-shadow: 0 4px 20px rgba(0,0,0,.03) !important;
+  border: 1px solid #edf2f7;
+}
+
+.table-title {
+  font-weight: 700 !important;
+  color: var(--text-dark);
+  margin-bottom: 20px !important;
+}
+
+.search-field {
+  margin-bottom: 24px !important;
+}
+
+.search-field .MuiOutlinedInput-root {
+  background: #fff;
+  border-radius: 12px;
+}
+
+.custom-table-container {
+  background: #fff;
+  border-radius: 12px;
+  border: 1px solid #eaeaea;
+}
+
+.table-header {
+  background: #f7f9fa;
+}
+
+.table-header th {
+  font-weight: 600 !important;
+  color: var(--text-dark) !important;
+  border-bottom: 2px solid #eaeaea !important;
+}
+
+.table-body-row:hover {
+  background: #fcfdfe !important;
+}
+
+.product-avatar {
+  width: 54px !important;
+  height: 54px !important;
+}
+
+.product-name {
+  font-weight: 600 !important;
+}
+
+.product-desc,
+.text-muted {
+  color: var(--text-light) !important;
+}
+
+.price-text {
+  font-weight: 600 !important;
+}
+
+.status-chip {
+  font-weight: 600 !important;
+  border-radius: 8px !important;
+}
+
+.chip-success {
+  background: var(--pastel-success) !important;
+  color: var(--pastel-success-text) !important;
+}
+
+.chip-warning {
+  background: var(--pastel-warning) !important;
+  color: var(--pastel-warning-text) !important;
+}
+
+.chip-danger {
+  background: var(--pastel-danger) !important;
+  color: var(--pastel-danger-text) !important;
+}
+
+.chip-active {
+  background: var(--pastel-info) !important;
+  color: var(--pastel-info-text) !important;
+}
+
+.chip-inactive {
+  background: #f0f2f5 !important;
+  color: #65676b !important;
+}
+
+.edit-action-btn {
+  background: var(--pastel-accent) !important;
+  color: #8c7b6e !important;
+}
+
+.edit-action-btn:hover {
+  background: #e6dacb !important;
+}
+
+.loader-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 150px;
+}
+
+.pastel-progress {
+  color: var(--pastel-primary) !important;
+}
+.delete-action-btn {
+  background-color: #fde8e8 !important;
+  color: #d32f2f !important;
+  border-radius: 8px !important;
+  margin-left: 8px !important;
+}
+
+.delete-action-btn:hover {
+  background-color: #f8caca !important;
+}
