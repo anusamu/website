@@ -18,6 +18,7 @@ import {
 } from "@mui/material";
 
 import "./InactiveProduct.css";
+import api from "../../../api";
 
 const InactiveProduct = () => {
   const [products, setProducts] = useState([]);
@@ -36,8 +37,7 @@ const InactiveProduct = () => {
     try {
       const token = localStorage.getItem("token");
 
-      const res = await axios.get(
-        "http://localhost:5000/api/products/admin/all",
+      const res = await api.get( "products/admin/all",
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -63,8 +63,8 @@ const handleStatusToggle = async (productId) => {
   try {
     const token = localStorage.getItem("token");
 
-    await axios.put(
-      `http://localhost:5000/api/products/status/${productId}`,
+    await api.put(
+      `products/status/${productId}`,
       {
         status: "active",
       },

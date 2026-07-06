@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import './ScrollCard.css';
+import api from '../../../api';
 
 function ScrollCard() {
   const [allProducts, setAllProducts] = useState([]); 
@@ -13,38 +14,42 @@ function ScrollCard() {
     const controller = new AbortController();
     const signal = controller.signal;
 
-    const fetchDatabaseData = async () => {
-      try {
-        setLoading(true);
-        // Hits your live getProducts controller method
-        const response = await fetch('http://localhost:5000/api/products', { signal });
-        
-        if (!response.ok) {
-          throw new Error('Failed to retrieve products from server');
-        }
-        
-        const data = await response.json();
-        setAllProducts(data);
+ const fetchDatabaseData = async () => {
+  try {
+    setLoading(true);
 
-        // Filter: Grabs exactly 1 representative card object per unique 'type' field
-        const uniqueTypeMap = {};
-        data.forEach((product) => {
-          const productType = product.type ? product.type.trim() : '';
-          if (productType && !uniqueTypeMap[productType]) {
-            uniqueTypeMap[productType] = product;
-          }
-        });
+    // Hits your getProducts controller
+    const response = await api.get("/products", {
+      signal,
+    });
 
-        setCategories(Object.values(uniqueTypeMap));
-        setLoading(false);
-      } catch (err) {
-        if (err.name !== 'AbortError') {
-          console.error("Database fetch error:", err);
-          setError(err.message);
-          setLoading(false);
-        }
+    const data = response.data;
+
+    setAllProducts(data);
+
+    // Get one representative product for each unique type
+    const uniqueTypeMap = {};
+
+    data.forEach((product) => {
+      const productType = product.type?.trim();
+
+      if (productType && !uniqueTypeMap[productType]) {
+        uniqueTypeMap[productType] = product;
       }
-    };
+    });
+
+    setCategories(Object.values(uniqueTypeMap));
+    setError(null);
+  } catch (err) {
+    // Ignore request cancellation
+    if (err.name !== "CanceledError" && err.code !== "ERR_CANCELED") {
+      console.error("Database fetch error:", err);
+      setError(err.response?.data?.message || err.message);
+    }
+  } finally {
+    setLoading(false);
+  }
+};
 
     fetchDatabaseData();
 

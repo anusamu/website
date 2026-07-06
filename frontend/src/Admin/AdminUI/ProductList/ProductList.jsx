@@ -21,6 +21,7 @@ import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import "./ProductList.css";
 import EditProduct from "../EditProduct/EditProduct";
+import api from "../../../api";
 
 const ProductList = () => {
   const [products, setProducts] = useState([]);
@@ -53,7 +54,7 @@ const ProductList = () => {
   const fetchProducts = async () => {
     try {
       const token = localStorage.getItem("token");
-      const res = await axios.get("http://localhost:5000/api/products/admin/all", {
+      const res = await api.get("/products/admin/all", {
         headers: { Authorization: `Bearer ${token}` },
       });
       setProducts(res.data);

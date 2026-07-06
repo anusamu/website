@@ -6,6 +6,7 @@ import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import AutoAwesomeIcon from "@mui/icons-material/AutoAwesome";
 import DeleteIcon from "@mui/icons-material/Delete";
 import "./AddProduct.css";
+import api from "../../../api";
 
 // Added a safety fallback default value to dynamicOptions to avoid initial undefined errors
 const AddProduct = ({ dynamicOptions = {}, refreshOptions }) => {
@@ -51,7 +52,7 @@ const AddProduct = ({ dynamicOptions = {}, refreshOptions }) => {
 
     try {
       const token = localStorage.getItem("token");
-      await axios.post("http://localhost:5000/api/products/add", formData, {
+      await api.post("/products/add", formData, {
         headers: { Authorization: `Bearer ${token}`, "Content-Type": "multipart/form-data" }
       });
       toast.success("Product Created Successfully");

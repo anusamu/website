@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate, Link } from "react-router-dom";
+import api from "../../api";
 
 function Register() {
   const navigate = useNavigate();
@@ -25,8 +26,8 @@ function Register() {
     e.preventDefault();
 
     try {
-      const res = await axios.post(
-        "http://localhost:5000/api/register",
+      const res = await api.post(
+        "/register",
         formData
       );
 

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import "./ShopByPattern.css";
+import api from "../../../api";
 
 // 1. New Features Bar Sub-Component matching the exact icons and subtitles from the image
 function FeaturesBar() {
@@ -86,36 +87,37 @@ function ShopByPattern() {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    const controller = new AbortController();
-    const signal = controller.signal;
+  const controller = new AbortController();
+  const signal = controller.signal;
 
-    const fetchPatterns = async () => {
-      try {
-        setLoading(true);
-        const response = await fetch("http://localhost:5000/api/products", { signal });
+  const fetchPatterns = async () => {
+    try {
+      setLoading(true);
 
-        if (!response.ok) {
-          throw new Error("Failed to retrieve patterns from server");
-        }
+      const response = await api.get("/products", {
+        signal,
+      });
 
-        const data = await response.json();
-        setPatterns(data.slice(0, 3));
-        setLoading(false);
-      } catch (err) {
-        if (err.name !== "AbortError") {
-          console.error("Pattern fetch error:", err);
-          setError(err.message);
-          setLoading(false);
-        }
+      const data = response.data;
+
+      setPatterns(data.slice(0, 3));
+      setError(null);
+    } catch (err) {
+      if (err.name !== "CanceledError" && err.code !== "ERR_CANCELED") {
+        console.error("Pattern fetch error:", err);
+        setError(err.response?.data?.message || err.message);
       }
-    };
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    fetchPatterns();
+  fetchPatterns();
 
-    return () => {
-      controller.abort();
-    };
-  }, []);
+  return () => {
+    controller.abort();
+  };
+}, []);
 
   if (loading) {
     return (

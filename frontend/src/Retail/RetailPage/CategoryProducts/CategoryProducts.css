@@ -1,0 +1,240 @@
+/* ==========================================================================
+   Structural Wrapper & Ambient Animation
+   ========================================================================== */
+.cat-products-section {
+  position: relative;
+  width: 100%;
+  background-color: #ffffff;
+  padding: 170px 24px 100px 24px;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+/* Subtle fluid moving ambient background light */
+.cat-ambient-bg-glow {
+  position: absolute;
+  top: -20%;
+  left: 25%;
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, rgba(136, 160, 105, 0.04) 0%, rgba(255,255,255,0) 70%);
+  border-radius: 50%;
+  z-index: 1;
+  pointer-events: none;
+  animation: driftAmbient 12s ease-in-out infinite alternate;
+}
+
+@keyframes driftAmbient {
+  0% { transform: translate(0, 0) scale(1); }
+  100% { transform: translate(40px, 30px) scale(1.15); }
+}
+
+.cat-products-container {
+  position: relative;
+  z-index: 2;
+  max-width: 1400px; /* Widened frame to sit beautifully with 4 columns */
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ==========================================================================
+   Header Layout Custom Styling
+   ========================================================================== */
+.cat-grid-header {
+  text-align: center;
+  margin-bottom: 55px;
+}
+
+.cat-grid-title {
+  font-family: "Playfair Display", "Didot", "Georgia", serif;
+  font-size: 3.2rem;
+  font-weight: 400;
+  color: #111111;
+  margin: 0 0 12px 0;
+  letter-spacing: 0.01em;
+  text-transform: capitalize;
+ 
+}
+
+.cat-grid-subtitle {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-size: 0.95rem;
+  color: #71717a;
+  margin: 0;
+}
+
+/* 4-COLUMN ARRAY SETUP */
+.cat-products-layout-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr); /* Exactly 4 columns per row */
+  gap: 24px; /* Crisp gap alignment */
+  width: 100%;
+}
+
+/* ==========================================================================
+   Interactive Product Card Layout
+   ========================================================================== */
+.cat-product-display-card {
+  display: flex;
+  flex-direction: column;
+  background-color: #ffffff;
+  width: 100%;
+  cursor: pointer;
+}
+
+/* Main Image Container - Increased length using custom aspect ratio */
+.cat-product-image-container {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 0.72 / 1; /* Decreased ratio slightly to lengthen the portrait layout look */
+  border: rgb(195, 35, 35); /* Smooth elegant edge curvature */
+  overflow: hidden;
+  background-color: #fcfcfc;
+  display: flex;
+  justify-content: center;
+}
+
+/* Smooth zoom transition profile */
+.cat-product-display-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.8s cubic-bezier(0.25, 1, 0.3, 1); /* Professional high-end dampening curve */
+}
+
+/* Card hover zooms image content smoothly */
+.cat-product-display-card:hover .cat-product-display-img {
+  transform: scale(1.05);
+}
+
+/* ==========================================================================
+   Dynamic "Add to Cart" Action Box (Exact Image Replication)
+   ========================================================================== */
+.cat-action-add-to-cart-btn {
+  position: absolute;
+  /* 1. Moves the card button up away from the bottom edge */
+  bottom: 16px; 
+  
+  /* 2. Sets up the side spacing/width to make it look floating and inset */
+  width: 88%; 
+  left: 6%; /* (100% - 88%) / 2 = 6% left/right padding for perfect centering */
+  
+  /* 3. Rounded corners to match the premium screenshot style */
+  border-radius: 1px; 
+  
+  border: none;
+  outline: none;
+  box-sizing: border-box;
+  
+  /* Initial default state matching image overlay mix */
+  background-color: rgba(255, 255, 255, 0.95); 
+  color: #2c2c2c;
+  
+  padding: 14px 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-size: 0.9rem;
+  font-weight: 500;
+  letter-spacing: 0.03em;
+  text-align: center;
+  cursor: pointer;
+
+  /* Smooth slide up configuration values */
+  opacity: 0;
+  /* Changed start position from 15px to 8px for a tight, elegant pop animation */
+  transform: translateY(8px); 
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), 
+              opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1), 
+              background-color 0.25s ease, 
+              color 0.25s ease;
+  z-index: 5;
+}
+/* Card Hover pops the "Add to Cart" strip gracefully inside the frame */
+.cat-product-display-card:hover .cat-action-add-to-cart-btn {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Button hover triggers structural transition to image's muted sage green background style */
+.cat-action-add-to-cart-btn:hover {
+  background-color: #88a069; /* Your premium sage tone */
+  color: #ffffff; /* Turns clean white */
+}
+
+/* ==========================================================================
+   Card Typography Details
+   ========================================================================== */
+.cat-product-meta-details {
+  display: flex;
+  flex-direction: column;
+  padding: 14px 2px 0 2px;
+  gap: 5px;
+}
+
+.cat-product-meta-title {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-size: 1rem;
+  font-weight: 400;
+  color: #2c2c2c;
+  margin: 0;
+  line-height: 1.4;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.cat-product-meta-price {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #111111;
+  margin: 0;
+}
+
+/* ==========================================================================
+   Status & Responsiveness Fallbacks
+   ========================================================================== */
+.cat-grid-status-box {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 50vh;
+  width: 100%;
+  background-color: #ffffff;
+}
+
+.cat-status-message {
+  font-family: -apple-system, sans-serif;
+  font-size: 1rem;
+  color: #71717a;
+}
+
+.cat-empty-state-box {
+  text-align: center;
+  padding: 80px 0;
+  width: 100%;
+}
+
+.cat-empty-text {
+  font-family: -apple-system, sans-serif;
+  color: #71717a;
+}
+
+@media (max-width: 1024px) {
+  .cat-products-layout-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+  }
+}
+
+@media (max-width: 600px) {
+  .cat-products-layout-grid {
+    grid-template-columns: 1fr;
+  }
+  .cat-action-add-to-cart-btn {
+    opacity: 1;
+    transform: translateY(0);
+    background-color: #ffffff;
+  }
+}

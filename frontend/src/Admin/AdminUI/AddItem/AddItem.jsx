@@ -4,6 +4,7 @@ import { toast } from "react-toastify";
 import { Paper, TextField, Typography, Button, Box, List, ListItem, ListItemText, Divider, CircularProgress } from "@mui/material";
 import LayersIcon from "@mui/icons-material/Layers";
 import "./AttributeCard.css";
+import api from "../../../api";
 
 const AddItem = ({ dynamicOptions = {}, refreshOptions }) => {
   const [value, setValue] = useState("");
@@ -16,8 +17,8 @@ const AddItem = ({ dynamicOptions = {}, refreshOptions }) => {
     setLoading(true);
     try {
       const token = localStorage.getItem("token");
-      const res = await axios.post(
-        "http://localhost:5000/api/attributes/item", 
+      const res = await api.post(
+        "/attributes/item", 
         { name: trimmedValue }, 
         { headers: { Authorization: `Bearer ${token}` } }
       );

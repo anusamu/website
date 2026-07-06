@@ -14,6 +14,7 @@ import {
   FormGroup,
 } from "@mui/material";
 import "./EditProduct.css";
+import api from "../../../api";
 const EditProduct = ({ open, onClose, product, fetchProducts }) => {
   const [selectedProduct, setSelectedProduct] = useState(product);
   const [newImages, setNewImages] = useState([]);
@@ -94,8 +95,8 @@ const EditProduct = ({ open, onClose, product, fetchProducts }) => {
         formData.append("images", image);
       });
 
-      await axios.put(
-        `http://localhost:5000/api/products/update/${selectedProduct._id}`,
+      await api.put(
+        `/products/update/${selectedProduct._id}`,
         formData,
         {
           headers: {

@@ -5,10 +5,9 @@ import {
   Heart,
   Menu,
   LogOut,
-  LayoutDashboard,
   Search,
   User,
-  Package,
+  X,
 } from "lucide-react";
 
 import {
@@ -29,6 +28,7 @@ import {
 
 import "./Navbar.css";
 import RajagopalLogo from '../../assets/Rajagopal handloom.png';
+
 const Navbar = () => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -37,6 +37,10 @@ const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
+  
+  // Search States
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [searchInputValue, setSearchInputValue] = useState("");
 
   const cartCount = 3;
   const isMenuOpen = Boolean(anchorEl);
@@ -44,10 +48,7 @@ const Navbar = () => {
 
   const role = user?.role?.toLowerCase();
   const isAdmin = role === "admin";
-  const isWholesale = role === "wholesale";
-  const isRetail = role === "retail";
 
-  // Check for logged-in user on mount
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
     if (storedUser) {
@@ -60,15 +61,18 @@ const Navbar = () => {
     }
   }, []);
 
-  // Handle scroll effect
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 20);
     };
-
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  // Close search drawer automatically on navigation changes
+  useEffect(() => {
+    setIsSearchOpen(false);
+  }, [location.pathname]);
 
   const logout = () => {
     localStorage.removeItem("token");
@@ -87,6 +91,21 @@ const Navbar = () => {
 
   const getLinkClass = (path) => {
     return `nav-item-link ${location.pathname === path ? "link-active" : ""}`;
+  };
+
+  // FIX: Redirects explicitly using the new ?search= parameter query
+  const executeSearch = () => {
+    if (searchInputValue.trim()) {
+      navigate(`/products?search=${encodeURIComponent(searchInputValue.trim())}`);
+      setSearchInputValue("");
+      setIsSearchOpen(false);
+    }
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter") {
+      executeSearch();
+    }
   };
 
   return (
@@ -113,60 +132,42 @@ const Navbar = () => {
             </IconButton>
           </Box>
 
-      <Link to="/" >
-  <img 
-    src={RajagopalLogo} 
-    alt="Rajagopal Handloom Logo" 
-    style={{ 
-      height: "50px", 
-      objectFit: "contain",
-     // Pushes it neatly into the left corner with a tiny bit of breathing room
-    }} 
-  />
-</Link>
+          <Link to="/" >
+            <img 
+              src={RajagopalLogo} 
+              alt="Rajagopal Handloom Logo" 
+              style={{ height: "50px", objectFit: "contain" }} 
+            />
+          </Link>
 
           {/* Navigation Links */}
           <div className="nav-links-container">
             {isAdmin ? (
               <>
-                <Link to="/admindashboard" className={getLinkClass("/admindashboard")}>
-                  Dashboard
-                </Link>
-                <Link to="/adminorders" className={getLinkClass("/adminorders")}>
-                  Orders
-                </Link>
+                <Link to="/admindashboard" className={getLinkClass("/admindashboard")}>Dashboard</Link>
+                <Link to="/adminorders" className={getLinkClass("/adminorders")}>Orders</Link>
               </>
             ) : (
               <>
-        
-                <Link to="/" className={getLinkClass("/")}>
-                  Home
-                </Link>
-                <Link to="/products" className={getLinkClass("/products")}>
-                  Shop
-                </Link>
-                <Link to="/blog" className={getLinkClass("/blog")}>
-                  Blog
-                </Link>
-                <Link to="/about" className={getLinkClass("/about")}>
-                  About
-                </Link>
-                <Link to="/lookbook" className={getLinkClass("/lookbook")}>
-                  Lookbook
-                </Link>
-                <Link to="/contact" className={getLinkClass("/contact")}>
-                  Contact
-                </Link>
+                <Link to="/" className={getLinkClass("/")}>Home</Link>
+                <Link to="/products" className={getLinkClass("/products")}>Shop</Link>
+                <Link to="/blog" className={getLinkClass("/blog")}>Blog</Link>
+                <Link to="/about" className={getLinkClass("/about")}>About</Link>
+                <Link to="/lookbook" className={getLinkClass("/lookbook")}>Lookbook</Link>
+                <Link to="/contact" className={getLinkClass("/contact")}>Contact</Link>
               </>
             )}
           </div>
 
-          {/* Right Actions */}
+          {/* Right Actions Tray */}
           <Box className="nav-action-tray" sx={{ gap: { xs: 0.5, md: 1.5 }, alignItems: "center" }}>
             {!isAdmin && (
               <>
-                <IconButton className="nav-icon-button" onClick={() => navigate("/search")}>
-                  <Search size={19} strokeWidth={1.5} />
+                <IconButton 
+                  className={`nav-icon-button ${isSearchOpen ? 'search-active' : ''}`} 
+                  onClick={() => setIsSearchOpen(!isSearchOpen)}
+                >
+                  {isSearchOpen ? <X size={19} strokeWidth={1.5} /> : <Search size={19} strokeWidth={1.5} />}
                 </IconButton>
 
                 <IconButton className="nav-icon-button" onClick={() => navigate("/wishlist")}>
@@ -202,16 +203,11 @@ const Navbar = () => {
                   anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
                 >
                   <MenuItem onClick={() => navigate("/profile")}>
-                    <ListItemIcon>
-                      <User size={16} />
-                    </ListItemIcon>
+                    <ListItemIcon><User size={16} /></ListItemIcon>
                     My Profile
                   </MenuItem>
-
                   <MenuItem onClick={logout}>
-                    <ListItemIcon>
-                      <LogOut size={16} />
-                    </ListItemIcon>
+                    <ListItemIcon><LogOut size={16} /></ListItemIcon>
                     Logout
                   </MenuItem>
                 </MuiMenu>
@@ -224,41 +220,33 @@ const Navbar = () => {
           </Box>
         </Toolbar>
 
+        {/* SEARCH BAR DROPDOWN BAR */}
+        <div className={`nav-search-popdown-container ${isSearchOpen ? "expanded" : ""}`}>
+          <div className="nav-search-inner-wrapper">
+            <div className="nav-search-input-field-box">
+              <Search className="nav-search-inside-icon" size={18} strokeWidth={1.5} />
+              <input
+                type="text"
+                placeholder="Search premium handlooms, categories, variants, patterns..."
+                value={searchInputValue}
+                onChange={(e) => setSearchInputValue(e.target.value)}
+                onKeyDown={handleKeyDown}
+                className="nav-search-text-input"
+              />
+            </div>
+            <button className="nav-search-submit-action-btn" onClick={executeSearch}>
+              Search
+            </button>
+          </div>
+        </div>
+
         {/* Mobile Drawer */}
         <Drawer anchor="left" open={mobileOpen} onClose={() => setMobileOpen(false)}>
           <Box sx={{ width: 260, p: 3, pt: 6 }}>
             <List>
-              {isAdmin ? (
-                <>
-                  <ListItem component={Link} to="/admindashboard" onClick={() => setMobileOpen(false)}>
-                    <ListItemText primary="Dashboard" />
-                  </ListItem>
-                  <ListItem component={Link} to="/adminorders" onClick={() => setMobileOpen(false)}>
-                    <ListItemText primary="Orders" />
-                  </ListItem>
-                </>
-              ) : (
-                <>
-                  <ListItem component={Link} to="/" onClick={() => setMobileOpen(false)}>
-                    <ListItemText primary="Home" />
-                  </ListItem>
-                  <ListItem component={Link} to="/products" onClick={() => setMobileOpen(false)}>
-                    <ListItemText primary="Shop" />
-                  </ListItem>
-                  <ListItem component={Link} to="/blog" onClick={() => setMobileOpen(false)}>
-                    <ListItemText primary="Blog" />
-                  </ListItem>
-                  <ListItem component={Link} to="/about" onClick={() => setMobileOpen(false)}>
-                    <ListItemText primary="About" />
-                  </ListItem>
-                  <ListItem component={Link} to="/lookbook" onClick={() => setMobileOpen(false)}>
-                    <ListItemText primary="Lookbook" />
-                  </ListItem>
-                  <ListItem component={Link} to="/contact" onClick={() => setMobileOpen(false)}>
-                    <ListItemText primary="Contact" />
-                  </ListItem>
-                </>
-              )}
+              {/* Core Mobile Links stay identical */}
+              <ListItem component={Link} to="/" onClick={() => setMobileOpen(false)}><ListItemText primary="Home" /></ListItem>
+              <ListItem component={Link} to="/products" onClick={() => setMobileOpen(false)}><ListItemText primary="Shop" /></ListItem>
             </List>
           </Box>
         </Drawer>

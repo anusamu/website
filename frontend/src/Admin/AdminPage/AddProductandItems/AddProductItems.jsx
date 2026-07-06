@@ -15,6 +15,7 @@ import AddType from "../../AdminUI/AddItem/AddType";
 import AddCategory from "../../AdminUI/AddItem/AddCategory";
 
 import "./AddProductItems.css";
+import api from "../../../api";
 
 const AddProductItems = () => {
   const [activeTab, setActiveTab] = useState("product");
@@ -22,7 +23,7 @@ const AddProductItems = () => {
 
   const fetchAttributes = async () => {
     try {
-      const res = await axios.get("http://localhost:5000/api/attributes/form-options");
+      const res = await api.get("attributes/form-options");
       if (res.data.success) {
         setDynamicOptions({
           categories: res.data.categories.map((c) => c.name),

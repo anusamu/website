@@ -15,6 +15,7 @@ import {
 } from "@mui/material";
 import CategoryIcon from "@mui/icons-material/Category";
 import "./AttributeCard.css";
+import api from "../../../api";
 
 // 1. Added dynamicOptions to props
 const AddCategory = ({ dynamicOptions = {}, refreshOptions }) => {
@@ -28,8 +29,8 @@ const AddCategory = ({ dynamicOptions = {}, refreshOptions }) => {
     setLoading(true);
     try {
       const token = localStorage.getItem("token");
-      const res = await axios.post(
-        "http://localhost:5000/api/attributes/category", 
+      const res = await api.post(
+        "/attributes/category", 
         { name: trimmedValue }, 
         { headers: { Authorization: `Bearer ${token}` } }
       );

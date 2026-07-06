@@ -15,6 +15,7 @@ import {
 } from "@mui/material";
 import LabelIcon from "@mui/icons-material/Label";
 import "./AttributeCard.css";
+import api from "../../../api";
 
 // 1. Added dynamicOptions here as a prop
 const AddType = ({ dynamicOptions = {}, refreshOptions }) => {
@@ -28,8 +29,8 @@ const AddType = ({ dynamicOptions = {}, refreshOptions }) => {
     setLoading(true);
     try {
       const token = localStorage.getItem("token");
-      const res = await axios.post(
-        "http://localhost:5000/api/attributes/type", 
+      const res = await api.post(
+        "/attributes/type", 
         { name: trimmedValue }, 
         { headers: { Authorization: `Bearer ${token}` } }
       );

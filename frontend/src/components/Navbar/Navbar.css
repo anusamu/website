@@ -163,10 +163,175 @@ background-color: var(--color-dark-accent);
 .nav-auth-login-btn:hover {
   color: var(--color-primary-accent);
 }
-
 /* --- Mobile Viewport Breakpoint Adjustments --- */
 @media (max-width: 900px) {
   .nav-links-container {
     display: none !important;
+  }
+}
+/* ==========================================================================
+   Search Input Container Unit (Exact Image Form Component Replication)
+   ========================================================================== */
+.nav-search-popdown-container {
+ 
+  /* Initial hidden state values */
+ 
+  overflow: hidden;
+
+  transform: translateY(-8px);
+  /* Ultra-smooth hardware-accelerated transition profiles */
+  transition: max-height 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+              opacity 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+              visibility 0.4s;
+}
+
+/* Active State Trigger when icon is clicked */
+.nav-search-popdown-container.expanded {
+  max-height: 90px; 
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+  padding: 20px 50px 50px 50px;
+}
+
+/* ==========================================================================
+   Internal Search Bar Container & Elements (Exact Form Component)
+   ========================================================================== */
+.nav-search-inner-wrapper {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0; /* Flush alignment matches seamless block format */
+  width: 100%;
+}
+
+.nav-search-input-field-box {
+  position: relative;
+  display: flex;
+  align-items: center;
+  flex: 1;
+  max-width: 780px;
+  background-color: #fcfbfa; 
+  border: 1px solid #d8d3c9; 
+  border-right: none; 
+  border-top-left-radius: 2px;
+  border-bottom-left-radius: 2px;
+  padding: 0 16px;
+  height: 48px; 
+  box-sizing: border-box;
+  transition: border-color 0.2s cubic-bezier(0.25, 1, 0.5, 1), 
+              background-color 0.2s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.nav-search-input-field-box:focus-within {
+  border-color: #88a069; 
+  background-color: #ffffff;
+}
+
+.nav-search-inside-icon {
+  color: #8d877e;
+  margin-right: 12px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+}
+
+.nav-search-text-input {
+  width: 100%;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-size: 0.95rem;
+  color: #111111;
+  padding: 0;
+}
+
+.nav-search-text-input::placeholder {
+  color: #b5aea4; 
+  font-weight: 300;
+}
+
+.nav-search-submit-action-btn {
+  background-color: #88a069; 
+  color: #ffffff;
+  border: 1px solid #88a069; 
+  outline: none;
+  border-top-right-radius: 2px;
+  border-bottom-right-radius: 2px;
+  height: 48px;
+  padding: 0 42px; 
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-size: 0.95rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+  box-sizing: border-box;
+  transition: background-color 0.25s cubic-bezier(0.16, 1, 0.3, 1), 
+              border-color 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.1s ease;
+}
+
+.nav-search-submit-action-btn:hover {
+  background-color: #768d5a; 
+  border-color: #768d5a;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .nav-main-bar {
+    height: 75px;
+  }
+  .nav-links-menu {
+    display: none; /* Collapses menu items on tablet/mobile screens */
+  }
+  .nav-search-popdown-container.expanded {
+    max-height: 80px;
+    padding: 16px;
+  }
+  .nav-search-input-field-box, .nav-search-submit-action-btn {
+    height: 42px;
+  }
+}
+
+@media (max-width: 480px) {
+  .nav-search-popdown-container.expanded {
+    max-height: 250px; /* Increase height */
+    overflow: visible;
+    padding: 10px;
+  }
+
+  .nav-search-inner-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+    width: 100%;
+  }
+
+  .nav-search-input-field-box {
+    width: 100%;
+    max-width: 100%;
+    border-right: none;
+    border: 1px solid #d8d3c9;
+    border-radius: 4px;
+    box-sizing: border-box;
+  }
+
+  .nav-search-input-field-box input {
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .nav-search-submit-action-btn {
+    width: 100%;
+    border-radius: 4px;
   }
 }
