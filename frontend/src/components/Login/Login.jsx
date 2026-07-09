@@ -80,8 +80,8 @@ function Login() {
 
     if (role === "admin") {
       navigate("/admindashboard");
-    } else if (role === "wholesale") {
-      navigate("/wholesalehome");
+    } else if (role === "SuperAdmin") {
+      navigate("/admindashboard");
     } else {
       navigate("/");
     }

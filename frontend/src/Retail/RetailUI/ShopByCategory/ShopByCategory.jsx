@@ -36,7 +36,8 @@ function ShopByCategory() {
           ? data
           : data.categories || [];
 
-        setCategories(rawCategories.slice(0, 3));
+        // LOGIC FIX: Removed .slice(0, 3) so all fetched categories can load properly
+        setCategories(rawCategories);
         setError(null);
       } catch (err) {
         if (err.name !== "CanceledError" && err.code !== "ERR_CANCELED") {
@@ -55,11 +56,11 @@ function ShopByCategory() {
     };
   }, []);
 
-  // Handler mapping target collection parameters to search query views
+  // LOGIC FIX: Added the missing '?category=' query indicator so your router and useLocation can parse it
   const handleCategoryClick = (categoryName) => {
     if (!categoryName) return;
 
-    navigate(`/products?category=${encodeURIComponent(categoryName)}`);
+    navigate(`/category-products?category=${encodeURIComponent(categoryName.trim())}`);
   };
 
   if (loading) {
@@ -93,8 +94,6 @@ function ShopByCategory() {
         </header>
 
         <div className="category-grid">
-        
-
           {categories.map((cat, index) => {
             const title = cat.name || cat.title || `Collection ${index + 1}`;
 
@@ -123,7 +122,7 @@ function ShopByCategory() {
         <div className="cta-wrapper">
           <button
             className="shop-now-btn"
-            onClick={() => navigate("/products")}
+            onClick={() => navigate("/category-products")}
           >
             Shop All
           </button>

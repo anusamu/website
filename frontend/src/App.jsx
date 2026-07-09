@@ -10,7 +10,10 @@ import AdminLayout from "./Admin/AdminPage/AdminLayout";
 import InactiveProduct from "./Admin/AdminPage/InactiveProduct/InactiveProduct";
 import AddProductItems from "./Admin/AdminPage/AddProductandItems/AddProductItems";
 import CategoryProducts from "./Retail/RetailPage/CategoryProducts/CategoryProducts";
+import ShopPage from "./Retail/RetailPage/ShopPages/ShopPage";
+// import StorefrontUI from "./Retail/RetailPage/test/StorefrontUI";
 // import WholesaleDashboard from "./WholeSale/Wholsale";
+import AddAdmin from "./Admin/AdminPage/AddAdmin/AddAdmin";
 
 function App() {
   return (
@@ -24,7 +27,8 @@ function App() {
 
         {/* Retail Customer */}
         <Route path="/" element={<Home />} />
-        <Route path="/products" element={<CategoryProducts/>} />
+        <Route path="/category-products" element={<CategoryProducts/>} />
+      <Route path="/shop" element={<ShopPage/>} />
 
 
 
@@ -35,6 +39,7 @@ function App() {
           <Route path="/addproduct" element={<AddProductItems/>} />
           <Route path="/productlist" element={<ProductList />} />
            <Route path="/inactiveproducts" element={<InactiveProduct/>} />
+           <Route path="/addAdmin" element={<AddAdmin/>} />
          
         </Route>
       </Routes>

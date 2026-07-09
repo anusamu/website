@@ -66,7 +66,7 @@ const AdminSidebar = ({
     { text: "Orders", icon: <ShoppingBag size={20} />, path: "/orders" },
     { text: "Payments", icon: <CreditCard size={20} />, path: "/payments" },
     { text: "Reports", icon: <BarChart3 size={20} />, path: "/reports" },
-   { text: "Add Admin user", icon: <UserPlus size={20} />, path: "/adduser" },
+   { text: "Add Admin user", icon: <UserPlus size={20} />, path: "/addAdmin" },
     { text: "Feedbacks", icon: <MessageSquareMore size={20} />, path: "/feedbacks" },
   ];
 

@@ -21,8 +21,15 @@ exports.protect = async (req, res, next) => {
         return res.status(401).json({ success: false, message: "Invalid or expired token" });
       }
       
-      req.user = decoded;
-      next();
+      // FIX: Map both 'id' and '_id' uniformly to avoid property mismatches across your controllers
+      req.user = {
+        ...decoded,
+        _id: decoded._id || decoded.id, 
+        id: decoded.id || decoded._id
+      };
+
+      // Crucial: Execute next() strictly within the verified asynchronous scope
+      return next(); 
     });
 
   } catch (error) {
@@ -44,6 +51,6 @@ exports.authorize = (...roles) => {
       });
     }
 
-    next();
+    return next();
   };
 };

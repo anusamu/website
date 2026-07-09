@@ -37,7 +37,7 @@ phoneNumber: {
 
     role: {
       type: String,
-      enum: ["admin", "wholesale", "retail"],
+      enum: ["SuperAdmin","admin", "wholesale", "retail"],
       default: "retail",
     },
 

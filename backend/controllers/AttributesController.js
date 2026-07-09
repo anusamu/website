@@ -1,4 +1,4 @@
-const { Category, Item, Type,
+const { Category, Item, Type, Material, Collect,
     //  Variant
 
  } = require('../models/Attributes');
@@ -34,24 +34,35 @@ exports.addType = async (req, res) => {
 //     res.status(201).json({ success: true, data: variant });
 //   } catch (err) { res.status(400).json({ success: false, message: err.message }); }
 // };
+exports.addCollect = async (req, res) => {
+  try {
+    const collect = await Collect.create({ name: req.body.name });
+    res.status(201).json({ success: true, data: collect});
+  } catch (err) { 
+    res.status(400).json({ success: false, message: err.message }); 
+  }
+};
 
 // --- FETCH ALL ATTRIBUTES FOR FRONTEND DROPDOWNS ---
 // Call this endpoint when the "Add Product" page loads
 
 exports.getProductFormAttributes = async (req, res) => {
   try {
-    const [categories, items, types, variants] = await Promise.all([
+    const [categories, items, types, materials, collects] = await Promise.all([
       Category.find(),
       Item.find(),
       Type.find(),
-    //   Variant.find()
+      Material.find(),
+      Collect.find()
     ]);
+    
     res.status(200).json({
       success: true,
       categories,
       items,
       types,
-    //   variants
+      materials,    // Normalized to plural array names
+      collects  // Normalized to plural array names
     });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });

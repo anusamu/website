@@ -11,10 +11,11 @@ exports.addProduct = async (req, res) => {
       item,       // Populated dynamically from dropdown
       type,       // Populated dynamically from dropdown (e.g., Saree)
       colors,
-      brand,
+      collect,
       category,   // Populated dynamically from dropdown
       gender,
       part,
+      material,
       stockCount,
       sizes,
     } = req.body;
@@ -78,10 +79,11 @@ exports.addProduct = async (req, res) => {
       item,
       type,
       colors: processedColors,
-      brand,
+      collect,
       category,
       gender,
       part,
+       material,
       images: imageUrls,
       sizes: processedSizes,
       stockCount: count,
@@ -125,11 +127,12 @@ exports.updateProduct = async (req, res) => {
       description,
       price,
       item,
-      brand,
+      collect,
       category,
       type,
       gender,
       part,
+       material,
       stockCount,
     } = req.body;
 
@@ -184,11 +187,12 @@ exports.updateProduct = async (req, res) => {
       description,
       price: Number(price),
       item,
-      brand,
+      collect,
       category,
       type,
       gender,
       part,
+       material,
       stockCount: count,
       stockStatus,
       sizes: updatedSizes,

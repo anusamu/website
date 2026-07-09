@@ -150,7 +150,7 @@ const Navbar = () => {
             ) : (
               <>
                 <Link to="/" className={getLinkClass("/")}>Home</Link>
-                <Link to="/products" className={getLinkClass("/products")}>Shop</Link>
+                <Link to="/shop" className={getLinkClass("/shop")}>Shop</Link>
                 <Link to="/blog" className={getLinkClass("/blog")}>Blog</Link>
                 <Link to="/about" className={getLinkClass("/about")}>About</Link>
                 <Link to="/lookbook" className={getLinkClass("/lookbook")}>Lookbook</Link>

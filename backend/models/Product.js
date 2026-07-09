@@ -11,7 +11,7 @@ const productSchema = new mongoose.Schema(
     productNumber: {
       type: String,
       required: true, // Recommended to keep product numbers unique
-      trim: true,
+      
     },
 
     description: {
@@ -24,12 +24,12 @@ const productSchema = new mongoose.Schema(
       required: true,
     },
 
-    // Brand
-    brand: {
+    
+    collect: {
       type: String,
-      trim: true,
+      required: true,
+    
     },
-
     // Category (Populated dynamically from Category collection)
     category: {
       type: String,
@@ -70,6 +70,10 @@ const productSchema = new mongoose.Schema(
         trim: true,
       },
     ],
+       material: {
+      type: String,
+      trim: true,
+    },
 
     images: [
       {

@@ -7,28 +7,37 @@ import AddBoxIcon from "@mui/icons-material/AddBox";
 import CategoryIcon from "@mui/icons-material/Category";
 import LayersIcon from "@mui/icons-material/Layers";
 import LabelIcon from "@mui/icons-material/Label";
+import CollectionsIcon from "@mui/icons-material/Collections"; 
 
 // Children Panel Imports
 import AddProductForm from "../../AdminUI/AddProduct/AddProduct";
 import AddItem from "../../AdminUI/AddItem/AddItem";
 import AddType from "../../AdminUI/AddItem/AddType";
 import AddCategory from "../../AdminUI/AddItem/AddCategory";
+import AddCollection from "../../AdminUI/AddItem/AddCollection"; 
 
 import "./AddProductItems.css";
 import api from "../../../api";
 
 const AddProductItems = () => {
   const [activeTab, setActiveTab] = useState("product");
-  const [dynamicOptions, setDynamicOptions] = useState({ categories: [], items: [], types: [] });
+  const [dynamicOptions, setDynamicOptions] = useState({ 
+    categories: [], 
+    items: [], 
+    types: [], 
+    collect: [] // Initialized key matching state change requirements
+  });
 
   const fetchAttributes = async () => {
     try {
       const res = await api.get("attributes/form-options");
       if (res.data.success) {
         setDynamicOptions({
-          categories: res.data.categories.map((c) => c.name),
-          items: res.data.items.map((i) => i.name),
-          types: res.data.types.map((t) => t.name)
+          categories: (res.data.categories || []).map((c) => c.name),
+          items: (res.data.items || []).map((i) => i.name),
+          types: (res.data.types || []).map((t) => t.name),
+          // Maps backend collections structure directly into your collect hook variable array
+          collect: (res.data.collects || res.data.collect || []).map((col) => col.name)
         });
       }
     } catch (err) {
@@ -50,6 +59,11 @@ const AddProductItems = () => {
             <ListItemText primary="Add Product" secondary="Catalog Entry" />
           </ListItemButton>
 
+          <ListItemButton selected={activeTab === "collection"} onClick={() => setActiveTab("collect")} className="nav-panel-big-btn">
+            <ListItemIcon><CollectionsIcon className="action-panel-icon" /></ListItemIcon>
+            <ListItemText primary="Add Collection" secondary="Store Segments" />
+          </ListItemButton>
+
           <ListItemButton selected={activeTab === "item"} onClick={() => setActiveTab("item")} className="nav-panel-big-btn">
             <ListItemIcon><LayersIcon className="action-panel-icon" /></ListItemIcon>
             <ListItemText primary="Add Item" secondary="Root Divisions" />
@@ -68,21 +82,25 @@ const AddProductItems = () => {
       </Box>
 
       <Box className="workspace-dynamic-viewport">
-   {activeTab === "product" && (
-  <AddProductForm dynamicOptions={dynamicOptions} refreshOptions={fetchAttributes} />
-)}
+        {activeTab === "product" && (
+          <AddProductForm dynamicOptions={dynamicOptions} refreshOptions={fetchAttributes} />
+        )}
 
-{activeTab === "item" && (
-  <AddItem dynamicOptions={dynamicOptions} refreshOptions={fetchAttributes} />
-)}
+        {activeTab === "collect" && (
+          <AddCollection dynamicOptions={dynamicOptions} refreshOptions={fetchAttributes} />
+        )}
 
-{activeTab === "type" && (
-  <AddType dynamicOptions={dynamicOptions} refreshOptions={fetchAttributes} />
-)}
+        {activeTab === "item" && (
+          <AddItem dynamicOptions={dynamicOptions} refreshOptions={fetchAttributes} />
+        )}
 
-{activeTab === "category" && (
-  <AddCategory dynamicOptions={dynamicOptions} refreshOptions={fetchAttributes} />
-)}
+        {activeTab === "type" && (
+          <AddType dynamicOptions={dynamicOptions} refreshOptions={fetchAttributes} />
+        )}
+
+        {activeTab === "category" && (
+          <AddCategory dynamicOptions={dynamicOptions} refreshOptions={fetchAttributes} />
+        )}
       </Box>
     </Box>
   );

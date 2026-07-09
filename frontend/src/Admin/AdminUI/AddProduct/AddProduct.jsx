@@ -12,7 +12,7 @@ import api from "../../../api";
 const AddProduct = ({ dynamicOptions = {}, refreshOptions }) => {
   const [product, setProduct] = useState({
     productName: "", productNumber: "", description: "", price: "", item: "",
-    type: "", colors: "", brand: "", category: "", gender: "", part: "", stockCount: "", sizes: []
+    type: "", colors: "", collect: "", category: "", gender: "", part: "", material: "", stockCount: "", sizes: []
   });
   const [images, setImages] = useState([]);
   const [previewUrls, setPreviewUrls] = useState([]);
@@ -56,7 +56,7 @@ const AddProduct = ({ dynamicOptions = {}, refreshOptions }) => {
         headers: { Authorization: `Bearer ${token}`, "Content-Type": "multipart/form-data" }
       });
       toast.success("Product Created Successfully");
-      setProduct({ productName: "", productNumber: "", description: "", price: "", item: "", type: "", colors: "", brand: "", category: "", gender: "", part: "", stockCount: "", sizes: [] });
+      setProduct({ productName: "", productNumber: "", description: "", price: "", item: "", type: "", colors: "", collect: "", category: "", gender: "", part: "", material: "", stockCount: "", sizes: [] });
       setImages([]); setPreviewUrls([]);
       
       // Refresh options after submission if needed
@@ -100,7 +100,12 @@ const AddProduct = ({ dynamicOptions = {}, refreshOptions }) => {
           </Box>
           <Box className="input-grid-2">
             <TextField fullWidth label="Colors" name="colors" placeholder="Black, White" value={product.colors} onChange={handleChange} />
-            <TextField fullWidth label="Brand" name="brand" value={product.brand} onChange={handleChange} />
+            <TextField select fullWidth required label="Collection Selection" name="collect" value={product.collect} onChange={handleChange}>
+              <MenuItem value="">Select Collection</MenuItem>
+              {/* Updated parser to read collects / collect arrays matching structural changes */}
+              {(dynamicOptions?.collects || dynamicOptions?.collect || []).map((o) => <MenuItem key={o} value={o}>{o}</MenuItem>)}
+            </TextField>
+            <TextField fullWidth label="Material" name="material" value={product.material} onChange={handleChange} />
           </Box>
           <Box className="input-grid-2">
             {/* Added safety fallback array to options for categories */}
