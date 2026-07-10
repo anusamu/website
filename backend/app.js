@@ -15,12 +15,26 @@ connectDB();
 // Middleware
 
 
-app.use(
-  cors({
-    origin: process.env.CLIENT_URL || "http://localhost:5173",
-    credentials: true,
-  })
-);
+const allowedOrigins = [
+  'http://localhost:5173', // For local development
+  'https://website-rg-handloom.vercel.app', // Production frontend (no trailing slash)
+  'https://website-cj3wrxesh-rg-handloom.vercel.app' // The specific preview URL you are testing
+];
+
+app.use(cors({
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+    
+    // Check if the origin is in our allowed list, OR if it's a Vercel preview URL
+    if (allowedOrigins.indexOf(origin) !== -1 || origin.endsWith('-rg-handloom.vercel.app')) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true
+}));
 app.use(express.json());
 app.use(cookieParser());
 app.use(morgan("dev"));
