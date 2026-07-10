@@ -13,7 +13,7 @@ const app = express();
 connectDB();
 
 // Middleware
-const cors = require("cors");
+
 
 app.use(
   cors({
