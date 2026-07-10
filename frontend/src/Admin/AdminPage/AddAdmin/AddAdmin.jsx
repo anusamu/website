@@ -174,7 +174,7 @@ export default function AddAdmin() {
             <p className="view-subtitle">Provision system security scopes, edit dynamic roles, and monitor deployment permission structures.</p>
           </div>
           <button onClick={() => { resetForm(); setIsCreateModalOpen(true); }} className="mui-button mui-button-contained">
-            <span>➕</span> Add New Operator
+            <span>➕</span> Add Admin
           </button>
         </div>
 

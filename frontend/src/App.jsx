@@ -14,6 +14,9 @@ import ShopPage from "./Retail/RetailPage/ShopPages/ShopPage";
 // import StorefrontUI from "./Retail/RetailPage/test/StorefrontUI";
 // import WholesaleDashboard from "./WholeSale/Wholsale";
 import AddAdmin from "./Admin/AdminPage/AddAdmin/AddAdmin";
+import ProductDetails from "./Retail/RetailUI/ProductDetails/ProductDetails";
+import Cart from "./Retail/RetailPage/Cart/Cart";
+import Wishlist from "./Retail/RetailPage/Wishlist/Wishlist";
 
 function App() {
   return (
@@ -29,6 +32,9 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/category-products" element={<CategoryProducts/>} />
       <Route path="/shop" element={<ShopPage/>} />
+      <Route path="/product/:id" element={<ProductDetails/>} />
+      <Route path="/cart" element={<Cart/>} />
+       <Route path="/myWishlist" element={<Wishlist/>} />
 
 
 

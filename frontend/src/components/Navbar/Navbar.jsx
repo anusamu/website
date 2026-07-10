@@ -25,14 +25,18 @@ import {
   MenuItem,
   ListItemIcon,
 } from "@mui/material";
-
+import { useCart } from "../Context/CartContext";
+import { toast } from "react-toastify"; // Added explicit toast import
 import "./Navbar.css";
 import RajagopalLogo from '../../assets/Rajagopal handloom.png';
 
 const Navbar = () => {
   const navigate = useNavigate();
   const location = useLocation();
-
+  
+  // Dynamic live count pulled directly from context
+const { cartCount, clearCartOnLogout } = useCart();
+  
   const [user, setUser] = useState(null);
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -41,13 +45,23 @@ const Navbar = () => {
   // Search States
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [searchInputValue, setSearchInputValue] = useState("");
-
-  const cartCount = 3;
+  
   const isMenuOpen = Boolean(anchorEl);
-  const isLoggedIn = !!user;
 
+  // Derive login state safely by checking for either token existence or state user instance
+  const isLoggedIn = !!localStorage.getItem("token") || !!user;
   const role = user?.role?.toLowerCase();
   const isAdmin = role === "admin";
+
+  // Safe navigation lock logic used by Flipkart, Amazon, Swiggy, etc.
+  const handleCartClick = () => {
+    if (isLoggedIn) {
+      navigate("/cart");
+    } else {
+      toast.warn("Please log in to view your shopping bag.");
+      navigate("/login");
+    }
+  };
 
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
@@ -55,7 +69,7 @@ const Navbar = () => {
       try {
         setUser(JSON.parse(storedUser));
       } catch (error) {
-        console.error(error);
+        console.error("Failed to parse user session metadata:", error);
         localStorage.removeItem("user");
       }
     }
@@ -69,7 +83,6 @@ const Navbar = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Close search drawer automatically on navigation changes
   useEffect(() => {
     setIsSearchOpen(false);
   }, [location.pathname]);
@@ -78,6 +91,7 @@ const Navbar = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
     setUser(null);
+    clearCartOnLogout();
     navigate("/");
   };
 
@@ -93,14 +107,14 @@ const Navbar = () => {
     return `nav-item-link ${location.pathname === path ? "link-active" : ""}`;
   };
 
-  // FIX: Redirects explicitly using the new ?search= parameter query
-  const executeSearch = () => {
-    if (searchInputValue.trim()) {
-      navigate(`/products?search=${encodeURIComponent(searchInputValue.trim())}`);
-      setSearchInputValue("");
-      setIsSearchOpen(false);
-    }
-  };
+const executeSearch = () => {
+  if (searchInputValue.trim()) {
+    // Changing /products to /shop maps to your working route layout instantly
+    navigate(`/category-products?search=${encodeURIComponent(searchInputValue.trim())}`); 
+    setSearchInputValue("");
+    setIsSearchOpen(false);
+  }
+};
 
   const handleKeyDown = (e) => {
     if (e.key === "Enter") {
@@ -125,7 +139,7 @@ const Navbar = () => {
             px: { xs: 2, md: 6 },
           }}
         >      
-          {/* Mobile Menu */}
+          {/* Mobile Menu Open Trigger */}
           <Box sx={{ flex: 1, display: { xs: "block", md: "none" } }}>
             <IconButton onClick={() => setMobileOpen(true)} className="nav-icon-button">
               <Menu size={22} />
@@ -170,11 +184,12 @@ const Navbar = () => {
                   {isSearchOpen ? <X size={19} strokeWidth={1.5} /> : <Search size={19} strokeWidth={1.5} />}
                 </IconButton>
 
-                <IconButton className="nav-icon-button" onClick={() => navigate("/wishlist")}>
+                <IconButton className="nav-icon-button" onClick={() => navigate("/myWishlist")}>
                   <Heart size={19} strokeWidth={1.5} />
                 </IconButton>
 
-                <IconButton className="nav-icon-button" onClick={() => navigate("/cart")}>
+                {/* Fixed Cart Icon Button to route safely using handleCartClick */}
+                <IconButton className="nav-icon-button" onClick={handleCartClick}>
                   <Badge badgeContent={cartCount} className="nav-badge-override">
                     <ShoppingBag size={19} strokeWidth={1.5} />
                   </Badge>
@@ -244,7 +259,6 @@ const Navbar = () => {
         <Drawer anchor="left" open={mobileOpen} onClose={() => setMobileOpen(false)}>
           <Box sx={{ width: 260, p: 3, pt: 6 }}>
             <List>
-              {/* Core Mobile Links stay identical */}
               <ListItem component={Link} to="/" onClick={() => setMobileOpen(false)}><ListItemText primary="Home" /></ListItem>
               <ListItem component={Link} to="/products" onClick={() => setMobileOpen(false)}><ListItemText primary="Shop" /></ListItem>
             </List>

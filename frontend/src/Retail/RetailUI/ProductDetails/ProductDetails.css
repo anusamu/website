@@ -1,0 +1,617 @@
+/* ==========================================================================
+   1. Page Frame Layout & Fixed Overlap Buffering (Widened Configuration)
+   ========================================================================== */
+.pdp-page-wrapper {
+  width: 100%;
+  min-height: 100vh;
+  background-color: #ffffff;
+  margin-top: 130px; 
+  padding-bottom: 100px;
+  box-sizing: border-box;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+.pdp-container {
+  max-width: 1400px; /* Widened frame for luxury presentation */
+  margin: 0 auto;
+  padding: 0 24px;
+  display: flex;
+  gap: 80px; /* Enhanced breathability between main content sections */
+}
+
+/* Status Load State Layout Wrapper */
+.pdp-status-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: calc(100vh - 120px);
+  margin-top: 110px;
+  text-align: center;
+  gap: 16px;
+}
+
+/* ==========================================================================
+   2. Media Gallery Columns
+   ========================================================================== */
+.pdp-image-section {
+  flex: 1.2;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.pdp-main-image-wrapper {
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  background-color: #fafafa;
+  border-radius: 4px;
+  overflow: hidden;
+  border: 1px solid #f0f0f0;
+}
+
+.pdp-main-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.pdp-thumbnail-list {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+}
+
+.pdp-thumbnail-container {
+  width: 76px;
+  height: 100px;
+  border-radius: 4px;
+  overflow: hidden;
+  cursor: pointer;
+  border: 2px solid transparent;
+  background-color: #fafafa;
+  flex-shrink: 0;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.pdp-thumbnail-container:hover {
+  transform: translateY(-2px);
+}
+
+.pdp-thumbnail-container.active {
+  border-color: #111111;
+}
+
+.pdp-thumbnail {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* ==========================================================================
+   3. Details / Specifications Meta Information Panel
+   ========================================================================== */
+.pdp-info-section {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.pdp-collection-tag {
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: #888888;
+  font-weight: 600;
+  margin-bottom: 12px;
+}
+
+.pdp-title {
+  font-size: 2.4rem;
+  font-weight: 700;
+  color: #111111;
+  margin: 0 0 16px 0;
+  line-height: 1.2;
+  letter-spacing: -0.5px;
+}
+
+.pdp-pricing-row {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.pdp-price {
+  font-size: 1.8rem;
+  font-weight: 600;
+  color: #111111;
+}
+
+.pdp-tax-info {
+  font-size: 0.85rem;
+  color: #777777;
+}
+
+.pdp-divider {
+  border: 0;
+  height: 1px;
+  background-color: #eeeeee;
+  margin: 0 0 24px 0;
+}
+
+/* Variant Selection Elements */
+.pdp-attributes {
+  margin-bottom: 28px;
+}
+
+.pdp-attribute-label {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #111111;
+  display: block;
+  margin-bottom: 12px;
+}
+
+.attribute-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.attr-chip {
+  padding: 12px 24px;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  background-color: #ffffff;
+  transition: all 0.15s ease;
+  font-weight: 500;
+}
+
+.attr-chip:hover {
+  border-color: #111111;
+  background-color: #fafdff;
+}
+
+/* Action Control Strip Buttons */
+.pdp-action-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.pdp-btn {
+  width: 100%;
+  padding: 18px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  border-radius: 4px;
+  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  transition: all 0.2s ease;
+  border: none;
+}
+
+.pdp-btn.primary {
+  background-color: #111111;
+  color: #ffffff;
+}
+
+.pdp-btn.primary:hover:not(:disabled) {
+  background-color: #2a2a2a;
+}
+
+.pdp-btn.secondary {
+  background-color: #ffffff;
+  color: #111111;
+  border: 1px solid #111111;
+}
+
+.pdp-btn.secondary:hover:not(:disabled) {
+  background-color: #fafafa;
+}
+
+.pdp-btn:disabled {
+  background-color: #f5f5f5;
+  color: #b5b5b5;
+  border-color: #e8e8e8;
+  cursor: not-allowed;
+}
+
+.pdp-wishlist-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 40px;
+  cursor: pointer;
+  width: fit-content;
+}
+
+.wishlist-text {
+  font-size: 0.9rem;
+  color: #555555;
+}
+
+/* Marketing Pillars Infobox List */
+.pdp-features {
+  background-color: #fafafa;
+  border-radius: 4px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  margin-bottom: 40px;
+}
+
+.feature-item {
+  display: flex;
+  gap: 16px;
+}
+
+.feature-icon {
+  color: #222222;
+}
+
+.feature-title {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #111111;
+  margin-bottom: 2px;
+  display: block;
+}
+
+.feature-desc {
+  font-size: 0.85rem;
+  color: #666666;
+  display: block;
+}
+
+.pdp-description-section {
+  border-top: 1px solid #eeeeee;
+  padding-top: 30px;
+}
+
+.pdp-description-label {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #111111;
+  display: block;
+  margin-bottom: 12px;
+}
+
+.pdp-description-text {
+  font-size: 1rem;
+  color: #444444;
+  line-height: 1.7;
+  margin: 0;
+}
+
+/* ==========================================================================
+   4. Recommendations Engine Layout View (Upgraded 4-Column Array Setup)
+   ========================================================================== */
+.pdp-similar-section {
+  max-width: 1400px; /* Matches wider layout context */
+  margin: 80px auto 0 auto;
+  padding: 0 24px;
+}
+
+.pdp-similar-header {
+  margin-bottom: 35px;
+}
+
+.pdp-similar-heading {
+  font-size: 1.8rem;
+  font-weight: 600;
+  color: #111111;
+  margin: 0;
+  letter-spacing: -0.3px;
+}
+
+.pdp-similar-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr); 
+  gap: 24px;
+  width: 100%;
+}
+
+.pdp-similar-card {
+  display: flex;
+  flex-direction: column;
+  background-color: #ffffff;
+  width: 100%;
+  cursor: pointer;
+}
+
+/* Updated Image Container with Elongated Portrait aspect-ratio */
+.pdp-similar-img-wrapper {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 0.72 / 1; 
+  overflow: hidden;
+  background-color: #fcfcfc;
+  display: flex;
+  justify-content: center;
+  border: 1px solid #eeeeee;
+  border-radius: 2px;
+}
+
+/* Smooth zoom transition profile */
+.pdp-similar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.8s cubic-bezier(0.25, 1, 0.3, 1);
+}
+
+/* Card hover zooms image content smoothly */
+.pdp-similar-card:hover .pdp-similar-img {
+  transform: scale(1.05);
+}
+
+/* Integrated Dynamic Action Box Button */
+.pdp-similar-add-to-cart-btn {
+  position: absolute;
+  bottom: 16px; 
+  width: 88%; 
+  left: 6%; 
+  border-radius: 1px; 
+  border: none;
+  outline: none;
+  box-sizing: border-box;
+  background-color: rgba(255, 255, 255, 0.95); 
+  color: #2c2c2c;
+  padding: 14px 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-size: 0.9rem;
+  font-weight: 500;
+  letter-spacing: 0.03em;
+  text-align: center;
+  cursor: pointer;
+  opacity: 0;
+  transform: translateY(8px); 
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), 
+              opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1), 
+              background-color 0.25s ease, 
+              color 0.25s ease;
+  z-index: 5;
+}
+
+/* Card Hover pops the button strip gracefully into frame */
+.pdp-similar-card:hover .pdp-similar-add-to-cart-btn {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Button hover triggers custom premium sage green activation color */
+.pdp-similar-add-to-cart-btn:hover {
+  background-color: #88a069;
+  color: #ffffff;
+}
+
+/* Upgraded Typography Alignment */
+.pdp-similar-meta-details {
+  display: flex;
+  flex-direction: column;
+  padding: 14px 2px 0 2px;
+  gap: 5px;
+}
+
+.pdp-similar-title {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-size: 1rem;
+  font-weight: 400;
+  color: #2c2c2c;
+  margin: 0;
+  line-height: 1.4;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.pdp-similar-price {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #111111;
+  margin: 0;
+}
+
+.pdp-section-divider {
+  border: 0;
+  height: 1px;
+  background-color: #eaeaea;
+  margin: 80px auto;
+  max-width: 1400px;
+}
+
+/* ==========================================================================
+   5. Dynamic Reviews Summary Interface Dashboard Panel
+   ========================================================================== */
+.pdp-reviews-section {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+.pdp-reviews-heading {
+  font-size: 1.8rem;
+  font-weight: 600;
+  color: #111111;
+  margin: 0 0 36px 0;
+}
+
+.pdp-reviews-container {
+  display: flex;
+  gap: 80px;
+  align-items: flex-start;
+}
+
+.pdp-reviews-summary-card {
+  flex: 1;
+  max-width: 340px;
+  background-color: #fafafa;
+  padding: 32px 28px;
+  border-radius: 4px;
+  border: 1px solid #eeeeee;
+}
+
+.summary-score-block {
+  text-align: center;
+  margin-bottom: 28px;
+}
+
+.summary-average-num {
+  font-size: 3.8rem;
+  font-weight: 700;
+  display: block;
+  color: #111111;
+  line-height: 1;
+  margin-bottom: 10px;
+}
+
+.summary-stars-row {
+  display: flex;
+  justify-content: center;
+  gap: 2px;
+  margin-bottom: 8px;
+}
+
+.summary-total-count {
+  font-size: 0.9rem;
+  color: #666666;
+  display: block;
+}
+
+.summary-distribution-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.dist-row {
+  display: flex;
+  align-items: center;
+  font-size: 0.85rem;
+  color: #333333;
+}
+
+.dist-label {
+  width: 55px;
+  white-space: nowrap;
+}
+
+.dist-percentage {
+  width: 40px;
+  text-align: right;
+  font-weight: 500;
+}
+
+.pdp-reviews-feed {
+  flex: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+.review-feed-card {
+  border-bottom: 1px solid #f0f0f0;
+  padding-bottom: 32px;
+}
+
+.review-feed-card:last-child {
+  border-bottom: none;
+}
+
+.review-card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 14px;
+}
+
+.review-user-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.review-username {
+  font-weight: 600;
+  font-size: 1.05rem;
+  color: #111111;
+}
+
+.review-stars {
+  display: flex;
+  gap: 1px;
+}
+
+.review-date {
+  font-size: 0.85rem;
+  color: #888888;
+}
+
+.review-comment {
+  color: #444444;
+  font-size: 1rem;
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* ==========================================================================
+   6. Responsive Adaptability Viewports Rules
+   ========================================================================== */
+@media (max-width: 1024px) {
+  .pdp-similar-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+  }
+}
+
+@media (max-width: 992px) {
+  .pdp-container {
+    flex-direction: column;
+    gap: 40px;
+  }
+  
+  .pdp-image-section, .pdp-info-section {
+    flex: unset;
+    width: 100%;
+  }
+
+  .pdp-reviews-container {
+    flex-direction: column;
+    gap: 48px;
+  }
+
+  .pdp-reviews-summary-card {
+    max-width: 100%;
+    width: 100%;
+  }
+}
+
+@media (max-width: 600px) {
+  .pdp-similar-grid {
+    grid-template-columns: 1fr;
+  }
+  .pdp-similar-add-to-cart-btn {
+    opacity: 1;
+    transform: translateY(0);
+    background-color: #ffffff;
+  }
+}
+
+@media (max-width: 576px) {
+  .pdp-title {
+    font-size: 1.8rem;
+  }
+  .pdp-page-wrapper {
+    margin-top: 90px;
+  }
+}

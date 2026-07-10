@@ -2,7 +2,8 @@ const { Category, Item, Type, Material, Collect,
     //  Variant
 
  } = require('../models/Attributes');
-
+const mongoose = require('mongoose')
+const Product = require("../models/Product");
 // --- CATEGORY CONTROLLERS ---
 exports.addCategory = async (req, res) => {
   try {
@@ -66,5 +67,34 @@ exports.getProductFormAttributes = async (req, res) => {
     });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
+  }
+};
+// Add this to your backend product controller (e.g., controllers/productController.js)
+exports.getSimilarProducts = async (req, res) => {
+  try {
+    const { item, excludeId } = req.query;
+
+    if (!item) {
+      return res.status(400).json({ success: false, message: "Item type query parameter is required." });
+    }
+
+    // Build the query safely
+    const query = { item: item };
+
+    // Only apply the exclusion filter if a valid ObjectId string was passed
+    if (excludeId && mongoose.Types.ObjectId.isValid(excludeId)) {
+      query._id = { $ne: new mongoose.Types.ObjectId(excludeId) };
+    }
+
+    // Find similar items
+    const products = await Product.find(query).limit(4);
+
+    return res.status(200).json({
+      success: true,
+      products
+    });
+  } catch (err) {
+    console.error("Error in getSimilarProducts backend:", err.message); // This will log the exact crash reason to your terminal console
+    return res.status(500).json({ success: false, message: err.message });
   }
 };

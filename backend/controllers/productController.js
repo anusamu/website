@@ -1,3 +1,5 @@
+
+const mongoose = require('mongoose')
 const Product = require("../models/Product");
 
 // 1. ADD PRODUCT
@@ -106,7 +108,31 @@ exports.getProducts = async (req, res) => {
     res.status(500).json({ success: false, message: error.message });
   }
 };
+exports.getProductById = async (req, res) => {
+  try {
+    const { id } = req.params;
 
+    // 1. Check if the ID is a valid 24-character hex string
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ 
+        success: false, 
+        message: "Invalid Product ID format" 
+      });
+    }
+
+    const product = await Product.findById(id);
+
+    // 2. Check if the product actually exists
+    if (!product) {
+      return res.status(404).json({ success: false, message: "Product not found" });
+    }
+
+    res.status(200).json({ success: true, product });
+  } catch (error) {
+    console.error("Database Error:", error.message); // Logs the real issue to your terminal
+    res.status(500).json({ success: false, message: "Internal Server Error" });
+  }
+};
 // 3. GET ALL PRODUCTS (ADMIN DASHBOARD)
 exports.getAllProductsAdmin = async (req, res) => {
   try {
