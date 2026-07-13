@@ -43,8 +43,18 @@ exports.authorize = (...roles) => {
   const allowedRoles = new Set(roles);
 
   return (req, res, next) => {
-    // Crucial Correction: Safe navigation check to prevent system crashes if req.user is absent
-    if (!req.user || !req.user.role || !allowedRoles.has(req.user.role)) {
+    if (!req.user || !req.user.role) {
+      return res.status(403).json({
+        success: false,
+        message: "Access denied",
+      });
+    }
+
+    if (req.user.role === "SuperAdmin") {
+      return next();
+    }
+
+    if (!allowedRoles.has(req.user.role)) {
       return res.status(403).json({
         success: false,
         message: "Access denied",

@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../../api";
 
@@ -78,9 +78,7 @@ function Login() {
 
     const role = res.data.user.role?.toLowerCase();
 
-    if (role === "admin") {
-      navigate("/admindashboard");
-    } else if (role === "SuperAdmin") {
+    if (role === "admin" || role === "superadmin") {
       navigate("/admindashboard");
     } else {
       navigate("/");
@@ -99,6 +97,72 @@ function Login() {
     setLoading(false);
   }
 };
+  const handleGoogleResponse = async (response) => {
+    if (!response?.credential) {
+      return alert("Google login failed");
+    }
+
+    try {
+      setLoading(true);
+
+      const res = await api.post("/login/google", {
+        token: response.credential,
+      });
+
+      localStorage.setItem("token", res.data.token);
+      localStorage.setItem("user", JSON.stringify(res.data.user));
+
+      const role = res.data.user.role?.toLowerCase();
+
+      if (role === "admin" || role === "superadmin") {
+        navigate("/admindashboard");
+      } else {
+        navigate("/");
+      }
+    } catch (error) {
+      console.error("Google login error:", error.response?.data || error);
+      alert(error.response?.data?.message || "Google login failed");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
+
+    if (!googleClientId) {
+      return;
+    }
+
+    const script = document.createElement("script");
+    script.src = "https://accounts.google.com/gsi/client";
+    script.async = true;
+    script.defer = true;
+    document.body.appendChild(script);
+
+    script.onload = () => {
+      if (window.google) {
+        window.google.accounts.id.initialize({
+          client_id: googleClientId,
+          callback: handleGoogleResponse,
+        });
+
+        window.google.accounts.id.renderButton(
+          document.getElementById("google-signin"),
+          {
+            theme: "outline",
+            size: "large",
+            width: "100%",
+          }
+        );
+      }
+    };
+
+    return () => {
+      document.body.removeChild(script);
+    };
+  }, []);
+
   const styles = {
     container: {
       maxWidth: "420px",
@@ -157,6 +221,43 @@ function Login() {
         ? "not-allowed"
         : "pointer",
       marginTop: "10px",
+    },
+
+    dividerRow: {
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      gap: "12px",
+      margin: "24px 0 16px",
+    },
+
+    dividerLine: {
+      flex: 1,
+      height: "1px",
+      backgroundColor: "#e5e7eb",
+    },
+
+    dividerText: {
+      color: "#6b7280",
+      fontSize: "14px",
+      fontWeight: "600",
+    },
+
+    googleWrapper: {
+      display: "flex",
+      justifyContent: "center",
+      marginBottom: "14px",
+    },
+
+    googleButton: {
+      width: "100%",
+    },
+
+    smallText: {
+      textAlign: "center",
+      color: "#6b7280",
+      fontSize: "13px",
+      marginBottom: "18px",
     },
 
     footerText: {
@@ -225,6 +326,20 @@ function Login() {
                 : "Sign In"}
             </button>
           </form>
+
+          <div style={styles.dividerRow}>
+            <span style={styles.dividerLine} />
+            <span style={styles.dividerText}>OR</span>
+            <span style={styles.dividerLine} />
+          </div>
+
+          <div style={styles.googleWrapper}>
+            <div id="google-signin" style={styles.googleButton} />
+          </div>
+
+          <p style={styles.smallText}>
+            Continue with Google to sign in faster without OTP.
+          </p>
 
           <p style={styles.footerText}>
             Don't have an account?

@@ -1,17 +1,24 @@
 const nodemailer = require("nodemailer");
 
-const mailHost = process.env.MAIL_HOST;
+const useBrevo = Boolean(process.env.BREVO_EMAIL && process.env.BREVO_SMTP_KEY);
+const mailHost = useBrevo
+  ? process.env.MAIL_HOST || "smtp-relay.brevo.com"
+  : process.env.MAIL_HOST;
 const mailPort = Number(process.env.MAIL_PORT) || 2525;
-const mailUser = process.env.MAIL_USER;
-const mailPass = process.env.MAIL_PASS;
+const mailUser = useBrevo ? process.env.BREVO_EMAIL : process.env.MAIL_USER;
+const mailPass = useBrevo ? process.env.BREVO_SMTP_KEY : process.env.MAIL_PASS;
 const mailFrom = process.env.MAIL_FROM || mailUser;
 
 if (!mailHost || !mailUser || !mailPass || !mailFrom) {
   throw new Error(
-    "Missing required mail environment variables: MAIL_HOST, MAIL_USER, MAIL_PASS, MAIL_FROM"
+    "Missing required mail environment variables: " +
+      (useBrevo
+        ? "BREVO_EMAIL, BREVO_SMTP_KEY, MAIL_FROM"
+        : "MAIL_HOST, MAIL_USER, MAIL_PASS, MAIL_FROM")
   );
 }
 
+const providerName = useBrevo ? "Brevo" : mailHost;
 const transporter = nodemailer.createTransport({
   host: mailHost,
   port: mailPort,
@@ -28,6 +35,14 @@ const transporter = nodemailer.createTransport({
   greetingTimeout: 10000,
   socketTimeout: 10000,
 });
+
+if (process.env.NODE_ENV !== "production") {
+  transporter.verify().then(() => {
+    console.log(`✅ Mail transporter configured and verified (${providerName})`);
+  }).catch((err) => {
+    console.warn(`⚠️ Mail transporter verification warning (${providerName}):`, err.message || err);
+  });
+}
 
 if (process.env.NODE_ENV !== "production") {
   transporter.verify().then(() => {

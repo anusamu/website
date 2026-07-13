@@ -12,6 +12,7 @@ const { getCart, addToCart, removeFromCart } = require("../controllers/CartContr
 // ===================== AUTH =====================
 router.post("/register", auth.register);
 router.post("/login", auth.login);
+router.post("/login/google", auth.googleLogin);
 router.post("/verify-login-otp", auth.verifyLoginOtp);
 
 // ===================== PUBLIC =====================

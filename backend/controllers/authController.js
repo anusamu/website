@@ -2,6 +2,9 @@
 const bcrypt = require("bcryptjs");
 const sendMail = require("../utils/sendMail");
 const jwt = require("jsonwebtoken");
+const { OAuth2Client } = require("google-auth-library");
+
+const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 exports.register = async (req, res) => {
   try {
@@ -50,6 +53,82 @@ exports.register = async (req, res) => {
     });
   } catch (error) {
     res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+exports.googleLogin = async (req, res) => {
+  try {
+    const { token } = req.body;
+
+    if (!token) {
+      return res.status(400).json({
+        success: false,
+        message: "Google token is required",
+      });
+    }
+
+    const ticket = await googleClient.verifyIdToken({
+      idToken: token,
+      audience: process.env.GOOGLE_CLIENT_ID,
+    });
+
+    const payload = ticket.getPayload();
+    const { email, given_name, family_name } = payload;
+
+    if (!email) {
+      return res.status(400).json({
+        success: false,
+        message: "Google account did not return an email",
+      });
+    }
+
+    let user = await User.findOne({ email });
+
+    if (!user) {
+      user = await User.create({
+        firstName: given_name || "Google User",
+        lastName: family_name || "",
+        email,
+        password: Math.random().toString(36).slice(2),
+        isVerified: true,
+      });
+    }
+
+    user.lastLogin = new Date();
+    await user.save();
+
+    const authToken = jwt.sign(
+      {
+        id: user._id,
+        role: user.role,
+      },
+      process.env.JWT_SECRET,
+      {
+        expiresIn: "7d",
+      }
+    );
+
+    return res.status(200).json({
+      success: true,
+      message: "Login successful",
+      token: authToken,
+      user: {
+        _id: user._id,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        email: user.email,
+        phoneNumber: user.phoneNumber,
+        avatar: user.avatar || "",
+        role: user.role,
+      },
+    });
+  } catch (error) {
+    console.error("Google Login Error:", error);
+
+    return res.status(500).json({
       success: false,
       message: error.message,
     });
