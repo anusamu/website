@@ -16,9 +16,8 @@ connectDB();
 
 
 const allowedOrigins = [
-  'http://localhost:5173', // For local development
-  'https://website-rg-handloom.vercel.app', // Production frontend (no trailing slash)
-  'https://website-cj3wrxesh-rg-handloom.vercel.app' // The specific preview URL you are testing
+  "http://localhost:5173",
+  process.env.CLIENT_URL,
 ];
 
 app.use(cors({
