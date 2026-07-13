@@ -14,26 +14,30 @@ connectDB();
 
 // Middleware
 
-
 const allowedOrigins = [
   "http://localhost:5173",
   process.env.CLIENT_URL,
 ];
 
-app.use(cors({
-  origin: function (origin, callback) {
-    // Allow requests with no origin (like mobile apps or curl requests)
-    if (!origin) return callback(null, true);
-    
-    // Check if the origin is in our allowed list, OR if it's a Vercel preview URL
-    if (allowedOrigins.indexOf(origin) !== -1 || origin.endsWith('-rg-handloom.vercel.app')) {
-      callback(null, true);
-    } else {
-      callback(new Error('Not allowed by CORS'));
-    }
-  },
-  credentials: true
-}));
+console.log("CLIENT_URL:", process.env.CLIENT_URL);
+
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      console.log("Incoming Origin:", origin);
+
+      if (!origin || allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+
+      console.log("Blocked Origin:", origin);
+      console.log("Allowed Origins:", allowedOrigins);
+
+      return callback(new Error("Not allowed by CORS"));
+    },
+    credentials: true,
+  })
+);
 app.use(express.json());
 app.use(cookieParser());
 app.use(morgan("dev"));
