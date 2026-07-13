@@ -267,3 +267,40 @@ exports.deleteProduct = async (req, res) => {
     res.status(500).json({ success: false, message: error.message });
   }
 };
+
+
+// Example Product Controller method targeting product display logic
+exports.getProductsForShop = async (req, res) => {
+  try {
+    const { category, collection, filter } = req.query;
+    let queryCondition = {};
+
+    // 1. If user filtered by Category
+    if (category) {
+      queryCondition.category = category; 
+    }
+
+    // 2. If user clicked a Seasonal Collection (e.g., Wedding Collection, Festive Season)
+    if (collection) {
+      queryCondition.collect = collection; // Product schema uses the `collect` field
+    }
+
+    // Initialize base query
+    let query = Product.find(queryCondition);
+
+    // 3. If user clicked "New Arrivals", sort by newest created date and limit results to 20
+    if (filter === 'newest') {
+      query = query.sort({ createdAt: -1 }).limit(20);
+    }
+
+    const products = await query.exec();
+    
+    res.status(200).json({
+      success: true,
+      count: products.length,
+      products
+    });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+};

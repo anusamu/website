@@ -1,48 +1,61 @@
+/* Core Layout Container */
 .shop-page-container {
-  max-width: 1600px;
+  max-width: 1400px;
   margin: 0 auto;
-  padding: 120px 20px;
-  font-family: 'Playfair Display', serif, sans-serif;
+  padding: 160px 20px 40px;
+  font-family: 'Playfair Display', Georgia, serif;
   color: #333;
 }
 
-/* Header Text Styles */
+/* Header Text Styles matching the image layout */
 .shop-header {
   text-align: center;
-  margin-bottom: 50px;
+  margin-bottom: 64px;
 }
 
 .shop-tagline {
   font-size: 14px;
-  color: #777;
-  text-transform: capitalize;
-  margin-bottom: 8px;
+  color: #7a756c;
+  font-weight: 400;
+  margin-bottom: 12px;
+  letter-spacing: 0.02em;
 }
 
 .shop-main-title {
-  font-size: 42px;
+  font-size: 48px;
   font-weight: 400;
   color: #111;
   margin: 0;
+  font-family: 'Playfair Display', Georgia, serif;
 }
 
-/* Section Configurations */
+/* Section Controls */
 .shop-section {
-  margin-bottom: 60px;
+  margin-bottom: 80px;
 }
 
 .section-title {
   text-align: center;
-  font-size: 24px;
+  font-size: 26px;
   font-weight: 400;
-  color: #444;
-  margin-bottom: 30px;
+  color: #555;
+  margin-bottom: 32px;
+  font-family: 'Playfair Display', Georgia, serif;
 }
 
-/* Layout Grids */
+.section-description {
+  text-align: center;
+  max-width: 700px;
+  margin: -16px auto 36px auto;
+  color: #7a756c;
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+/* Structural Layout Grids */
 .category-grid {
   display: grid;
-  gap: 24px;
+  gap: 32px;
 }
 
 .standard-grid {
@@ -51,81 +64,137 @@
 
 .single-centered-grid {
   grid-template-columns: 1fr;
-  max-width: 588px;
-  margin: 24px auto 0 auto;
+  max-width: 660px;
+  margin: 32px auto 0 auto;
 }
 
 .full-width-grid {
   grid-template-columns: 1fr;
 }
 
-/* Card Styling Matches Screens Details */
+/* Component Cards Matching the Screenshot Properties */
 .category-card {
-  background-color: #fbf9f6;
-  border-radius: 12px;
+  background-color: #fbf9f6; /* Off-white container backdrop visible in image */
+  border-radius: 16px;       /* Smooth rounded card corners */
   overflow: hidden;
   cursor: pointer;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s ease;
   display: flex;
   flex-direction: column;
+  height: 100%;             /* Forces adjacent cards to match heights exactly */
 }
 
 .category-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.04);
+  transform: translateY(-6px);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.06);
 }
 
+/* Photo Wrapper Management */
 .image-wrapper {
   width: 100%;
-  height: 380px; 
+  height: 400px; 
   overflow: hidden;
+  position: relative;
+  flex-shrink: 0;           /* Prevents dynamic text heights from squeezing the image aspect ratio */
 }
 
 .image-wrapper.large-banner {
-  height: 440px;
+  height: 480px;
 }
 
 .image-wrapper img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
-  transition: transform 0.5s ease;
+  object-fit: cover;        /* Forces the image to perfectly fill, scale and crop inside the container boundaries */
+  display: block;
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .category-card:hover .image-wrapper img {
-  transform: scale(1.02);
+  transform: scale(1.03);
 }
 
-/* Typography on Cards */
+/* Base Card Text Info Box Layout */
 .card-info {
-  padding: 24px;
+  padding: 24px 20px 28px 20px;
   text-align: center;
   background-color: #fbf9f6;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  flex-grow: 1;             /* Makes text cards stretch evenly down to match card heights */
 }
 
 .card-info h3 {
-  font-size: 18px;
+  font-size: 20px;
   font-weight: 400;
-  margin: 0 0 8px 0;
-  color: #4a4a4a;
+  margin: 0 0 6px 0;
+  color: #444;
+  font-family: 'Playfair Display', Georgia, serif;
 }
 
+.card-subtitle {
+  margin: 6px 0 12px 0;
+  font-size: 14px;
+  line-height: 1.5;
+  color: #8c8576;
+}
+
+/* "shop now ->" Styling */
 .shop-now-link {
   font-size: 13px;
-  color: #8c826e;
-  text-transform: lowercase;
+  color: #9a917e;
+  text-transform: lowercase; /* Exact lowercase typography styling */
   display: inline-block;
+  letter-spacing: 0.03em;
+  transition: color 0.2s ease;
+  margin-top: auto;          /* Pushes link down to the absolute bottom edge of the card text box */
 }
 
-/* Responsive tweaks for smaller views */
-@media (max-width: 768px) {
+.category-card:hover .shop-now-link {
+  color: #5a5345;
+}
+
+/* Specific UI Layout Patch constraints for Section 3 Cards */
+.card-info.alignment-patch {
+  flex-direction: row;       /* Changes section 3 text layout to inline row */
+  text-align: left;
+  justify-content: space-between;
+  align-items: center;
+  padding: 24px 20px;
+}
+
+.card-info.alignment-patch h3 {
+  margin: 0;
+}
+
+.card-info.alignment-patch .shop-now-link {
+  margin-top: 0;             /* Resets the block push rule back to baseline row geometry */
+}
+
+/* Status messaging formatting helper classes */
+.shop-status-text, .shop-error-text {
+  text-align: center;
+  font-family: sans-serif;
+  color: #666;
+  padding: 40px 0;
+}
+
+/* Responsive Scaling Overrides */
+@media (max-width: 900px) {
+  .shop-main-title {
+    font-size: 36px;
+  }
   .standard-grid {
     grid-template-columns: 1fr;
   }
   .image-wrapper, .image-wrapper.large-banner {
-    height: 280px;
+    height: 320px;
   }
-  .shop-main-title {
-    font-size: 32px;
+  .card-info.alignment-patch {
+    flex-direction: column;  /* Stack items vertically on mobile viewports safely */
+    text-align: center;
+    gap: 12px;
   }
 }

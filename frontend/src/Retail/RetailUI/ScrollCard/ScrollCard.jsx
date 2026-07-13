@@ -1,4 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useCart } from '../../../components/Context/CartContext';
+import { toast } from 'react-toastify';
 import './ScrollCard.css';
 import api from '../../../api';
 
@@ -9,6 +12,9 @@ function ScrollCard() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const variantsRef = useRef(null);
+  
+  const navigate = useNavigate();
+  const { addToCart } = useCart();
 
   useEffect(() => {
     const controller = new AbortController();
@@ -18,25 +24,17 @@ function ScrollCard() {
       try {
         setLoading(true);
 
-        // Hits your getProducts controller
         const response = await api.get("/products", {
           signal,
         });
 
-        // 1. Handle wrapped object (response.data.products) OR direct array (response.data)
         const rawData = response.data?.products || response.data;
-
-        // 2. Safe fallback: Ensure it's absolutely an array before running loops
         const productsArray = Array.isArray(rawData) ? rawData : [];
-
         setAllProducts(productsArray);
 
-        // Get one representative product for each unique type
         const uniqueTypeMap = {};
-
         productsArray.forEach((product) => {
           const productType = product.type?.trim();
-
           if (productType && !uniqueTypeMap[productType]) {
             uniqueTypeMap[productType] = product;
           }
@@ -45,7 +43,6 @@ function ScrollCard() {
         setCategories(Object.values(uniqueTypeMap));
         setError(null);
       } catch (err) {
-        // Ignore request cancellation
         if (err.name !== "CanceledError" && err.code !== "ERR_CANCELED") {
           console.error("Database fetch error:", err);
           setError(err.response?.data?.message || err.message);
@@ -69,7 +66,31 @@ function ScrollCard() {
     }, 100);
   };
 
-  // Filters out variants matching the type chosen
+  const handleCardClick = (productId) => {
+    if (productId) {
+      navigate(`/product/${productId}`);
+    } else {
+      console.warn("Product does not have a valid ID string.");
+    }
+  };
+
+  const handleAddToCartClick = async (product, event) => {
+    event.stopPropagation(); // Prevents layout link from routing to details page
+    
+    const isLoggedIn = !!localStorage.getItem("token");
+    if (!isLoggedIn) {
+      toast.warn("Please log in to add items to your shopping cart!");
+      return navigate("/login");
+    }
+
+    const success = await addToCart(product, 1);
+    if (success) {
+      toast.success(`${product.productName || 'Item'} added to cart!`);
+    } else {
+      toast.error("Failed to add item to cart. Try again.");
+    }
+  };
+
   const displayedVariants = selectedType 
     ? allProducts.filter(product => product.type?.trim() === selectedType.trim())
     : [];
@@ -122,9 +143,15 @@ function ScrollCard() {
             <p>Explore all beautifully crafted variants in this collection.</p>
           </div>
           
-          <div className="variants-grid">
+          {/* Changed standard grid layout container styling target */}
+          <div className="cat-products-layout-grid">
             {displayedVariants.map((variant, index) => (
-              <VariantCard key={variant._id || index} variant={variant} />
+              <VariantCard 
+                key={variant._id || index} 
+                variant={variant} 
+                onCardClick={handleCardClick}
+                onAddToCartClick={handleAddToCartClick}
+              />
             ))}
           </div>
         </div>
@@ -133,7 +160,7 @@ function ScrollCard() {
   );
 }
 
-// Scroller item component - extracts array item index 0 safely
+// Scroller item component
 function CardItem({ item, onClick }) {
   const displayImage = item.images && item.images.length > 0 
     ? item.images[0] 
@@ -149,20 +176,44 @@ function CardItem({ item, onClick }) {
   );
 }
 
-// Grid layout display item component
-function VariantCard({ variant }) {
+// PREMIUM UPGRADED VARIANT CARD COMPONENT
+function VariantCard({ variant, onCardClick, onAddToCartClick }) {
   const displayImage = variant.images && variant.images.length > 0 
     ? variant.images[0] 
-    : 'https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&q=80&w=400';
+    : 'https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&q=80&w=600';
+
+  const title = variant.productName || variant.type || "Borderless cloth item...";
+  const price = `₹ ${variant.price}`;
 
   return (
-    <div className="variant-card">
-      <div className="variant-image-wrapper">
-        <img src={displayImage} alt={variant.productName} className="variant-img" loading="lazy" />
+    <div className="cat-product-display-card">
+      {/* Interactive Image Frame */}
+      <div 
+        className="cat-product-image-container"
+        onClick={() => onCardClick(variant._id || variant.id)}
+        style={{ cursor: 'pointer' }}
+      >
+        <img 
+          src={displayImage} 
+          alt={title} 
+          className="cat-product-display-img" 
+          loading="lazy" 
+        />
+        
+        {/* Animated Add to Cart Action strip overlay inside image footprint */}
+        <button 
+          className="cat-action-add-to-cart-btn"
+          disabled={variant.stockStatus === "Out Of Stock"}
+          onClick={(event) => onAddToCartClick(variant, event)}
+        >
+          {variant.stockStatus === "Out Of Stock" ? "Out of Stock" : "Add to Cart"}
+        </button>
       </div>
-      <div className="variant-details">
-        <h4 className="variant-name">{variant.productName || variant.type}</h4>
-        <p className="variant-price">${variant.price}</p>
+
+      {/* Typography Profile underneath Image container boundary */}
+      <div className="cat-product-meta-details">
+        <h3 className="cat-product-meta-title">{title}</h3>
+        <p className="cat-product-meta-price">{price}</p>
       </div>
     </div>
   );

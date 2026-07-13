@@ -67,12 +67,13 @@
 .pattern-section {
   display: flex;
   width: 100%;
-  min-height: 85vh;
+  min-height: auto;
+  height: auto;
   background-color: #eae7dc;
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  overflow: hidden;
+  overflow: hidden; /* Keeps overflowing internal content hidden */
 }
 
 .pattern-left-panel {
@@ -80,15 +81,16 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
-  padding: 60px 5% 40px 6%;
+  padding: 42px 4% 32px 6%;
   box-sizing: border-box;
+  position: relative;
 }
 
 .pattern-right-panel {
-  flex: 0.8;
+  flex: 0.95;
   position: relative;
   height: auto;
-  min-height: 100%;
+  min-height: 320px;
 }
 
 .editorial-img {
@@ -96,6 +98,8 @@
   height: 100%;
   object-fit: cover;
   display: block;
+  transform: scale(1.03);
+  transition: transform 0.45s ease;
 }
 
 /* ==========================================================================
@@ -125,22 +129,38 @@
 }
 
 /* ==========================================================================
-   Patterns Visual Grid Layout
+   Patterns Visual Grid Layout & Smooth Transitions
    ========================================================================== */
 .pattern-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 16px;
+  grid-template-columns: 1fr 1.25fr 1fr;
+  align-items: center;
+  gap: 24px;
   width: 100%;
-  max-width: 680px;
+  max-width: 720px;
   margin-bottom: 40px;
+  min-height: 380px;
 }
 
 .pattern-card {
   position: relative;
   width: 100%;
-  aspect-ratio: 0.78 / 1;
+  aspect-ratio: 0.75 / 1;
   cursor: pointer;
+  overflow: hidden;
+  border-radius: 4px;
+  transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1), 
+              box-shadow 0.5s cubic-bezier(0.25, 1, 0.5, 1), 
+              opacity 0.5s ease;
+  opacity: 0.85;
+}
+
+/* Featured / Center Card Scale Setup */
+.pattern-card.featured {
+  transform: scale(1.15);
+  z-index: 3;
+  opacity: 1;
+  box-shadow: 0 20px 45px rgba(0, 0, 0, 0.18);
 }
 
 .pattern-image-frame {
@@ -183,13 +203,17 @@
 
 .pattern-card-title {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  font-size: 0.95rem;
+  font-size: 0.9rem;
   font-weight: 500;
   color: #ffffff;
   text-transform: uppercase;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.15em;
   text-align: center;
-  margin-bottom: 12px;
+  transition: transform 0.4s ease;
+}
+
+.pattern-card.featured .pattern-card-title {
+  transform: translateY(-45px);
 }
 
 .pattern-card-btn {
@@ -197,13 +221,24 @@
   background-color: #ffffff;
   color: #111111;
   border: none;
-  font-size: 0.75rem;
+  font-size: 0.82rem;
   font-weight: 500;
-  padding: 8px 18px;
-  border-radius: 4px;
+  padding: 9px 24px;
+  border-radius: 0; /* Square minimalist button design */
   cursor: pointer;
-  text-transform: capitalize;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  position: absolute;
+  bottom: 25px;
+  left: 50%;
+  transform: translateX(-50%);
+  animation: fadeInButton 0.4s ease forwards;
+}
+
+@keyframes fadeInButton {
+  from { opacity: 0; transform: translate(-50%, 10px); }
+  to { opacity: 1; transform: translate(-50%, 0); }
 }
 
 /* ==========================================================================
@@ -212,36 +247,44 @@
 .pattern-controls {
   display: flex;
   gap: 16px;
-  margin-top: 10px;
+  justify-content: flex-start;
+  width: 100%;
+  max-width: 680px;
+  margin-top: 2px;
+  margin-left: 304px;
+  z-index: 4;
 }
 
 .ctrl-arrow-btn {
-  width: 48px;
-  height: 48px;
+  width: 54px;
+  height: 56px;
+
   border-radius: 50%;
   background-color: #ffffff;
-  border: none;
+  border: 1px solid #e5e0d3;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
-  transition: background-color 0.2s, transform 0.2s;
+  transition: all 0.25s ease;
 }
 
 .ctrl-arrow-btn:hover {
-  background-color: #f5f5f5;
-  transform: scale(1.05);
+  background-color: #111111;
+  border-color: #111111;
+}
+
+.ctrl-arrow-btn:hover .arrow-icon {
+  color: #ffffff;
 }
 
 .arrow-icon {
-  font-size: 1.2rem;
-  color: #333333;
+  font-size: 1.1rem;
+  color: #111111;
+  transition: color 0.25s ease;
 }
 
-/* ==========================================================================
-   Fallback Database Container Styles
-   ========================================================================== */
+/* Fallback database container states */
 .pattern-status-container {
   display: flex;
   justify-content: center;
@@ -255,51 +298,108 @@
   font-family: -apple-system, BlinkMacSystemFont, sans-serif;
   font-size: 1rem;
   color: #6d6a61;
-  letter-spacing: 0.05em;
-}
-
-.pattern-status-text.error {
-  color: #ef4444;
 }
 
 /* ==========================================================================
    Responsive Adaptations
    ========================================================================== */
 @media (max-width: 1024px) {
-  .features-inner-wrapper {
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 32px 40px;
-  }
   .pattern-section {
     flex-direction: column;
+    min-height: auto;
   }
   .pattern-left-panel {
-    padding: 60px 24px;
+    padding: 48px 24px 32px 24px;
   }
   .pattern-right-panel {
-    height: 450px;
     width: 100%;
+    min-height: 380px;
   }
   .pattern-main-title {
     font-size: 2.6rem;
+    max-width: 100%;
+  }
+  .pattern-grid {
+    max-width: 100%;
+    margin-bottom: 32px;
+  }
+  .pattern-controls {
+    margin-left: 0;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 768px) {
+  .pattern-left-panel {
+    padding: 36px 20px 28px 20px;
+  }
+  .pattern-right-panel {
+    min-height: 320px;
+  }
+  .pattern-grid {
+    gap: 20px;
+    min-height: auto;
+  }
+  .pattern-card {
+    aspect-ratio: auto;
+    min-height: 260px;
+  }
+  .pattern-card.featured {
+    transform: scale(1.05);
+  }
+  .pattern-card-btn {
+    bottom: 18px;
+    padding: 10px 20px;
   }
 }
 
 @media (max-width: 600px) {
-  .features-bar-container {
-    padding: 24px 16px;
-  }
-  .features-inner-wrapper {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 20px;
-  }
   .pattern-grid {
     grid-template-columns: 1fr;
+    gap: 22px;
     max-width: 100%;
   }
   .pattern-card {
-    aspect-ratio: 1.3 / 1;
+    min-height: 240px;
+    border-radius: 8px;
+  }
+  .pattern-card.featured {
+    transform: scale(1.02);
+    box-shadow: 0 14px 28px rgba(0, 0, 0, 0.14);
+  }
+  .pattern-controls {
+    justify-content: space-between;
+    width: 100%;
+    max-width: 100%;
+    margin-top: 18px;
+    margin-left: 0;
+    padding: 0 20px;
+  }
+  .ctrl-arrow-btn {
+    width: 48px;
+    height: 48px;
+  }
+  .editorial-img {
+    min-height: 260px;
+    object-position: center center;
+  }
+}
+
+@media (max-width: 480px) {
+  .pattern-left-panel {
+    padding: 28px 16px 24px 16px;
+  }
+  .pattern-main-title {
+    font-size: 2rem;
+  }
+  .feature-title {
+    font-size: 0.92rem;
+  }
+  .feature-desc {
+    font-size: 0.78rem;
+  }
+  .pattern-card-btn {
+    padding: 10px 18px;
+    font-size: 0.78rem;
   }
 }

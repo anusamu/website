@@ -5,6 +5,7 @@ import Navbar from "../../../components/Navbar/Navbar";
 import api from "../../../api";
 import { useCart } from "../../../components/Context/CartContext";
 import { toast } from "react-toastify";
+import Footer from "../../../components/Footer/Footer";
 
 const CategoryProducts = () => {
   const [products, setProducts] = useState([]);
@@ -20,6 +21,8 @@ const CategoryProducts = () => {
   // Extract query parameters from URL string
   const queryParams = new URLSearchParams(location.search);
   const selectedCategory = queryParams.get("category");
+  const selectedCollection = queryParams.get("collection");
+  const filter = queryParams.get("filter");
   const searchQuery = queryParams.get("search");
 
   useEffect(() => {
@@ -27,53 +30,19 @@ const CategoryProducts = () => {
       try {
         setLoading(true);
         setError(null);
-        
-        const res = await api.get("/products");
-        const allProducts = Array.isArray(res.data) ? res.data : (res.data.products || res.data.data || []);
 
-        let filtered = allProducts;
+        const queryParts = [];
+        if (selectedCategory) queryParts.push(`category=${encodeURIComponent(selectedCategory.trim())}`);
+        if (selectedCollection) queryParts.push(`collection=${encodeURIComponent(selectedCollection.trim())}`);
+        if (filter) queryParts.push(`filter=${encodeURIComponent(filter.trim())}`);
+        if (searchQuery) queryParts.push(`search=${encodeURIComponent(searchQuery.trim())}`);
 
-        // 1. FILTER BY CATEGORY
-        if (selectedCategory) {
-          const cleanSearchCategory = selectedCategory.trim().toLowerCase();
-          
-          filtered = filtered.filter((product) => {
-            if (!product) return false;
-            const productCat = typeof product.category === "object" 
-              ? (product.category.name || product.category.title) 
-              : (product.category || product.categoryName);
-              
-            return productCat?.toString().trim().toLowerCase() === cleanSearchCategory;
-          });
-        }
+        const queryString = queryParts.length ? `?${queryParts.join("&")}` : "";
+        const res = await api.get(`/shop-products${queryString}`);
+        const returned = res.data;
+        const allProducts = Array.isArray(returned) ? returned : (returned.products || returned.data || []);
 
-        // 2. FILTER BY SEARCH TERM
-        if (searchQuery) {
-          const term = searchQuery.trim().toLowerCase();
-
-          filtered = filtered.filter((product) => {
-            if (!product) return false;
-
-            const name = product.productName?.toLowerCase() || "";
-            const type = product.type?.toLowerCase() || "";
-            const variant = product.variant?.toLowerCase() || "";
-            const pattern = product.pattern?.toLowerCase() || "";
-            
-            const categoryName = typeof product.category === "object"
-              ? (product.category.name || product.category.title || "")
-              : (product.category || product.categoryName || "");
-
-            return (
-              name.includes(term) ||
-              type.includes(term) ||
-              variant.includes(term) ||
-              pattern.includes(term) ||
-              categoryName.toLowerCase().includes(term)
-            );
-          });
-        }
-        
-        setProducts(filtered);
+        setProducts(allProducts);
       } catch (err) {
         console.error("Error loading products:", err);
         setError("Failed to load products. Please try again later.");
@@ -83,7 +52,7 @@ const CategoryProducts = () => {
     };
 
     fetchFilteredProducts();
-  }, [selectedCategory, searchQuery]);
+  }, [selectedCategory, selectedCollection, filter, searchQuery]);
 
   // Click handler to go to detail page
   const handleCardClick = (productId) => {
@@ -122,8 +91,18 @@ const handleAddToCartClick = async (product, event) => {
 
   const getHeaderTitle = () => {
     if (searchQuery) return `Search Results for "${searchQuery}"`;
-    if (selectedCategory) return `${selectedCategory}`;
+    if (filter === 'newest') return "Latest Arrivals";
+    if (selectedCollection) return selectedCollection;
+    if (selectedCategory) return selectedCategory;
     return "Our Entire Catalogue";
+  };
+
+  const getHeaderSubtitle = () => {
+    if (searchQuery) return `Showing ${products.length} results for "${searchQuery}".`;
+    if (filter === 'newest') return "Showing the latest 20 arrival products.";
+    if (selectedCollection) return `Products from the ${selectedCollection} collection.`;
+    if (selectedCategory) return `Products in the ${selectedCategory} category.`;
+    return `Showing ${products.length} elegant items matching your selection.`;
   };
 
   return (
@@ -137,7 +116,7 @@ const handleAddToCartClick = async (product, event) => {
           <header className="cat-grid-header">
             <h1 className="cat-grid-title">{getHeaderTitle()}</h1>
             <p className="cat-grid-subtitle">
-              Showing {products.length} elegant items matching your selection.
+              {getHeaderSubtitle()}
             </p>
           </header>
 
@@ -196,6 +175,7 @@ const handleAddToCartClick = async (product, event) => {
           )}
         </div>
       </section>
+      <Footer/>
     </>
   );
 };

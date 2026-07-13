@@ -5,9 +5,9 @@ import api from "../../../api";
 
 // Fallback images
 const fallbackImages = [
-  "https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&q=80&w=600",
-  "https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?auto=format&fit=crop&q=80&w=600",
-  "https://images.unsplash.com/photo-1606760227091-3dd870d97f1d?auto=format&fit=crop&q=80&w=600",
+  "https://i.postimg.cc/k4bj9htq/0b226ffd6270af58d170233b8255ab66.jpg",
+  "https://i.postimg.cc/jS24tkp5/3bd80b1ad07dcf1d29b127a172f817de.jpg",
+  "https://i.postimg.cc/nrx1xVJq/1-966d4ce6-7e82-4725-b234-fcf81d6f867f.webp",
 ];
 
 function ShopByCategory() {

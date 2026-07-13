@@ -15,11 +15,9 @@
   position: relative;
   width: 100%;
   max-width: 1350px;
-
   display: flex;
   flex-direction: column;
   align-items: center;
-
   overflow: hidden;
   padding: 80px 40px 70px;
   box-sizing: border-box;
@@ -32,33 +30,26 @@
 .category-container::before {
   content: "";
   position: absolute;
-
   width: 850px;
   height: 800px;
-
   left: 50%;
   top: 48%;
-
   transform: translate(-50%, -50%);
   border-radius: 50%;
-
-  background:
-    radial-gradient(
-      ellipse at top,
-      rgba(152,180,120,0.04) 0%,
-      rgba(152,180,120,0.08) 25%,
-      rgba(145,175,110,0.12) 45%,
-      rgba(136,165,100,0.18) 65%,
-      rgba(124,150,90,0.28) 82%,
-      rgba(108,135,75,0.36) 100%
-    );
-
+  background: radial-gradient(
+    ellipse at top,
+    rgba(152,180,120,0.04) 0%,
+    rgba(152,180,120,0.08) 25%,
+    rgba(145,175,110,0.12) 45%,
+    rgba(136,165,100,0.18) 65%,
+    rgba(124,150,90,0.28) 82%,
+    rgba(108,135,75,0.36) 100%
+  );
   z-index: 0;
   pointer-events: none;
 }
 
 /* Bring content above circle */
-
 .category-header,
 .category-grid,
 .cta-wrapper {
@@ -97,22 +88,22 @@
 .category-grid {
   width: 100%;
   display: grid;
-  grid-template-columns: repeat(3,1fr);
+  grid-template-columns: repeat(3, 1fr);
   gap: 60px;
-
   margin-bottom: 60px;
 }
 
 /* ==========================================================================
-   Card
+   Card Layout & Structural Framing Corrections
    ========================================================================== */
 
 .category-card {
   display: flex;
   flex-direction: column;
   align-items: center;
-  transition: .35s ease;
   cursor: pointer;
+  /* Upgraded transitions to fluid cubic-bezier for premium feel */
+  transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1);
 }
 
 .category-card:hover {
@@ -124,22 +115,26 @@
   aspect-ratio: 1.05;
   overflow: hidden;
   border-radius: 28px;
-
   background: #f4f4f4;
-
-  box-shadow:
-    0 10px 35px rgba(0,0,0,.08);
+  box-shadow: 0 10px 35px rgba(0,0,0,.08);
 }
 
 .image-frame img {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: .6s;
+  /* CORRECTION: Pushes the focal crop frame baseline down to center-top (15%).
+     Prevents portrait/head-covering cuts on high-aspect draped layouts.
+  */
+  object-position: center 15%;
+  transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1);
 }
 
-.category-card:hover img {
-  transform: scale(1.05);
+/* CORRECTION: Combined zoom + subtle downward focus shift on hover 
+   to keep the model framing immaculate while zooming.
+*/
+.category-card:hover .image-frame img {
+  transform: scale(1.06) translateY(2px);
 }
 
 .card-label {
@@ -156,75 +151,68 @@
 
 .shop-now-btn {
   padding: 15px 48px;
-
   background: #fff;
   color: #111;
-
   border: none;
   border-radius: 10px;
-
   cursor: pointer;
-
   font-size: .95rem;
   font-weight: 500;
-
-  box-shadow:
-    0 10px 25px rgba(0,0,0,.08);
-
-  transition: .3s;
+  box-shadow: 0 10px 25px rgba(0,0,0,.08);
+  transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
 }
 
 .shop-now-btn:hover {
   transform: translateY(-2px);
-  box-shadow:
-    0 14px 30px rgba(0,0,0,.12);
+  box-shadow: 0 14px 30px rgba(0,0,0,.12);
 }
 
 /* ==========================================================================
    Responsive
    ========================================================================== */
 
-@media (max-width:1000px){
+@media (max-width: 1000px) {
+  .category-container::before {
+    width: 900px;
+    height: 900px;
+  }
 
-.category-container::before{
-    width:900px;
-    height:900px;
+  .category-grid {
+    grid-template-columns: 1fr;
+    max-width: 400px;
+    gap: 40px;
+  }
+
+  .main-title {
+    font-size: 2.5rem;
+  }
 }
 
-.category-grid{
-    grid-template-columns:1fr;
-    max-width:400px;
-    gap:40px;
-}
+@media (max-width: 600px) {
+  .category-container {
+    padding: 60px 20px;
+  }
 
-.main-title{
-    font-size:2.5rem;
-}
+  .category-container::before {
+    width: 680px;
+    height: 680px;
+  }
 
-}
+  .main-title {
+    font-size: 2rem;
+  }
 
-@media (max-width:600px){
+  .category-header {
+    margin-bottom: 45px;
+  }
 
-.category-container{
-    padding:60px 20px;
-}
+  /* Structural adjustment to preserve relative object mapping on small devices */
+  .image-frame img {
+    object-position: center 12%;
+  }
 
-.category-container::before{
-    width:680px;
-    height:680px;
-}
-
-.main-title{
-    font-size:2rem;
-}
-
-.category-header{
-    margin-bottom:45px;
-}
-
-.shop-now-btn{
-    width:100%;
-    max-width:260px;
-}
-
+  .shop-now-btn {
+    width: 100%;
+    max-width: 260px;
+  }
 }

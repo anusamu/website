@@ -7,7 +7,7 @@ export default function HandloomHero() {
       {/* Background image overlay container */}
       <div className="hero-bg-container">
         <img 
-          src="https://images.unsplash.com/photo-1617627143750-d86bc21e42bb?auto=format&fit=crop&w=1800&q=80" 
+          src="https://i.postimg.cc/QxXRkhTq/Chat-GPT-Image-Jul-10-2026-10-46-17-AM.png" 
           alt="Traditional Indian Handloom Weaving" 
           className="hero-bg-image"
         />

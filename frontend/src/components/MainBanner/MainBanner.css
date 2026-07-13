@@ -206,6 +206,7 @@
 /* Small Tablets & Standard Portrait Screens (Stacked Layout Fallbacks) */
 @media (max-width: 991px) {
   .hero-banner-container {
+    padding-top: 0;
     height: auto;
     min-height: auto;
     overflow: visible;

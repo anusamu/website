@@ -3,19 +3,33 @@ import { useNavigate } from "react-router-dom";
 import Navbar from "../../../components/Navbar/Navbar"; 
 import "./ShopPage.css";
 import api from "../../../api"; 
+import Footer from "../../../components/Footer/Footer";
 
-// Fallback images matching backend parsing indexes
 const fallbackImages = [
-  "https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&q=80&w=600",
-  "https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?auto=format&fit=crop&q=80&w=600",
-  "https://images.unsplash.com/photo-1606760227091-3dd870d97f1d?auto=format&fit=crop&q=80&w=600",
+  "https://i.postimg.cc/T3vt3jXP/MENS.jpg",
+  "https://i.postimg.cc/KzjNHJtP/GIRL.jpg",
+  "https://i.postimg.cc/qvrW5HqQ/PRO.jpg",
+];
+
+// Fallback collections defined here so they are globally accessible to the JSX template
+const defaultCollections = [
+  {
+    _id: 'season1',
+    name: 'Seasonal Collection',
+    image: 'https://i.postimg.cc/mDBBs1mQ/5ce2e4af22c7273968630e1afa559d0f.jpg',
+  },
+  {
+    _id: 'season2',
+    name: 'Wedding Collection',
+    image: 'https://i.postimg.cc/vm6tsc4F/photo-with-cousins-photo-in-saree-traditional.jpg',
+  },
 ];
 
 const ShopPage = () => {
   const navigate = useNavigate();
   
   const [categories, setCategories] = useState([]);
-   const [material, setMaterial] = useState([]);
+  const [collections, setCollections] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -26,19 +40,18 @@ const ShopPage = () => {
     const fetchCategories = async () => {
       try {
         setLoading(true);
-
-        const response = await api.get("/attributes/form-options", {
-          signal,
-        });
-
+        const response = await api.get("/attributes/form-options", { signal });
         const data = response.data;
 
-        // Safely parse out the categories array
-        const rawCategories = Array.isArray(data)
-          ? data
-          : data.categories || [];
+        const rawCategories = Array.isArray(data) ? data : data.categories || [];
+        const rawCollects = Array.isArray(data.collects) ? data.collects : [];
+
+        // Dynamic lookup with structural defaults
+        const seasonalCollect = rawCollects.find((item) => /season|festive/i.test(item.name)) || defaultCollections[0];
+        const weddingCollect = rawCollects.find((item) => /wedding/i.test(item.name)) || defaultCollections[1];
 
         setCategories(rawCategories);
+        setCollections([seasonalCollect, weddingCollect]);
         setError(null);
       } catch (err) {
         if (err.name !== "CanceledError" && err.code !== "ERR_CANCELED") {
@@ -57,11 +70,18 @@ const ShopPage = () => {
     };
   }, []);
 
-  // Helper function to navigate to your CategoryProducts route
   const handleCategoryClick = (categoryName) => {
     if (!categoryName) return;
-
     navigate(`/category-products?category=${encodeURIComponent(categoryName.trim())}`);
+  };
+
+  const handleCollectionClick = (collectionName) => {
+    if (!collectionName) return;
+    navigate(`/category-products?collection=${encodeURIComponent(collectionName.trim())}`);
+  };
+
+  const handleNewArrivalsClick = () => {
+    navigate(`/category-products?filter=newest`);
   };
 
   return (
@@ -76,21 +96,16 @@ const ShopPage = () => {
         {/* SECTION 1: FEATURED COLLECTIONS */}
         <section className="shop-section">
           <h2 className="section-title">Featured Collections</h2>
-          
           {loading ? (
-            <p>Loading premium collections...</p>
+            <p className="shop-status-text">Loading premium collections...</p>
           ) : error ? (
-            <p>Error matching collections: {error}</p>
+            <p className="shop-error-text">Error matching collections: {error}</p>
           ) : (
             <>
-              {/* Grid for the first 2 categories */}
               <div className="category-grid standard-grid">
                 {categories.slice(0, 2).map((cat, index) => {
                   const title = cat.name || cat.title || `Collection ${index + 1}`;
-                  const displayImage =
-                    cat.image ||
-                    cat.imageUrl ||
-                    fallbackImages[index % fallbackImages.length];
+                  const displayImage = cat.image || cat.imageUrl || fallbackImages[index % fallbackImages.length];
 
                   return (
                     <div 
@@ -110,16 +125,12 @@ const ShopPage = () => {
                 })}
               </div>
 
-              {/* Centered Grid for the 3rd category if it exists */}
               {categories.length > 2 && (
                 <div className="category-grid single-centered-grid">
                   {categories.slice(2, 3).map((cat, index) => {
                     const actualIndex = index + 2; 
                     const title = cat.name || cat.title || `Collection ${actualIndex + 1}`;
-                    const displayImage =
-                      cat.image ||
-                      cat.imageUrl ||
-                      fallbackImages[actualIndex % fallbackImages.length];
+                    const displayImage = cat.image || cat.imageUrl || fallbackImages[actualIndex % fallbackImages.length];
 
                     return (
                       <div 
@@ -147,10 +158,10 @@ const ShopPage = () => {
         <section className="shop-section">
           <h2 className="section-title">New arrivals</h2>
           <div className="category-grid full-width-grid">
-            <div className="category-card dynamic-banner-card" onClick={() => handleCategoryClick("New arrivals")}>
+            <div className="category-card dynamic-banner-card" onClick={handleNewArrivalsClick}>
               <div className="image-wrapper large-banner">
                 <img 
-                  src="https://images.unsplash.com/photo-1606760227091-3dd870d97f1d?auto=format&fit=crop&q=80&w=1200" 
+                  src="https://i.postimg.cc/d1jQkjhG/33ecab45094204489dcda36387be0ea0.jpg" 
                   alt="New arrivals" 
                   loading="lazy"
                 />
@@ -163,37 +174,37 @@ const ShopPage = () => {
           </div>
         </section>
 
-        {/* SECTION 3: SEASON COLLECTION */}
+        {/* SECTION 3: SEASONAL & WEDDING COLLECTIONS */}
         <section className="shop-section">
-          <h2 className="section-title">Season collection</h2>
+          <h2 className="section-title">Seasonal & Wedding Collections</h2>
+          <p className="section-description">Pick a curated seasonal or wedding collection below to view the matching products.</p>
           <div className="category-grid standard-grid">
             {loading ? (
-              <p>Loading premium collections...</p>
+              <p className="shop-status-text">Loading collections...</p>
             ) : error ? (
-              <p>Error matching collections: {error}</p>
+              <p className="shop-error-text">Error matching collections: {error}</p>
             ) : (
-              material.map((cat, index) => {
-                const title = cat.name || cat.title || `collections ${index + 1}`;
-                const displayImage =
-                  cat.image ||
-                  cat.imageUrl ||
-                  fallbackImages[index % fallbackImages.length];
+              collections.map((collectItem, index) => {
+                const title = collectItem.name || collectItem.title || `Collection ${index + 1}`;
+                
+                // Prioritize database image field, falling back precisely to corresponding default images array entry
+                const fallbackTarget = defaultCollections[index % defaultCollections.length].image;
+                const displayImage = collectItem.image || collectItem.imageUrl || fallbackTarget;
 
                 return (
                   <div 
-                    key={cat._id || index} 
-                    className="category-card" 
-                    onClick={() => handleCategoryClick(title)}
+                    key={collectItem._id || index} 
+                    className="category-card season-card" 
+                    onClick={() => handleCollectionClick(title)}
                   >
                     <div className="image-wrapper">
-                      <img 
-                        src={displayImage} 
-                        alt={title} 
-                        loading="lazy"
-                      />
+                      <img src={displayImage} alt={title} loading="lazy" />
                     </div>
-                    <div className="card-info">
-                      <h3>{title}</h3>
+                    <div className="card-info alignment-patch">
+                      <div>
+                        <h3>{title}</h3>
+                        <p className="card-subtitle">Curated products for every fine moment.</p>
+                      </div>
                       <span className="shop-now-link">shop now &rarr;</span>
                     </div>
                   </div>
@@ -203,6 +214,7 @@ const ShopPage = () => {
           </div>
         </section>
       </div>
+      <Footer/>
     </>
   );
 };

@@ -9,7 +9,7 @@ const BANNER_SLIDES = [
     subtitle: "Handwoven, Heartmade",
     title: "The Beauty of Handloom",
     description: "Discover premium clothing crafted with quality in mind. Explore pieces that effortlessly complement your lifestyle.",
-    image: "https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&w=1200&q=80"
+    image: "https://i.postimg.cc/Znn1rL94/Gemini-Generated-Image-m1dzf7m1dzf7m1dz.png"
   },
   {
     id: "slide_02",

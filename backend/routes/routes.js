@@ -5,7 +5,7 @@ const upload = require("../middleware/upload");
 
 const auth = require("../controllers/authController");
 const { addCategory, addItem, addType, addCollect, getProductFormAttributes, getSimilarProducts } = require("../controllers/AttributesController");
-const { addProduct, getProducts, getAllProductsAdmin, updateProduct, changeStatus, deleteProduct, getProductById } = require("../controllers/productController");
+const { addProduct, getProducts, getAllProductsAdmin, updateProduct, changeStatus, deleteProduct, getProductById ,getProductsForShop } = require("../controllers/productController");
 const { createAdmin, listAdmins, updateAdmin, deleteAdmin } = require("../controllers/adminAuth");
 const { getCart, addToCart, removeFromCart } = require("../controllers/CartController");
 
@@ -20,6 +20,7 @@ router.get("/products", getProducts);
 router.get("/products/:id", getProductById);
 router.get("/products/recommendations/similar", getSimilarProducts);
 router.get("/attributes/form-options", getProductFormAttributes);
+router.get("/shop-products", getProductsForShop);
 
 // ===================== CART =====================
 router.get("/cart", protect, getCart);

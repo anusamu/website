@@ -85,7 +85,7 @@ margin-bottom: -10px;
 
 .card-image-wrapper {
   width: 100%;
-  height: 3000px; /* Forces a neat frame around the visual */
+  height: 220px; /* Fixed frame height for correct layout */
   border-radius: 16px;
   overflow: hidden;
   background-color: #f4f4f5;
