@@ -20,6 +20,7 @@ const transporter = nodemailer.createTransport({
     user: mailUser,
     pass: mailPass,
   },
+  family: 4,
   tls: {
     rejectUnauthorized: false,
   },
