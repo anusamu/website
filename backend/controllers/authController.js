@@ -21,7 +21,7 @@ exports.register = async (req, res) => {
       });
     }
 
-    const exists = await User.findOne({
+    const exists = await User.exists({
       $or: [
         { email },
         { phoneNumber },
@@ -136,10 +136,7 @@ exports.login = async (req, res) => {
 
     await user.save();
 
- await sendMail(
-  user.email,
-  "Rajagopal Handlooms - Login OTP Verification",
-  `
+    const emailHtml = `
     <!DOCTYPE html>
   <html>
   <head>
@@ -230,8 +227,15 @@ exports.login = async (req, res) => {
 
   </body>
   </html>
-  `
-);
+  `;
+
+    sendMail(
+      user.email,
+      "Rajagopal Handlooms - Login OTP Verification",
+      emailHtml
+    ).catch((err) => {
+      console.error("OTP email send error:", err);
+    });
 
     return res.status(200).json({
       success: true,
