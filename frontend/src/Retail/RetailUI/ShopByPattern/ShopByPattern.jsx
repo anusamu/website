@@ -87,37 +87,42 @@ function ShopByPattern() {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-  const controller = new AbortController();
-  const signal = controller.signal;
+    const controller = new AbortController();
+    const signal = controller.signal;
 
-  const fetchPatterns = async () => {
-    try {
-      setLoading(true);
+    const fetchPatterns = async () => {
+      try {
+        setLoading(true);
 
-      const response = await api.get("/products", {
-        signal,
-      });
+        const response = await api.get("/products", {
+          signal,
+        });
 
-      const data = response.data;
+        // 1. Unify wrapped object targeting (response.data.products) and direct array targeting (response.data)
+        const rawData = response.data?.products || response.data;
 
-      setPatterns(data.slice(0, 3));
-      setError(null);
-    } catch (err) {
-      if (err.name !== "CanceledError" && err.code !== "ERR_CANCELED") {
-        console.error("Pattern fetch error:", err);
-        setError(err.response?.data?.message || err.message);
+        // 2. Protect runtime execution from objects/errors by defaulting to an array
+        const productsArray = Array.isArray(rawData) ? rawData : [];
+
+        // 3. Slice safely now that an array structure is explicitly guaranteed
+        setPatterns(productsArray.slice(0, 3));
+        setError(null);
+      } catch (err) {
+        if (err.name !== "CanceledError" && err.code !== "ERR_CANCELED") {
+          console.error("Pattern fetch error:", err);
+          setError(err.response?.data?.message || err.message);
+        }
+      } finally {
+        setLoading(false);
       }
-    } finally {
-      setLoading(false);
-    }
-  };
+    };
 
-  fetchPatterns();
+    fetchPatterns();
 
-  return () => {
-    controller.abort();
-  };
-}, []);
+    return () => {
+      controller.abort();
+    };
+  }, []);
 
   if (loading) {
     return (
@@ -150,8 +155,10 @@ function ShopByPattern() {
 
           <div className="pattern-grid">
             {patterns.map((item, index) => {
-              const title = item.title || item.name || "Pattern";
-              const displayImage = item.image || item.imageUrl;
+              const title = item.title || item.name || item.productName || "Pattern";
+              
+              // Fallback map chain for image arrays vs single strings
+              const displayImage = item.image || item.imageUrl || (item.images && item.images[0]) || 'https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&q=80&w=400';
               const isFeaturedCard = index === 1;
 
               return (

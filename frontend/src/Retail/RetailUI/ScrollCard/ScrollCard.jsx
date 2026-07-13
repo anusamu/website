@@ -14,42 +14,46 @@ function ScrollCard() {
     const controller = new AbortController();
     const signal = controller.signal;
 
- const fetchDatabaseData = async () => {
-  try {
-    setLoading(true);
+    const fetchDatabaseData = async () => {
+      try {
+        setLoading(true);
 
-    // Hits your getProducts controller
-    const response = await api.get("/products", {
-      signal,
-    });
+        // Hits your getProducts controller
+        const response = await api.get("/products", {
+          signal,
+        });
 
-    const data = response.data;
+        // 1. Handle wrapped object (response.data.products) OR direct array (response.data)
+        const rawData = response.data?.products || response.data;
 
-    setAllProducts(data);
+        // 2. Safe fallback: Ensure it's absolutely an array before running loops
+        const productsArray = Array.isArray(rawData) ? rawData : [];
 
-    // Get one representative product for each unique type
-    const uniqueTypeMap = {};
+        setAllProducts(productsArray);
 
-    data.forEach((product) => {
-      const productType = product.type?.trim();
+        // Get one representative product for each unique type
+        const uniqueTypeMap = {};
 
-      if (productType && !uniqueTypeMap[productType]) {
-        uniqueTypeMap[productType] = product;
+        productsArray.forEach((product) => {
+          const productType = product.type?.trim();
+
+          if (productType && !uniqueTypeMap[productType]) {
+            uniqueTypeMap[productType] = product;
+          }
+        });
+
+        setCategories(Object.values(uniqueTypeMap));
+        setError(null);
+      } catch (err) {
+        // Ignore request cancellation
+        if (err.name !== "CanceledError" && err.code !== "ERR_CANCELED") {
+          console.error("Database fetch error:", err);
+          setError(err.response?.data?.message || err.message);
+        }
+      } finally {
+        setLoading(false);
       }
-    });
-
-    setCategories(Object.values(uniqueTypeMap));
-    setError(null);
-  } catch (err) {
-    // Ignore request cancellation
-    if (err.name !== "CanceledError" && err.code !== "ERR_CANCELED") {
-      console.error("Database fetch error:", err);
-      setError(err.response?.data?.message || err.message);
-    }
-  } finally {
-    setLoading(false);
-  }
-};
+    };
 
     fetchDatabaseData();
 
