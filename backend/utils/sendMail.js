@@ -23,13 +23,18 @@ const transporter = nodemailer.createTransport({
   tls: {
     rejectUnauthorized: false,
   },
+  connectionTimeout: 10000,
+  greetingTimeout: 10000,
+  socketTimeout: 10000,
 });
 
-transporter.verify().then(() => {
-  console.log("✅ Mail transporter configured and verified");
-}).catch((err) => {
-  console.error("❌ Mail transporter verification failed:", err);
-});
+if (process.env.NODE_ENV !== "production") {
+  transporter.verify().then(() => {
+    console.log("✅ Mail transporter configured and verified");
+  }).catch((err) => {
+    console.warn("⚠️ Mail transporter verification warning:", err.message || err);
+  });
+}
 
 const sendMail = async (to, subject, html) => {
   try {
