@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import "./CategoryProducts.css";
 import Navbar from "../../../components/Navbar/Navbar";
-import api from "../../../api"; // Adjust based on your folder structure
+import api from "../../../api";
 import { useCart } from "../../../components/Context/CartContext";
 import { toast } from "react-toastify";
 import Footer from "../../../components/Footer/Footer";
@@ -81,7 +81,7 @@ const CategoryProducts = () => {
           const prodId = prod._id || prod.id;
           const available = getAvailableSizes(prod);
           if (available.length > 0) {
-            initialSizes[prodId] = available[0]; // Default to first available size
+            initialSizes[prodId] = available[0]; // Default to first available size (e.g. "S" or "M")
           }
         });
 
@@ -131,12 +131,8 @@ const CategoryProducts = () => {
     // Get selected size from state or fallback to first size/Standard
     const chosenSize = selectedSizes[productId] || availableSizes[0] || "Standard";
 
-    // ✅ FIXED: Pass an object directly so it cleanly matches the new robust CartContext
-    const success = await addToCart({
-      productId: productId,
-      quantity: 1,
-      size: chosenSize
-    });
+    // Call addToCart passing (productId, quantity, size)
+    const success = await addToCart(productId, 1, chosenSize);
 
     if (success) {
       toast.success(`${product.productName} (${chosenSize}) added to cart!`);
@@ -199,13 +195,13 @@ const CategoryProducts = () => {
                 const currentSelectedSize = selectedSizes[productId] || availableSizes[0];
 
                 return (
-                  <div key={productId || index} className="cat-product-display-card">
+                  <div
+                    key={productId || index}
+                    className="cat-product-display-card"
+                    onClick={() => handleCardClick(productId)}
+                  >
                     {/* Image & Quick Add Button */}
-                    <div
-                      className="cat-product-image-container"
-                      onClick={() => handleCardClick(productId)}
-                      style={{ cursor: "pointer" }}
-                    >
+                    <div className="cat-product-image-container">
                       <img
                         src={displayImage}
                         alt={title}
@@ -214,6 +210,7 @@ const CategoryProducts = () => {
                       />
 
                       <button
+                        type="button"
                         className="cat-action-add-to-cart-btn"
                         disabled={isOutOfStock}
                         onClick={(event) => handleAddToCartClick(product, event)}
@@ -226,15 +223,16 @@ const CategoryProducts = () => {
 
                     {/* Meta details & Size selector */}
                     <div className="cat-product-meta-details">
-                      <h3 className="cat-product-meta-title">{title}</h3>
+                      <h3 className="cat-product-meta-title" title={title}>
+                        {title}
+                      </h3>
                       <p className="cat-product-meta-price">{price}</p>
 
                       {/* Render Size Selector Badges if product has sizes */}
-                      {availableSizes.length > 0 && (
+                      {availableSizes.length > 0 ? (
                         <div
                           className="cat-product-sizes-row"
                           onClick={(e) => e.stopPropagation()}
-                          style={{ display: "flex", gap: "6px", marginTop: "8px" }}
                         >
                           {availableSizes.map((sz) => (
                             <button
@@ -242,20 +240,14 @@ const CategoryProducts = () => {
                               type="button"
                               className={`cat-size-badge-btn ${currentSelectedSize === sz ? "active" : ""}`}
                               onClick={(e) => handleSizeChange(productId, sz, e)}
-                              style={{
-                                padding: "4px 8px",
-                                fontSize: "0.75rem",
-                                border: currentSelectedSize === sz ? "1.5px solid #111" : "1px solid #ccc",
-                                backgroundColor: currentSelectedSize === sz ? "#111" : "#fff",
-                                color: currentSelectedSize === sz ? "#fff" : "#333",
-                                cursor: "pointer",
-                                borderRadius: "2px",
-                              }}
                             >
                               {sz}
                             </button>
                           ))}
                         </div>
+                      ) : (
+                        /* Invisible height preservation placeholder to align grid heights uniformly */
+                        <div className="cat-product-sizes-placeholder" />
                       )}
                     </div>
                   </div>
