@@ -10,67 +10,56 @@ import ShoppingBagOutlinedIcon from "@mui/icons-material/ShoppingBagOutlined";
 import { useCart } from "../../../components/Context/CartContext";
 import Navbar from "../../../components/Navbar/Navbar";
 import Footer from "../../../components/Footer/Footer";
-import { toast, ToastContainer } from "react-toastify"; // Added ToastContainer for local styling override
+import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "./Cart.css";
 
 const Cart = () => {
   const navigate = useNavigate();
-  
-  // Destructure variables matching your new backend-integrated CartContext
   const { cart, addToCart, removeFromCart } = useCart();
-  
-  // Extract items array safely based on database structural schema
+
   const cartItems = cart?.items || [];
 
-  // Dynamic calculations unpacking item.product nested fields
+  // Price calculations
   const subtotal = cartItems.reduce((acc, item) => {
     const price = item.product?.price || 0;
     return acc + price * (item.quantity || 0);
   }, 0);
 
   const shippingThreshold = 699;
-  const shippingFee = subtotal > shippingThreshold || subtotal === 0 ? 0 : 150; 
+  const shippingFee = subtotal >= shippingThreshold || subtotal === 0 ? 0 : 150;
   const totalAmount = subtotal + shippingFee;
 
-  // Increment item quantity by 1 on the backend
   const handleQuantityIncrease = async (item) => {
-    if (!item.product) return;
-    await addToCart(item.product, 1);
+    const productId = item.product._id || item.product;
+    await addToCart(productId, 1, item.size);
   };
 
-  // Decrement item quantity by 1, or completely remove if quantity drops to 1
   const handleQuantityDecrease = async (item) => {
-    if (!item.product) return;
+    const productId = item.product._id || item.product;
     if (item.quantity > 1) {
-      await addToCart(item.product, -1);
+      await addToCart(productId, -1, item.size);
     } else {
       handleRemoveItem(item);
     }
   };
 
-  // Completely delete the unique product from the user's backend document array
-  const handleRemoveItem = async (item) => {
-    const targetId = item.product?._id || item.product?.id;
-    
-    if (!targetId) {
-      console.error("No valid unique product ID found on nested item structure.", item);
-      return;
-    }
-
-    await removeFromCart(targetId);
-    toast.info(`${item.product?.productName || "Item"} removed from cart.`);
+ const handleRemoveItem = async (item) => {
+    const productId = item.product._id || item.product;
+    await removeFromCart(productId, item.size);
+    toast.info(`${item.product?.productName || "Item"} (${item.size}) removed from cart.`);
   };
 
   const handleCheckout = () => {
-    toast.success("Proceeding to secure checkout gateway...");
+    navigate("/checkout", {
+      state: { checkoutItems: cartItems },
+    });
   };
 
-  // Render empty state view if no items exist inside the database array
+  // Render empty state
   if (cartItems.length === 0) {
     return (
       <>
-        {/* Customized Notification Container positioned and lowered */}
         <ToastContainer position="top-right" autoClose={3000} className="custom-toast-container" />
         <Navbar />
         <Box className="cart-navbar-spacer" />
@@ -89,7 +78,6 @@ const Cart = () => {
               bgcolor: "#111",
               color: "#fff",
               padding: "14px 40px",
-              textTransform: "none",
               borderRadius: "0px",
               fontWeight: 500,
               fontSize: "1rem",
@@ -107,14 +95,12 @@ const Cart = () => {
 
   return (
     <>
-      {/* Customized Notification Container positioned and lowered */}
       <ToastContainer position="top-right" autoClose={3000} className="custom-toast-container" />
       <Navbar />
       <div className="cart-navbar-spacer" />
-      
+
       <div className="cart-page-wrapper">
         <div className="cart-container">
-          
           {/* Left Side: Items List */}
           <div className="cart-items-section">
             <div className="cart-header-row">
@@ -125,8 +111,8 @@ const Cart = () => {
                   <FavoriteBorderIcon sx={{ fontSize: 16, mr: 0.5 }} /> Wishlist
                 </button>
               </div>
-              <Button 
-                startIcon={<ArrowBackIcon sx={{ fontSize: "16px !important" }} />} 
+              <Button
+                startIcon={<ArrowBackIcon sx={{ fontSize: "16px !important" }} />}
                 onClick={() => navigate(-1)}
                 sx={{ color: "#767676", textTransform: "none", fontSize: "0.95rem", "&:hover": { color: "#111" } }}
               >
@@ -135,22 +121,23 @@ const Cart = () => {
             </div>
 
             <div className="cart-items-list">
-              {cartItems.map((item, index) => {
+              {cartItems.map((item) => {
                 const product = item.product;
-                if (!product) return null; 
+                if (!product) return null;
 
-                const productId = product._id || product.id;
+                const productId = product._id || product;
+                const uniqueCardKey = `${productId}_${item.size}`;
 
                 return (
-                  <div key={productId || index} className="cart-item-card">
-                    <div 
-                      className="cart-item-img-wrapper" 
+                  <div key={uniqueCardKey} className="cart-item-card">
+                    <div
+                      className="cart-item-img-wrapper"
                       onClick={() => navigate(`/product/${productId}`)}
                       style={{ cursor: "pointer" }}
                     >
-                      <img 
-                        src={product.images?.[0] || "/placeholder-image.jpg"} 
-                        alt={product.productName} 
+                      <img
+                        src={product.images?.[0] || "/placeholder-image.jpg"}
+                        alt={product.productName}
                         className="cart-item-img"
                       />
                     </div>
@@ -158,16 +145,16 @@ const Cart = () => {
                     <div className="cart-item-details">
                       <div className="cart-item-meta">
                         <div className="cart-item-title-row">
-                          <h3 
-                            className="cart-item-name" 
+                          <h3
+                            className="cart-item-name"
                             onClick={() => navigate(`/product/${productId}`)}
                             style={{ cursor: "pointer" }}
                           >
                             {product.productName}
                           </h3>
-                          <IconButton 
-                            className="cart-item-delete-btn" 
-                            size="small" 
+                          <IconButton
+                            className="cart-item-delete-btn"
+                            size="small"
                             onClick={() => handleRemoveItem(item)}
                             sx={{ color: "#aaa", "&:hover": { color: "#ff4d4d" }, transition: "color 0.2s ease" }}
                           >
@@ -175,7 +162,12 @@ const Cart = () => {
                           </IconButton>
                         </div>
                         <span className="cart-item-collection">{product.collect || "Exclusive Item"}</span>
-                        <span className="cart-item-size">Size: Standard</span>
+
+                        <div className="cart-item-size-badge" style={{ marginTop: "6px" }}>
+                          <span style={{ fontSize: "0.875rem", color: "#444" }}>
+                            Size: <strong style={{ color: "#111" }}>{item.size || "Standard"}</strong>
+                          </span>
+                        </div>
                       </div>
 
                       <div className="cart-item-actions-row">
@@ -204,12 +196,12 @@ const Cart = () => {
           <div className="cart-summary-section">
             <h2 className="summary-title">Order Summary</h2>
             <Divider sx={{ mb: 3, borderColor: "#eee" }} />
-            
+
             <div className="summary-row">
               <span className="summary-label">Subtotal</span>
               <span className="summary-value">₹ {subtotal.toLocaleString("en-IN")}</span>
             </div>
-            
+
             <div className="summary-row">
               <span className="summary-label">Estimated Shipping</span>
               <span className="summary-value">
@@ -230,17 +222,14 @@ const Cart = () => {
               <span className="summary-total-value">₹ {totalAmount.toLocaleString("en-IN")}</span>
             </div>
 
-            <p className="tax-disclaimer">Taxes and shipping discounts applied at completion step.</p>
-
             <button className="cart-checkout-btn" onClick={handleCheckout}>
               Proceed to Checkout
             </button>
-            
+
             <button className="cart-continue-shopping-btn" onClick={() => navigate("/")}>
               Continue Shopping
             </button>
           </div>
-
         </div>
       </div>
       <Footer />

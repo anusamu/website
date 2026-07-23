@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
 import {
   Paper,
   Table,
@@ -19,6 +18,7 @@ import {
 
 import "./InactiveProduct.css";
 import api from "../../../api";
+import AdminProductDetail from "../../AdminUI/AdminProductDetail/AdminProductDetail"; // Adjust import path if needed
 
 const InactiveProduct = () => {
   const [products, setProducts] = useState([]);
@@ -26,8 +26,12 @@ const InactiveProduct = () => {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
 
+  // Pagination state
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
+
+  // Selected product state for Detail View
+  const [selectedProduct, setSelectedProduct] = useState(null);
 
   useEffect(() => {
     fetchInactiveProducts();
@@ -37,13 +41,11 @@ const InactiveProduct = () => {
     try {
       const token = localStorage.getItem("token");
 
-      const res = await api.get( "products/admin/all",
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const res = await api.get("products/admin/all", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
       const inactiveProducts = res.data.filter(
         (product) => product.status === "inactive"
@@ -51,42 +53,49 @@ const InactiveProduct = () => {
 
       setProducts(inactiveProducts);
       setFilteredProducts(inactiveProducts);
-
     } catch (error) {
       console.log(error);
-
     } finally {
       setLoading(false);
     }
   };
-const handleStatusToggle = async (productId) => {
-  try {
-    const token = localStorage.getItem("token");
 
-    await api.put(
-      `products/status/${productId}`,
-      {
-        status: "active",
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
+  const handleStatusToggle = async (e, productId) => {
+    // Stop event propagation so row click isn't triggered when toggling status
+    e.stopPropagation();
+
+    try {
+      const token = localStorage.getItem("token");
+
+      await api.put(
+        `products/status/${productId}`,
+        {
+          status: "active",
         },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      // Remove the product immediately from UI
+      const updatedProducts = products.filter(
+        (product) => product._id !== productId
+      );
+
+      setProducts(updatedProducts);
+      setFilteredProducts(updatedProducts);
+
+      // If viewing the toggled product in detail, close detail view
+      if (selectedProduct && selectedProduct._id === productId) {
+        setSelectedProduct(null);
       }
-    );
+    } catch (error) {
+      console.log(error.response?.data || error.message);
+    }
+  };
 
-    // Remove the product immediately from UI
-    const updatedProducts = products.filter(
-      (product) => product._id !== productId
-    );
-
-    setProducts(updatedProducts);
-    setFilteredProducts(updatedProducts);
-
-  } catch (error) {
-    console.log(error.response?.data || error.message);
-  }
-};
   useEffect(() => {
     const value = search.toLowerCase();
 
@@ -97,6 +106,7 @@ const handleStatusToggle = async (productId) => {
     );
 
     setFilteredProducts(result);
+    setPage(0); // Reset pagination on search
   }, [search, products]);
 
   if (loading) {
@@ -107,9 +117,19 @@ const handleStatusToggle = async (productId) => {
     );
   }
 
+  // 🟢 IF A PRODUCT IS SELECTED: Render the Full Detail Component
+  if (selectedProduct) {
+    return (
+      <AdminProductDetail
+        product={selectedProduct}
+        onBack={() => setSelectedProduct(null)}
+      />
+    );
+  }
+
+  // 🔴 DEFAULT TABLE VIEW
   return (
     <Paper className="inactive-paper">
-
       <Typography variant="h5" className="inactive-title">
         Inactive Products
       </Typography>
@@ -124,7 +144,6 @@ const handleStatusToggle = async (productId) => {
 
       <TableContainer>
         <Table>
-
           <TableHead>
             <TableRow>
               <TableCell>Image</TableCell>
@@ -134,64 +153,61 @@ const handleStatusToggle = async (productId) => {
               <TableCell>Stock</TableCell>
               <TableCell>Status</TableCell>
               <TableCell>Action</TableCell>
-              
             </TableRow>
           </TableHead>
 
           <TableBody>
             {filteredProducts
-              .slice(
-                page * rowsPerPage,
-                page * rowsPerPage + rowsPerPage
-              )
+              .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
               .map((product) => (
-                <TableRow key={product._id}>
-
+                <TableRow
+                  key={product._id}
+                  hover
+                  onClick={() => setSelectedProduct(product)}
+                  style={{ cursor: "pointer" }}
+                  className="interactive-row"
+                >
                   <TableCell>
                     <Avatar
                       src={product.images?.[0]}
                       variant="rounded"
+                      alt={product.productName}
                     />
                   </TableCell>
 
                   <TableCell>
-                    {product.productName}
+                    <Typography fontWeight="600" variant="body2">
+                      {product.productName}
+                    </Typography>
                   </TableCell>
 
+                  <TableCell>{product.productNumber}</TableCell>
+
                   <TableCell>
-                    {product.productNumber}
+                    ₹{Number(product.price || 0).toLocaleString()}
                   </TableCell>
 
+                  <TableCell>{product.stockCount ?? 0}</TableCell>
+
                   <TableCell>
-                    ₹{product.price}
+                    <Chip label="Inactive" className="inactive-chip" />
                   </TableCell>
 
-                  <TableCell>
-                    {product.stockCount}
+                  <TableCell onClick={(e) => e.stopPropagation()}>
+                    <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                      <Switch
+                        checked={false}
+                        onChange={(e) => handleStatusToggle(e, product._id)}
+                        color="success"
+                      />
+                      <Typography variant="caption" color="textSecondary">
+                        Make Active
+                      </Typography>
+                    </div>
                   </TableCell>
-
-                  <TableCell>
-                    <Chip
-                      label="Inactive"
-                      className="inactive-chip"
-                    />
-                  </TableCell>
-                  <TableCell>
-  <Switch
-    checked={false}
-    onChange={() => handleStatusToggle(product._id)}
-    color="success"
-  />
-
-  <Typography variant="caption">
-    Make Active
-  </Typography>
-</TableCell>
-
                 </TableRow>
               ))}
           </TableBody>
-
         </Table>
       </TableContainer>
 
@@ -207,7 +223,6 @@ const handleStatusToggle = async (productId) => {
           setPage(0);
         }}
       />
-
     </Paper>
   );
 };

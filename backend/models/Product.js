@@ -10,8 +10,7 @@ const productSchema = new mongoose.Schema(
 
     productNumber: {
       type: String,
-      required: true, // Recommended to keep product numbers unique
-      
+      required: true,
     },
 
     description: {
@@ -24,74 +23,79 @@ const productSchema = new mongoose.Schema(
       required: true,
     },
 
-    
     collect: {
       type: String,
       required: true,
-    
     },
-    // Category (Populated dynamically from Category collection)
+
     category: {
       type: String,
-      required: true, // Made required since it's a core dynamic dropdown field
+      required: true,
       trim: true,
     },
 
-    // Item (Men, Women, Kids, etc. Populated dynamically from Item collection)
     item: {
       type: String,
       required: true,
       trim: true,
     },
 
-    // Product Type (Saree, T-shirt, etc. Populated dynamically from Type collection)
     type: {
       type: String,
       required: true,
       trim: true,
     },
 
-    // Male / Female / Unisex
     gender: {
       type: String,
       trim: true,
     },
 
-    // Body Part
     part: {
       type: String,
       trim: true,
     },
 
-    // Available Colours
     colors: [
       {
         type: String,
         trim: true,
       },
     ],
-       material: {
+
+    material: {
       type: String,
       trim: true,
     },
 
     images: [
       {
-        type: String, // Cloudinary URL
+        type: String,
       },
     ],
 
-    // Flexible sizes array to accommodate both clothing strings and numerical measurements
+    // Dynamic array of size objects
     sizes: [
       {
-        type: String,
-        trim: true,
-      },
+        size: { 
+          type: String, 
+          required: true, 
+          trim: true 
+        },
+        quantity: { 
+          type: Number, 
+          required: true, 
+          min: 0, 
+          default: 0 
+        }
+      }
     ],
 
+    // Total stock (Sum of all size quantities)
     stockCount: {
       type: Number,
       default: 0,
+      min: 0,
     },
 
     stockStatus: {
@@ -117,5 +121,28 @@ const productSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
+
+// PRE-SAVE HOOK: Calculates stockCount, stockStatus & status automatically
+productSchema.pre("save", async function () {
+  // 1. Calculate stockCount from sizes
+  if (this.sizes && this.sizes.length > 0) {
+    this.stockCount = this.sizes.reduce(
+      (total, s) => total + (Number(s.quantity) || 0),
+      0
+    );
+  } else {
+    this.stockCount = 0;
+  }
+
+  // 2. Set stockStatus based on stockCount
+  if (this.stockCount <= 0) {
+    this.stockStatus = "Out Of Stock";
+    this.status = "inactive"; // Automatically set status to inactive when stock hits 0
+  } else if (this.stockCount <= 5) {
+    this.stockStatus = "Few Stock Available";
+  } else {
+    this.stockStatus = "In Stock";
+  }
+});
 
 module.exports = mongoose.model("Product", productSchema);

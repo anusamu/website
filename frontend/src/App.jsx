@@ -17,6 +17,8 @@ import AddAdmin from "./Admin/AdminPage/AddAdmin/AddAdmin";
 import ProductDetails from "./Retail/RetailUI/ProductDetails/ProductDetails";
 import Cart from "./Retail/RetailPage/Cart/Cart";
 import Wishlist from "./Retail/RetailPage/Wishlist/Wishlist";
+import Checkout from "./Retail/RetailPage/Checkout/Checkout";
+import MainOrder from "./Admin/AdminPage/MainOrder/MainOrder";
 
 function App() {
   return (
@@ -35,6 +37,9 @@ function App() {
       <Route path="/product/:id" element={<ProductDetails/>} />
       <Route path="/cart" element={<Cart/>} />
        <Route path="/myWishlist" element={<Wishlist/>} />
+       <Route path="/checkout" element={<Checkout/>} />
+
+
 
 
 
@@ -46,6 +51,7 @@ function App() {
           <Route path="/productlist" element={<ProductList />} />
            <Route path="/inactiveproducts" element={<InactiveProduct/>} />
            <Route path="/addAdmin" element={<AddAdmin/>} />
+           <Route path="/orders" element={<MainOrder/>} />
          
         </Route>
       </Routes>

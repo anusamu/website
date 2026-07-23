@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { Typography, Button, Box, CircularProgress, IconButton, LinearProgress } from "@mui/material";
+import { Typography, Button, Box, CircularProgress, IconButton, LinearProgress, Chip } from "@mui/material";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import LocalShippingOutlinedIcon from "@mui/icons-material/LocalShippingOutlined";
@@ -19,13 +19,15 @@ import "./ProductDetails.css";
 const ProductDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { addToCart } = useCart(); // Pull in context action hook
+  const { addToCart } = useCart();
+  const { toggleWishlist, isInWishlist } = useWishlist();
 
+  const [selectedSize, setSelectedSize] = useState('');
   const [product, setProduct] = useState(null);
   const [similarProducts, setSimilarProducts] = useState([]);
   const [mainImage, setMainImage] = useState("");
   const [loading, setLoading] = useState(true);
-const { toggleWishlist, isInWishlist } = useWishlist();
+
   // Mock data for Customer Reviews UI
   const [reviews] = useState([
     { id: 1, name: "Arjun Sharma", rating: 5, date: "July 02, 2026", comment: "Absolutely love the quality! True to size and matches the pictures perfectly." },
@@ -33,47 +35,110 @@ const { toggleWishlist, isInWishlist } = useWishlist();
     { id: 3, name: "Rohan Das", rating: 5, date: "June 15, 2026", comment: "Premium feel. Will definitely order from this collection again." }
   ]);
 
-  const handleAddToCartClick = () => {
-    if (!product) return;
+  // Safely normalizes sizes to array of strings (handles both object arrays and string arrays)
+  const normalizeSizes = (sizes) => {
+    if (!sizes) return [];
     
-    // Fire the contextual layout update dispatch hook
-    addToCart(product, 1);
+    if (Array.isArray(sizes)) {
+      return sizes
+        .map((s) => {
+          if (typeof s === "object" && s !== null) {
+            return s.size || ""; // Extracts size string if it's an object { size: 'M', quantity: 5 }
+          }
+          return String(s || "").trim();
+        })
+        .filter(Boolean);
+    }
+
+    if (typeof sizes === "string") {
+      try {
+        const parsed = JSON.parse(sizes);
+        return normalizeSizes(parsed);
+      } catch {
+        return sizes.split(",").map((s) => s.trim()).filter(Boolean);
+      }
+    }
+    return [];
+  };
+
+  const availableSizes = product ? normalizeSizes(product.sizes) : [];
+
+  // Calculate total stock count directly from size objects or database field
+  const getStockCount = () => {
+    if (!product) return 0;
+
+    if (Array.isArray(product.sizes) && product.sizes.length > 0) {
+      return product.sizes.reduce((sum, item) => {
+        if (typeof item === "object" && item !== null) {
+          return sum + (Number(item.quantity) || 0);
+        }
+        return sum;
+      }, 0);
+    }
+
+    return Number(product.stockCount) || 0;
+  };
+
+  const totalStock = getStockCount();
+  const isOutOfStock = totalStock <= 0 || product?.status === "inactive";
+
+  const handleAddToCartClick = () => {
+    if (!product || isOutOfStock) return;
+
+    if (availableSizes.length > 0 && !selectedSize) {
+      toast.warning("Please select a size first.");
+      return;
+    }
+
+    addToCart(product, 1, selectedSize);
     toast.success(`${product.productName} added to cart!`);
+  };
+
+  const handleBuyNow = () => {
+    if (!product || isOutOfStock) return;
+
+    if (availableSizes.length > 0 && !selectedSize) { 
+      toast.warning("Please select a size before proceeding to checkout."); 
+      return; 
+    }
+
+    navigate('/checkout', { 
+      state: { 
+        checkoutItems: [{
+          product: product,
+          size: selectedSize || "OS",
+          quantity: 1,
+          price: product.price
+        }],
+        isDirectCheckout: true
+      } 
+    });
   };
 
   useEffect(() => {
     const fetchFullProductData = async () => {
       if (!id || id === "undefined") return;
-      
+
       try {
         setLoading(true);
-        
-        // 1. Fetch current product details
+
         const res = await api.get(`/products/${id}`);
-        
+
         if (res.data.success) {
-          // Extract the data from the response and set your main product state
           const productData = res.data.product || res.data.data;
           setProduct(productData);
-          
-          // Set the main image for the gallery
+
           if (productData?.images && productData.images.length > 0) {
             setMainImage(productData.images[0]);
           }
 
-          // 2. Fetch similar products using a deep route to prevent parameter conflicts
           if (productData.item) {
-            console.log(`Requesting recommendations for: ${productData.item}`);
-            
-            // Appending a deep nested namespace path eliminates wildcards matches
             const similarRes = await api.get(
               `/products/recommendations/similar?item=${encodeURIComponent(productData.item)}&excludeId=${productData._id}`
             );
-            
+
             if (similarRes.data.success) {
-              const extracted = similarRes.data.products || [];
-              console.log("Successfully loaded recommendations:", extracted);
-              setSimilarProducts(extracted);
+              setSimilarProducts(similarRes.data.products || []);
             }
           }
         }
@@ -137,7 +202,7 @@ const { toggleWishlist, isInWishlist } = useWishlist();
       <Navbar />
       <div className="pdp-page-wrapper">
         <div className="pdp-container">
-          
+
           {/* Left Column: Image Gallery */}
           <div className="pdp-image-section">
             <div className="pdp-main-image-wrapper">
@@ -147,7 +212,7 @@ const { toggleWishlist, isInWishlist } = useWishlist();
                 className="pdp-main-image" 
               />
             </div>
-            
+
             {product.images && product.images.length > 1 && (
               <div className="pdp-thumbnail-list">
                 {product.images.map((img, index) => (
@@ -173,67 +238,96 @@ const { toggleWishlist, isInWishlist } = useWishlist();
               {product.collect || "Exclusive Collection"}
             </span>
             <h1 className="pdp-title">{product.productName}</h1>
-            
-            <div className="pdp-pricing-row">
+
+            <div className="pdp-pricing-row" style={{ display: "flex", alignItems: "center", gap: "12px" }}>
               <span className="pdp-price">
                 ₹ {product.price?.toLocaleString("en-IN")}
               </span>
               <span className="pdp-tax-info">Tax included.</span>
+
+              {/* Dynamic Stock Status Chip */}
+              {totalStock <= 0 ? (
+                <Chip label="Out of Stock" color="error" size="small" variant="filled" />
+              ) : totalStock <= 5 ? (
+                <Chip label={`Few Left (${totalStock})`} color="warning" size="small" variant="filled" />
+              ) : (
+                <Chip label="Available" color="success" size="small" variant="filled" />
+              )}
             </div>
 
             <hr className="pdp-divider" />
 
-            {product.sizes && product.sizes.length > 0 && (
+            {/* Available Sizes Selection */}
+            {availableSizes.length > 0 && (
               <div className="pdp-attributes">
                 <span className="pdp-attribute-label">Select Size</span>
                 <div className="attribute-chips">
-                  {product.sizes.map((size) => (
-                    <span key={size} className="attr-chip">{size}</span>
+                  {availableSizes.map((size, index) => (
+                    <span 
+                      key={`${size}-${index}`} 
+                      className={`attr-chip ${selectedSize === size ? "active-size" : ""}`}
+                      onClick={() => setSelectedSize(size)}
+                      style={{
+                        cursor: 'pointer',
+                        padding: '8px 16px',
+                        border: selectedSize === size ? '2px solid #111' : '1px solid #ccc',
+                        fontWeight: selectedSize === size ? 'bold' : 'normal',
+                        marginRight: '8px',
+                        display: 'inline-block',
+                        borderRadius: '4px'
+                      }}
+                    >
+                      {size}
+                    </span>
                   ))}
                 </div>
               </div>
             )}
 
-            <div className="pdp-action-buttons">
+            {/* Action Buttons */}
+            <div className="pdp-action-buttons" style={{ marginTop: "20px" }}>
               <button 
                 className="pdp-btn secondary"
-                disabled={product.stockStatus === "Out Of Stock"}
+                disabled={isOutOfStock}
                 onClick={handleAddToCartClick}
+                style={{ opacity: isOutOfStock ? 0.5 : 1, cursor: isOutOfStock ? "not-allowed" : "pointer" }}
               >
-                Add to Cart
+                {isOutOfStock ? "Out of Stock" : "Add to Cart"}
               </button>
               <button 
                 className="pdp-btn primary"
-                disabled={product.stockStatus === "Out Of Stock"}
+                disabled={isOutOfStock}
+                onClick={handleBuyNow}
+                style={{ opacity: isOutOfStock ? 0.5 : 1, cursor: isOutOfStock ? "not-allowed" : "pointer" }}
               >
                 Buy it Now
               </button>
             </div>
 
-            {/* --- Connected PDP Wishlist Toggle Row --- */}
-<div 
-  className="pdp-wishlist-row" 
-  onClick={() => toggleWishlist(product)} 
-  style={{ cursor: "pointer", display: "flex", alignItems: "center", gap: "8px" }}
->
-  <IconButton 
-    size="small" 
-    className="wishlist-btn"
-    sx={{ 
-      transition: "transform 0.2s ease",
-      "&:hover": { transform: "scale(1.1)" }
-    }}
-  >
-    {isInWishlist(product?._id || product?.id) ? (
-      <FavoriteIcon fontSize="small" sx={{ color: "#ff4d4d" }} />
-    ) : (
-      <FavoriteBorderIcon fontSize="small" sx={{ color: "#666" }} />
-    )}
-  </IconButton>
-  <span className="wishlist-text" style={{ fontSize: "0.95rem", color: "#222", userSelect: "none" }}>
-    {isInWishlist(product?._id || product?.id) ? "Saved in Wishlist" : "Add to wishlist"}
-  </span>
-</div>
+            {/* Wishlist Toggle Row */}
+            <div 
+              className="pdp-wishlist-row" 
+              onClick={() => toggleWishlist(product)} 
+              style={{ cursor: "pointer", display: "flex", alignItems: "center", gap: "8px", marginTop: "16px" }}
+            >
+              <IconButton 
+                size="small" 
+                className="wishlist-btn"
+                sx={{ 
+                  transition: "transform 0.2s ease",
+                  "&:hover": { transform: "scale(1.1)" }
+                }}
+              >
+                {isInWishlist(product?._id || product?.id) ? (
+                  <FavoriteIcon fontSize="small" sx={{ color: "#ff4d4d" }} />
+                ) : (
+                  <FavoriteBorderIcon fontSize="small" sx={{ color: "#666" }} />
+                )}
+              </IconButton>
+              <span className="wishlist-text" style={{ fontSize: "0.95rem", color: "#222", userSelect: "none" }}>
+                {isInWishlist(product?._id || product?.id) ? "Saved in Wishlist" : "Add to wishlist"}
+              </span>
+            </div>
 
             <div className="pdp-features">
               <div className="feature-item">
@@ -268,7 +362,7 @@ const { toggleWishlist, isInWishlist } = useWishlist();
               <h2 className="pdp-similar-heading">You May Also Like</h2>
               <div className="pdp-similar-line" />
             </div>
-            
+
             <div className="pdp-similar-grid">
               {similarProducts.slice(0, 4).map((item) => (
                 <div 
@@ -303,7 +397,6 @@ const { toggleWishlist, isInWishlist } = useWishlist();
           </div>
 
           <div className="pdp-reviews-container">
-            {/* Left Box: Aggregated Data */}
             <div className="pdp-reviews-summary-card">
               <div className="summary-score-block">
                 <span className="summary-average-num">4.7</span>
@@ -338,7 +431,6 @@ const { toggleWishlist, isInWishlist } = useWishlist();
               </div>
             </div>
 
-            {/* Right Box: Individual Review Cards */}
             <div className="pdp-reviews-feed">
               {reviews.map((rev) => (
                 <div className="review-feed-card" key={rev.id}>

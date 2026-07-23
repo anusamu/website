@@ -6,6 +6,12 @@ const { OAuth2Client } = require("google-auth-library");
 
 const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
+const normalizePhoneNumber = (value) => {
+  if (typeof value !== "string") return undefined;
+  const trimmed = value.trim();
+  return trimmed ? trimmed : undefined;
+};
+
 exports.register = async (req, res) => {
   try {
     const {
@@ -17,6 +23,8 @@ exports.register = async (req, res) => {
       confirmPassword,
     } = req.body;
 
+    const normalizedPhoneNumber = normalizePhoneNumber(phoneNumber);
+
     if (password !== confirmPassword) {
       return res.status(400).json({
         success: false,
@@ -27,7 +35,7 @@ exports.register = async (req, res) => {
     const exists = await User.exists({
       $or: [
         { email },
-        { phoneNumber },
+        ...(normalizedPhoneNumber ? [{ phoneNumber: normalizedPhoneNumber }] : []),
       ],
     });
 
@@ -42,7 +50,7 @@ exports.register = async (req, res) => {
       firstName,
       lastName,
       email,
-      phoneNumber,
+      phoneNumber: normalizedPhoneNumber,
       password, // schema will hash it
     });
 
@@ -399,5 +407,26 @@ exports.verifyLoginOtp = async (req, res) => {
       success: false,
       message: error.message,
     });
+  }
+};
+
+exports.getSavedAddress = async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id).select('savedAddress');
+
+    if (!user || !user.savedAddress) {
+      return res.status(200).json({
+        success: false,
+        message: 'No saved address found.',
+        address: null,
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      address: user.savedAddress,
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
   }
 };

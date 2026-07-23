@@ -8,6 +8,19 @@ const connectDB = async () => {
 
     // If connection success, show database host in terminal
     console.log(`MongoDB Connected: ${conn.connection.host}`);
+
+    try {
+      const cleanupResult = await conn.connection.collection("users").updateMany(
+        { phoneNumber: null },
+        { $unset: { phoneNumber: "" } }
+      );
+
+      if (cleanupResult.modifiedCount > 0) {
+        console.log(`Cleaned up ${cleanupResult.modifiedCount} user phone number values.`);
+      }
+    } catch (cleanupError) {
+      console.warn("Phone number cleanup skipped:", cleanupError.message);
+    }
   } catch (error) {
     // If connection failed, show error
     console.error(`MongoDB Connection Error: ${error.message}`);

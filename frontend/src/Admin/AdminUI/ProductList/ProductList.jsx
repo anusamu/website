@@ -16,11 +16,14 @@ import {
   Typography,
   IconButton,
   Switch,
+  Tooltip,
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
+import VisibilityIcon from "@mui/icons-material/Visibility";
 import "./ProductList.css";
 import EditProduct from "../EditProduct/EditProduct";
+import AdminProductDetail from "../AdminProductDetail/AdminProductDetail";
 import api from "../../../api";
 
 const ProductList = () => {
@@ -30,7 +33,10 @@ const ProductList = () => {
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
-  
+
+  // Detail View State
+  const [viewProduct, setViewProduct] = useState(null);
+
   // Edit Dialog State
   const [openEdit, setOpenEdit] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState({
@@ -41,9 +47,9 @@ const ProductList = () => {
     price: "",
     stockCount: "",
     sizes: [],
-    images: []
+    images: [],
   });
-  
+
   const [newImages, setNewImages] = useState([]);
   const [previewImages, setPreviewImages] = useState([]);
 
@@ -59,6 +65,12 @@ const ProductList = () => {
       });
       setProducts(res.data);
       setFilteredProducts(res.data);
+
+      // Refresh detail view if currently open
+      if (viewProduct) {
+        const updated = res.data.find((p) => p._id === viewProduct._id);
+        if (updated) setViewProduct(updated);
+      }
     } catch (error) {
       console.error("Error fetching products:", error);
     } finally {
@@ -87,7 +99,8 @@ const ProductList = () => {
     setPage(0);
   };
 
-  const handleEditOpen = (product) => {
+  const handleEditOpen = (product, e) => {
+    if (e) e.stopPropagation(); // Prevent opening detail view when clicking edit
     let sizes = product.sizes || [];
 
     if (typeof sizes === "string") {
@@ -118,69 +131,8 @@ const ProductList = () => {
     setOpenEdit(false);
   };
 
-  const handleEditChange = (e) => {
-    setSelectedProduct({
-      ...selectedProduct,
-      [e.target.name]: e.target.value,
-    });
-  };
-
-  const handleSizeChange = (e) => {
-    const { value, checked } = e.target;
-
-    setSelectedProduct((prev) => ({
-      ...prev,
-      sizes: checked
-        ? [...new Set([...prev.sizes, value])]
-        : prev.sizes.filter((size) => size !== value),
-    }));
-  };
-
-  const handleImageChange = (e) => {
-    const files = Array.from(e.target.files);
-    setNewImages(files);
-    const preview = files.map((file) => URL.createObjectURL(file));
-    setPreviewImages(preview);
-  };
-
-  const handleUpdateSubmit = async () => {
-    try {
-      const token = localStorage.getItem("token");
-      const formData = new FormData();
-
-      formData.append("productName", selectedProduct.productName);
-      formData.append("productNumber", selectedProduct.productNumber);
-      formData.append("description", selectedProduct.description);
-      formData.append("price", selectedProduct.price);
-      formData.append("stockCount", selectedProduct.stockCount);
-
-      const sizes = Array.isArray(selectedProduct.sizes) ? selectedProduct.sizes : [];
-      formData.append("sizes", JSON.stringify(sizes));
-      formData.append("existingImages", JSON.stringify(selectedProduct.images || []));
-
-      newImages.forEach((image) => {
-        formData.append("images", image);
-      });
-
-      await axios.put(
-        `http://localhost:5000/api/products/update/${selectedProduct._id}`,
-        formData,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
-
-      fetchProducts();
-      handleEditClose();
-    } catch (error) {
-      console.log(error.response?.data);
-    }
-  };
-
-  const handleStatusToggle = async (productId, currentStatus) => {
+  const handleStatusToggle = async (productId, currentStatus, e) => {
+    if (e) e.stopPropagation(); // Prevent opening detail view
     try {
       const token = localStorage.getItem("token");
       const newStatus = currentStatus === "active" ? "inactive" : "active";
@@ -201,7 +153,8 @@ const ProductList = () => {
     }
   };
 
-  const handleDelete = async (id) => {
+  const handleDelete = async (id, e) => {
+    if (e) e.stopPropagation(); // Prevent opening detail view
     const confirmDelete = window.confirm("Are you sure you want to delete this product?");
     if (!confirmDelete) return;
 
@@ -223,6 +176,20 @@ const ProductList = () => {
       <div className="loader-container">
         <CircularProgress size={50} className="pastel-progress" />
       </div>
+    );
+  }
+
+  // 🔴 CONDITIONAL RENDER: Show Detail View when a product is clicked
+  if (viewProduct) {
+    return (
+      <AdminProductDetail
+        product={viewProduct}
+        onBack={() => setViewProduct(null)}
+        onEdit={(prod) => {
+          setViewProduct(null);
+          handleEditOpen(prod);
+        }}
+      />
     );
   }
 
@@ -257,12 +224,17 @@ const ProductList = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {/* Added [...filteredProducts].reverse() to show newest entries first */}
             {[...filteredProducts]
               .reverse()
               .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
               .map((product) => (
-                <TableRow key={product._id} hover className="table-body-row">
+                <TableRow
+                  key={product._id}
+                  hover
+                  className="table-body-row clickable-row"
+                  onClick={() => setViewProduct(product)}
+                  style={{ cursor: "pointer" }}
+                >
                   <TableCell>
                     <Avatar
                       src={product.images && product.images[0]}
@@ -294,23 +266,41 @@ const ProductList = () => {
                       }`}
                     />
                   </TableCell>
-                  <TableCell>
+                  <TableCell onClick={(e) => e.stopPropagation()}>
                     <Switch
                       checked={product.status === "active"}
-                      onChange={() => handleStatusToggle(product._id, product.status)}
+                      onChange={(e) => handleStatusToggle(product._id, product.status, e)}
                       color="success"
                     />
                     <Typography variant="caption" display="block">
                       {product.status}
                     </Typography>
                   </TableCell>
-                  <TableCell align="center">
-                    <IconButton className="edit-action-btn" onClick={() => handleEditOpen(product)}>
-                      <EditIcon fontSize="small" />
-                    </IconButton>
-                    <IconButton className="delete-action-btn" onClick={() => handleDelete(product._id)}>
-                      <DeleteIcon fontSize="small" />
-                    </IconButton>
+                  <TableCell align="center" onClick={(e) => e.stopPropagation()}>
+                    <Tooltip title="View Full Details">
+                      <IconButton
+                        className="view-action-btn"
+                        onClick={() => setViewProduct(product)}
+                      >
+                        <VisibilityIcon fontSize="small" />
+                      </IconButton>
+                    </Tooltip>
+                    <Tooltip title="Edit Product">
+                      <IconButton
+                        className="edit-action-btn"
+                        onClick={(e) => handleEditOpen(product, e)}
+                      >
+                        <EditIcon fontSize="small" />
+                      </IconButton>
+                    </Tooltip>
+                    <Tooltip title="Delete Product">
+                      <IconButton
+                        className="delete-action-btn"
+                        onClick={(e) => handleDelete(product._id, e)}
+                      >
+                        <DeleteIcon fontSize="small" />
+                      </IconButton>
+                    </Tooltip>
                   </TableCell>
                 </TableRow>
               ))}

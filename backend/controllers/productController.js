@@ -10,15 +10,14 @@ exports.addProduct = async (req, res) => {
       productNumber,
       description,
       price,
-      item,       // Populated dynamically from dropdown
-      type,       // Populated dynamically from dropdown (e.g., Saree)
+      item,
+      type,
       colors,
       collect,
-      category,   // Populated dynamically from dropdown
+      category,
       gender,
       part,
       material,
-      stockCount,
       sizes,
     } = req.body;
 
@@ -27,52 +26,53 @@ exports.addProduct = async (req, res) => {
       ? req.files.map((file) => file.path || file.secure_url)
       : [];
 
+    // Parse Colors
     let processedColors = [];
     if (colors) {
       try {
         processedColors = typeof colors === "string" ? JSON.parse(colors) : colors;
       } catch {
-        processedColors = colors.split(",").map(c => c.trim());
+        processedColors = colors.split(",").map((c) => c.trim());
       }
     }
 
-    // Process Sizes array securely
+    // Parse Sizes Array of Objects [{ size: "Small", quantity: 5 }, ...]
     let processedSizes = [];
     if (sizes) {
       try {
-        let parsed = sizes;
-        while (typeof parsed === "string") {
-          parsed = JSON.parse(parsed);
-        }
-
-        if (Array.isArray(parsed)) {
-          processedSizes = parsed.flat(Infinity).map((s) => String(s).trim());
-        } else if (typeof parsed === "object" && parsed !== null) {
-          processedSizes = Object.values(parsed).map((s) => String(s).trim());
-        } else {
-          processedSizes = [String(parsed).trim()];
-        }
+        processedSizes = typeof sizes === "string" ? JSON.parse(sizes) : sizes;
       } catch (e) {
-        processedSizes = typeof sizes === "string" ? sizes.split(",").map((s) => s.trim()) : sizes;
+        processedSizes = [];
       }
     }
 
-    // Clean up strings inside sizes
-    processedSizes = processedSizes.filter((s) => typeof s === "string" && s.length > 0);
+    // Clean and validate processed sizes
+    if (Array.isArray(processedSizes)) {
+      processedSizes = processedSizes.map((s) => ({
+        size: String(s.size).trim(),
+        quantity: Math.max(0, Number(s.quantity) || 0),
+      }));
+    } else {
+      processedSizes = [];
+    }
+
+    // Calculate total stock count strictly from sizes array
+    const calculatedStockCount = processedSizes.reduce(
+      (total, s) => total + (s.quantity || 0),
+      0
+    );
 
     // Calculate dynamic inventory status
     let stockStatus = "Out Of Stock";
-    const count = Number(stockCount);
-
-    if (count > 5) {
+    if (calculatedStockCount > 5) {
       stockStatus = "In Stock";
-    } else if (count >= 1 && count <= 5) {
+    } else if (calculatedStockCount >= 1 && calculatedStockCount <= 5) {
       stockStatus = "Few Stock Available";
     } else {
       stockStatus = "Out Of Stock";
     }
 
-    // Save instance matching modified schema definitions
+    // Create and save Product instance
     const product = await Product.create({
       productName,
       productNumber,
@@ -85,29 +85,63 @@ exports.addProduct = async (req, res) => {
       category,
       gender,
       part,
-       material,
+      material,
       images: imageUrls,
       sizes: processedSizes,
-      stockCount: count,
+      stockCount: calculatedStockCount,
       stockStatus,
     });
 
-    res.status(201).json({ success: true, product });
+    return res.status(201).json({ success: true, product });
   } catch (error) {
     console.error("CRITICAL ADD PRODUCT ERROR:", error.message);
-    res.status(500).json({ success: false, message: error.message });
+    return res.status(500).json({ success: false, message: error.message });
   }
 };
 
 // 2. GET ACTIVE PRODUCTS (CLIENT-SIDE)
 exports.getProducts = async (req, res) => {
   try {
-    const products = await Product.find({ status: "active" });
-    res.status(200).json(products);
+    const { category, item, type, collect, gender, search } = req.query;
+
+    let query = {};
+
+    // Strictly enforce active status for user-side requests
+    query.status = "active";
+
+    if (category) query.category = category;
+    if (item) query.item = item;
+    if (type) query.type = type;
+    if (collect) query.collect = collect;
+    if (gender) query.gender = gender;
+
+    // Search by product name or product number
+    if (search) {
+      query.$or = [
+        { productName: { $regex: search, $options: "i" } },
+        { productNumber: { $regex: search, $options: "i" } }
+      ];
+    }
+
+    const products = await Product.find(query)
+      .sort({ createdAt: -1 })
+      .lean();
+
+    return res.status(200).json({
+      success: true,
+      count: products.length,
+      products
+    });
+
   } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
+    console.error("❌ GET ALL PRODUCTS ERROR:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Failed to fetch product list."
+    });
   }
 };
+
 exports.getProductById = async (req, res) => {
   try {
     const { id } = req.params;
@@ -120,16 +154,20 @@ exports.getProductById = async (req, res) => {
       });
     }
 
-    const product = await Product.findById(id);
+    // 2. Fetch product only if it exists AND its status is active
+    const product = await Product.findOne({ _id: id, status: "active" });
 
-    // 2. Check if the product actually exists
+    // 3. Return 404 if product doesn't exist or is inactive
     if (!product) {
-      return res.status(404).json({ success: false, message: "Product not found" });
+      return res.status(404).json({ 
+        success: false, 
+        message: "Product not found or is currently unavailable" 
+      });
     }
 
     res.status(200).json({ success: true, product });
   } catch (error) {
-    console.error("Database Error:", error.message); // Logs the real issue to your terminal
+    console.error("Database Error:", error.message);
     res.status(500).json({ success: false, message: "Internal Server Error" });
   }
 };
@@ -147,6 +185,12 @@ exports.getAllProductsAdmin = async (req, res) => {
 exports.updateProduct = async (req, res) => {
   try {
     const { id } = req.params;
+
+    const existingProduct = await Product.findById(id);
+    if (!existingProduct) {
+      return res.status(404).json({ success: false, message: "Product not found" });
+    }
+
     const {
       productName,
       productNumber,
@@ -158,21 +202,17 @@ exports.updateProduct = async (req, res) => {
       type,
       gender,
       part,
-       material,
-      stockCount,
+      material,
     } = req.body;
-
-    const existingProduct = await Product.findById(id);
-    if (!existingProduct) {
-      return res.status(404).json({ success: false, message: "Product not found" });
-    }
 
     // Process images
     let updatedImages = existingProduct.images;
     if (req.body.existingImages) {
       try {
         let imgs = req.body.existingImages;
-        while (typeof imgs === "string") { imgs = JSON.parse(imgs); }
+        while (typeof imgs === "string") {
+          imgs = JSON.parse(imgs);
+        }
         updatedImages = Array.isArray(imgs) ? imgs : [];
       } catch (err) {
         updatedImages = [];
@@ -189,44 +229,53 @@ exports.updateProduct = async (req, res) => {
     if (req.body.sizes) {
       let parsed = req.body.sizes;
       try {
-        while (typeof parsed === "string") { parsed = JSON.parse(parsed); }
+        while (typeof parsed === "string") {
+          parsed = JSON.parse(parsed);
+        }
       } catch (err) {}
 
-      if (!Array.isArray(parsed)) { parsed = [parsed]; }
-      updatedSizes = parsed.flat(Infinity).map((item) => String(item).trim()).filter(Boolean);
+      if (Array.isArray(parsed)) {
+        updatedSizes = parsed.map((s) => ({
+          size: String(s.size || "").trim(),
+          quantity: Math.max(0, parseInt(s.quantity, 10) || 0),
+        })).filter((s) => s.size.length > 0);
+      }
     }
-    updatedSizes = updatedSizes.filter((s) => typeof s === "string" && s.length > 0);
 
-    // Dynamic stock management
+    // Calculate dynamic stock
+    const calculatedStock = updatedSizes.reduce(
+      (acc, curr) => acc + (Number(curr.quantity) || 0),
+      0
+    );
+
     let stockStatus = "Out Of Stock";
-    const count = Number(stockCount);
-    if (count > 5) {
+    if (calculatedStock > 5) {
       stockStatus = "In Stock";
-    } else if (count >= 1 && count <= 5) {
+    } else if (calculatedStock >= 1 && calculatedStock <= 5) {
       stockStatus = "Few Stock Available";
     }
 
-    // Assemble payload
+    // Prepare update object — fallback to existing values if field is undefined/empty string
     const updateData = {
-      productName,
-      productNumber,
-      description,
-      price: Number(price),
-      item,
-      collect,
-      category,
-      type,
-      gender,
-      part,
-       material,
-      stockCount: count,
+      productName: productName || existingProduct.productName,
+      productNumber: productNumber || existingProduct.productNumber,
+      description: description || existingProduct.description,
+      price: price !== undefined && price !== "" ? Number(price) : existingProduct.price,
+      item: item || existingProduct.item,
+      collect: collect || existingProduct.collect,
+      category: category || existingProduct.category,
+      type: type || existingProduct.type,
+      gender: gender || existingProduct.gender,
+      part: part || existingProduct.part,
+      material: material || existingProduct.material,
+      stockCount: calculatedStock,
       stockStatus,
       sizes: updatedSizes,
       images: updatedImages,
     };
 
     const product = await Product.findByIdAndUpdate(id, updateData, {
-      new: true,
+      returnDocument: "after", // Replaces deprecated `new: true`
       runValidators: true,
     });
 
@@ -273,22 +322,24 @@ exports.deleteProduct = async (req, res) => {
 exports.getProductsForShop = async (req, res) => {
   try {
     const { category, collection, filter } = req.query;
-    let queryCondition = {};
 
-    // 1. If user filtered by Category
+    // 1. Enforce active status by default for all shop queries
+    let queryCondition = { status: "active" };
+
+    // 2. Filter by Category if provided
     if (category) {
       queryCondition.category = category; 
     }
 
-    // 2. If user clicked a Seasonal Collection (e.g., Wedding Collection, Festive Season)
+    // 3. Filter by Seasonal/Special Collection if provided
     if (collection) {
-      queryCondition.collect = collection; // Product schema uses the `collect` field
+      queryCondition.collect = collection; // Matches `collect` in Product schema
     }
 
-    // Initialize base query
+    // Initialize base query with condition
     let query = Product.find(queryCondition);
 
-    // 3. If user clicked "New Arrivals", sort by newest created date and limit results to 20
+    // 4. Handle "New Arrivals" filter
     if (filter === 'newest') {
       query = query.sort({ createdAt: -1 }).limit(20);
     }
@@ -303,4 +354,4 @@ exports.getProductsForShop = async (req, res) => {
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
   }
-};
+};;

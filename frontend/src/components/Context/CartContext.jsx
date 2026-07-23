@@ -1,16 +1,16 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
-import api from "../../api"; 
+import api from "../../api"; // Axios instance configured with baseURL and auth headers
 
 const CartContext = createContext();
 
 export const CartProvider = ({ children }) => {
   const [cart, setCart] = useState(null);
   const [cartCount, setCartCount] = useState(0);
-  const token = localStorage.getItem("token");
 
   // Fetch Cart from Backend DB
   const fetchCart = async () => {
-    if (!localStorage.getItem("token")) {
+    const token = localStorage.getItem("token");
+    if (!token) {
       setCart(null);
       setCartCount(0);
       return;
@@ -19,55 +19,101 @@ export const CartProvider = ({ children }) => {
       const res = await api.get("/cart");
       setCart(res.data);
     } catch (err) {
-      console.error("Error loading cart details from server", err);
+      console.error("Error loading cart from server:", err);
     }
   };
 
-  // Recalculate dynamic item quantities every time cart state modifications occur
   useEffect(() => {
-    if (cart && cart.items) {
-      const totalItems = cart.items.reduce((acc, item) => acc + item.quantity, 0);
+    fetchCart();
+  }, []);
+
+  // Recalculate dynamic item count badge when cart updates
+  useEffect(() => {
+    if (cart && Array.isArray(cart.items)) {
+      const totalItems = cart.items.reduce(
+        (acc, item) => acc + (Number(item.quantity) || 0),
+        0
+      );
       setCartCount(totalItems);
     } else {
       setCartCount(0);
     }
   }, [cart]);
 
-  // Sync cart automatically on app boot up if user is logged in
-  useEffect(() => {
-    fetchCart();
-  }, [token]);
+  // Add / Update item quantity (+1 / -1)
+const addToCart = async (param1, param2, param3) => {
+  const token = localStorage.getItem("token");
+  if (!token) return false;
 
-  // Dispatch API Call: Add or increment items
-  const addToCart = async (product, quantity = 1) => {
-    if (!localStorage.getItem("token")) return false;
-    try {
-      const res = await api.post("/cart/add", { productId: product._id, quantity });
-      setCart(res.data); // Directly updates state, reflecting across Navbar badge immediately
-      return true;
-    } catch (err) {
-      console.error(err);
-      return false;
-    }
-  };
+  let productId, quantity, size;
 
-  // Dispatch API Call: Delete item
-  const removeFromCart = async (productId) => {
-    try {
-      const res = await api.delete(`/cart/remove/${productId}`);
-      setCart(res.data); // Dynamic live recalculation triggers instantly
-    } catch (err) {
-      console.error(err);
-    }
-  };
+  // Handle all call signatures: addToCart(productObj, qty, size) or addToCart(idStr, qty, size)
+  if (typeof param1 === "object" && param1 !== null) {
+    productId = param1._id || param1.id || param1.productId;
+    quantity = typeof param2 === "number" ? param2 : param1.quantity || 1;
+    size = param3 || param1.size || "Standard";
+  } else {
+    productId = param1;
+    quantity = typeof param2 === "number" ? param2 : 1;
+    size = param3 || "Standard";
+  }
 
+  // Ensure productId is extracted cleanly as a string
+  const cleanProductId = typeof productId === "object" ? (productId?._id || productId?.id) : productId;
+
+  if (!cleanProductId) {
+    console.error("addToCart Error: Invalid Product ID", { param1, param2, param3 });
+    return false;
+  }
+
+  try {
+    const res = await api.post("/cart/add", {
+      productId: String(cleanProductId),
+      quantity: Number(quantity),
+      size: String(size).trim(),
+    });
+    setCart(res.data);
+    return true;
+  } catch (err) {
+    console.error("Error adding to cart:", err.response?.data || err.message);
+    return false;
+  }
+};
+
+  // Remove variant completely
+ // ✅ CORRECT:
+const removeFromCart = async (productId, size = "Standard") => {
+  const token = localStorage.getItem("token");
+  if (!token) return false;
+
+  try {
+    const res = await api.post("/cart/remove", {
+      productId: String(productId),
+      size: String(size).trim(),
+    });
+    setCart(res.data);
+    return true;
+  } catch (err) {
+    console.error("Error removing from cart:", err.response?.data || err.message);
+    return false;
+  }
+};
   const clearCartOnLogout = () => {
     setCart(null);
     setCartCount(0);
   };
 
   return (
-    <CartContext.Provider value={{ cart, cartCount, fetchCart, addToCart, removeFromCart, clearCartOnLogout }}>
+    <CartContext.Provider
+      value={{
+        cart,
+        cartCount,
+        fetchCart,
+        addToCart,
+        removeFromCart,
+        clearCartOnLogout,
+      }}
+    >
       {children}
     </CartContext.Provider>
   );

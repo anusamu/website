@@ -1,3 +1,4 @@
+// User.js
 const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
 
@@ -14,29 +15,30 @@ const userSchema = new mongoose.Schema(
       default: "",
     },
 
-  email: {
-  type: String,
-  required: true,
-  unique: true,
-  index: true,
-},
+    email: {
+      type: String,
+      required: true,
+      unique: true,
+      index: true,
+    },
 
-phoneNumber: {
-  type: String,
-  unique: true,
-  sparse: true,
-  index: true,
-},
+    phoneNumber: {
+      type: String,
+      trim: true,
+      unique: true,
+      sparse: true,
+      index: true,
+      default: undefined,
+    },
 
-   password: {
-  type: String,
-  select: false,
-
+    password: {
+      type: String,
+      select: false,
     },
 
     role: {
       type: String,
-      enum: ["SuperAdmin","admin", "wholesale", "retail"],
+      enum: ["SuperAdmin", "admin", "wholesale", "retail"],
       default: "retail",
     },
 
@@ -101,12 +103,8 @@ userSchema.pre("save", async function () {
   );
 });
 
-userSchema.methods.matchPassword =
-  async function (enteredPassword) {
-    return await bcrypt.compare(
-      enteredPassword,
-      this.password
-    );
-  };
+userSchema.methods.matchPassword = async function (enteredPassword) {
+  return await bcrypt.compare(enteredPassword, this.password);
+};
 
 module.exports = mongoose.model("User", userSchema);
