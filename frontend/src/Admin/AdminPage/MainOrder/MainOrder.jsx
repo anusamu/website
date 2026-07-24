@@ -67,7 +67,7 @@ export default function MainOrder() {
     const name = `${o.shippingAddress?.firstName || ''} ${o.shippingAddress?.lastName || ''}`.toLowerCase();
     const paymentId = o.paymentId?.toLowerCase() || '';
     const phone = o.shippingAddress?.phone || '';
-    const itemNames = o.items?.map(i => (i.product?.name || i.name || '').toLowerCase()).join(' ') || '';
+    const itemNames = o.items?.map(i => (i.product?.productName|| i.name || '').toLowerCase()).join(' ') || '';
 
     return name.includes(term) || paymentId.includes(term) || phone.includes(term) || itemNames.includes(term);
   });

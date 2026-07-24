@@ -1,7 +1,7 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 import Login from "./components/Login/Login";
-import Register from "./components/Login/Register";
+import RegisterForm from "./components/Register/Register";
 import Home from "./Retail/RetailPage/Home/Home";
 import Dashboard from "./Admin/AdminPage/AdminDash";
 import AddProduct from "./Admin/AdminUI/AddProduct/AddProduct";
@@ -20,13 +20,14 @@ import Wishlist from "./Retail/RetailPage/Wishlist/Wishlist";
 import Checkout from "./Retail/RetailPage/Checkout/Checkout";
 import MainOrder from "./Admin/AdminPage/MainOrder/MainOrder";
 
+
 function App() {
   return (
   
       <Routes>
         {/* Authentication */}
         <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
+        <Route path="/register" element={<RegisterForm/>} />
 
 
 

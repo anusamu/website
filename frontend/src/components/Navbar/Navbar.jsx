@@ -26,7 +26,7 @@ import {
   ListItemIcon,
 } from "@mui/material";
 import { useCart } from "../Context/CartContext";
-import { toast } from "react-toastify"; // Added explicit toast import
+import { toast } from "react-toastify";
 import "./Navbar.css";
 import RajagopalLogo from '../../assets/Rajagopal handloom.png';
 
@@ -35,7 +35,7 @@ const Navbar = () => {
   const location = useLocation();
   
   // Dynamic live count pulled directly from context
-const { cartCount, clearCartOnLogout } = useCart();
+  const { cartCount, clearCartOnLogout } = useCart();
   
   const [user, setUser] = useState(null);
   const [isScrolled, setIsScrolled] = useState(false);
@@ -48,12 +48,11 @@ const { cartCount, clearCartOnLogout } = useCart();
   
   const isMenuOpen = Boolean(anchorEl);
 
-  // Derive login state safely by checking for either token existence or state user instance
+  // Derive login state safely
   const isLoggedIn = !!localStorage.getItem("token") || !!user;
   const role = user?.role?.toLowerCase();
   const isAdmin = role === "admin";
 
-  // Safe navigation lock logic used by Flipkart, Amazon, Swiggy, etc.
   const handleCartClick = () => {
     if (isLoggedIn) {
       navigate("/cart");
@@ -108,14 +107,14 @@ const { cartCount, clearCartOnLogout } = useCart();
   };
 
 const executeSearch = () => {
-  if (searchInputValue.trim()) {
-    // Changing /products to /shop maps to your working route layout instantly
-    navigate(`/category-products?search=${encodeURIComponent(searchInputValue.trim())}`); 
+  const query = searchInputValue.trim();
+  if (query) {
+    // Reuses the trimmed 'query' variable directly
+    navigate(`/category-products?search=${encodeURIComponent(query)}`);
     setSearchInputValue("");
     setIsSearchOpen(false);
   }
 };
-
   const handleKeyDown = (e) => {
     if (e.key === "Enter") {
       executeSearch();
@@ -135,7 +134,7 @@ const executeSearch = () => {
         <Toolbar
           sx={{
             display: "flex",
-            justifyContent: "space-between",
+            justify: "space-between",
             px: { xs: 2, md: 6 },
           }}
         >      
@@ -154,7 +153,7 @@ const executeSearch = () => {
             />
           </Link>
 
-          {/* Navigation Links */}
+          {/* Desktop Navigation Links */}
           <div className="nav-links-container">
             {isAdmin ? (
               <>
@@ -168,7 +167,7 @@ const executeSearch = () => {
                 <Link to="/blog" className={getLinkClass("/blog")}>Blog</Link>
                 <Link to="/about" className={getLinkClass("/about")}>About</Link>
                 <Link to="/lookbook" className={getLinkClass("/lookbook")}>Lookbook</Link>
-                <Link to="/contact" className={getLinkClass("/contact")}>Contact</Link>
+                {/* <Link to="/contact" className={getLinkClass("/contact")}>Contact</Link> */}
               </>
             )}
           </div>
@@ -188,7 +187,6 @@ const executeSearch = () => {
                   <Heart size={19} strokeWidth={1.5} />
                 </IconButton>
 
-                {/* Fixed Cart Icon Button to route safely using handleCartClick */}
                 <IconButton className="nav-icon-button" onClick={handleCartClick}>
                   <Badge badgeContent={cartCount} className="nav-badge-override">
                     <ShoppingBag size={19} strokeWidth={1.5} />
@@ -255,12 +253,46 @@ const executeSearch = () => {
           </div>
         </div>
 
-        {/* Mobile Drawer */}
+        {/* Mobile & Tablet Drawer with Full Navigation Links */}
         <Drawer anchor="left" open={mobileOpen} onClose={() => setMobileOpen(false)}>
-          <Box sx={{ width: 260, p: 3, pt: 6 }}>
+          <Box sx={{ width: 260, p: 3, pt: 4 }}>
+            <Box sx={{ display: "flex", justifyContent: "flex-end", mb: 2 }}>
+              <IconButton onClick={() => setMobileOpen(false)}>
+                <X size={20} />
+              </IconButton>
+            </Box>
             <List>
-              <ListItem component={Link} to="/" onClick={() => setMobileOpen(false)}><ListItemText primary="Home" /></ListItem>
-              <ListItem component={Link} to="/products" onClick={() => setMobileOpen(false)}><ListItemText primary="Shop" /></ListItem>
+              {isAdmin ? (
+                <>
+                  <ListItem component={Link} to="/admindashboard" onClick={() => setMobileOpen(false)}>
+                    <ListItemText primary="Dashboard" />
+                  </ListItem>
+                  <ListItem component={Link} to="/adminorders" onClick={() => setMobileOpen(false)}>
+                    <ListItemText primary="Orders" />
+                  </ListItem>
+                </>
+              ) : (
+                <>
+                  <ListItem component={Link} to="/" onClick={() => setMobileOpen(false)}>
+                    <ListItemText primary="Home" />
+                  </ListItem>
+                  <ListItem component={Link} to="/shop" onClick={() => setMobileOpen(false)}>
+                    <ListItemText primary="Shop" />
+                  </ListItem>
+                  <ListItem component={Link} to="/blog" onClick={() => setMobileOpen(false)}>
+                    <ListItemText primary="Blog" />
+                  </ListItem>
+                  <ListItem component={Link} to="/about" onClick={() => setMobileOpen(false)}>
+                    <ListItemText primary="About" />
+                  </ListItem>
+                  <ListItem component={Link} to="/lookbook" onClick={() => setMobileOpen(false)}>
+                    <ListItemText primary="Lookbook" />
+                  </ListItem>
+                  {/* <ListItem component={Link} to="/contact" onClick={() => setMobileOpen(false)}>
+                    <ListItemText primary="Contact" />
+                  </ListItem> */}
+                </>
+              )}
             </List>
           </Box>
         </Drawer>

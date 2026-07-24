@@ -33,7 +33,7 @@ const AddProduct = ({ dynamicOptions = {}, refreshOptions }) => {
 
   const sizeOptions = [
     "Small", "Medium", "Large", "XL", "XXL", 
-    "2 inch", "3 inch", "4 inch", "5 inch", "12 inch", "24 inch"
+    "2 inch", "3 inch", "4 inch", "5 inch", "12 inch", "24 inch","other"
   ];
 
   const handleChange = (e) => {

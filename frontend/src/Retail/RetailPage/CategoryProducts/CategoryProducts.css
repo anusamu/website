@@ -1,18 +1,20 @@
 /* ==========================================================================
-   Structural Wrapper & Ambient Animation
+   Structural Wrapper & Ambient Animation (Fixed Overlap Issue)
    ========================================================================== */
 .cat-products-section {
   position: relative;
   width: 100%;
   background-color: #fcfcfc;
-  padding: 100px 24px 80px 24px;
+  /* Top padding ensures content sits safely below the fixed header (110px total height) */
+  padding: 130px 24px 80px 24px;
   box-sizing: border-box;
-  overflow: hidden;
+  overflow: hidden; /* Clips background glow to prevent layout spillage */
 }
 
 .cat-ambient-bg-glow {
   position: absolute;
-  top: -20%;
+  /* Reset top offset so radial glow doesn't drift under fixed navbar */
+  top: 0%;
   left: 25%;
   width: 600px;
   height: 600px;
@@ -172,77 +174,92 @@
   }
 }
 
-/* Card Meta Content */
+/* ==========================================================================
+   Elevated Luxury Meta & Action Area (Refined Typography & Spacing)
+   ========================================================================== */
+
 .cat-product-meta-details {
   display: flex;
   flex-direction: column;
   flex-grow: 1;
-  padding: 16px;
-  background-color: #ffffff;
+  padding: 18px 16px;
+  background-color: #faf7e9;
 }
 
+/* Subtle Minimalist Title */
 .cat-product-meta-title {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  font-size: 0.95rem;
+  font-size: 0.875rem;
   font-weight: 500;
-  color: #222222;
+  color: #2b2b2b;
+  letter-spacing: 0.02em;
   margin: 0 0 6px 0;
-  line-height: 1.35;
+  line-height: 1.4;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  text-transform: uppercase;
 }
 
+/* Luxury Editorial Serif Price */
 .cat-product-meta-price {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  font-size: 1rem;
-  font-weight: 700;
+  font-family: "Playfair Display", "Didot", "Georgia", serif;
+  font-size: 1.15rem;
+  font-weight: 500;
   color: #111111;
+  letter-spacing: -0.01em;
   margin: 0;
 }
 
-/* Size Selector Row */
+/* Elegant & Transparent Size Selector Row */
 .cat-product-sizes-row {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
-  margin-top: 12px;
+  gap: 8px;
+  margin-top: 14px;
+  padding-top: 10px;
+  border-top: 1px solid rgba(0, 0, 0, 0.04); /* Ultra-soft divider */
 }
 
 .cat-product-sizes-placeholder {
-  height: 28px;
-  margin-top: 12px;
+  height: 26px;
+  margin-top: 14px;
 }
 
+/* Translucent Glassmorphic Size Pills */
 .cat-size-badge-btn {
-  min-width: 28px;
-  height: 28px;
-  padding: 0 8px;
-  font-size: 0.75rem;
+  min-width: 30px;
+  height: 26px;
+  padding: 0 10px;
+  font-size: 0.7rem;
   font-weight: 500;
+  letter-spacing: 0.05em;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  border-radius: 4px;
-  border: 1px solid #e0e0e0;
-  background-color: #ffffff;
-  color: #444444;
+  border-radius: 9999px; /* Seamless Oval Pill */
+  border: 1px solid rgba(134, 74, 74, 0.08);
+  background-color: rgba(255, 255, 255, 0.6);
+  color: #666666;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  backdrop-filter: blur(4px);
 }
 
 .cat-size-badge-btn:hover {
-  border-color: #111111;
+  border-color: rgba(0, 0, 0, 0.4);
   color: #111111;
+  background-color: #ffffff;
+  transform: translateY(-1px);
 }
 
 .cat-size-badge-btn.active {
-  border-color: #111111;
-  background-color: #111111;
+  border-color: #efeaea;
+  background-color: #88a069;
   color: #ffffff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
 }
-
 /* ==========================================================================
    Status & Fallbacks
    ========================================================================== */
@@ -269,6 +286,8 @@
 
 /* ==========================================================================
    Responsive Breakpoints
+ /* ==========================================================================
+   Responsive Breakpoints (Fixed Mobile Navbar Overlap)
    ========================================================================== */
 @media (max-width: 1200px) {
   .cat-products-layout-grid {
@@ -279,7 +298,8 @@
 
 @media (max-width: 840px) {
   .cat-products-section {
-    padding: 60px 16px 40px 16px;
+    /* Pushed down further to 140px for tablets/small laptops */
+    padding: 140px 16px 40px 16px;
   }
   .cat-grid-header {
     margin-bottom: 32px;
@@ -295,39 +315,62 @@
 
 @media (max-width: 550px) {
   .cat-products-section {
-    padding: 40px 12px 32px 12px;
+    /* Pushed down further to 160px specifically for mobile devices */
+    padding: 130px 16px 32px 16px;
   }
+
   .cat-grid-title {
-    font-size: 1.6rem;
+    font-size: 1.8rem;
   }
+
   .cat-grid-subtitle {
     font-size: 0.85rem;
   }
+
+  /* One card per row */
   .cat-products-layout-grid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 10px;
+    grid-template-columns: 1fr;
+    gap: 24px;
   }
 
   .cat-product-meta-details {
-    padding: 10px;
-  }
-
-  .cat-action-add-to-cart-btn {
-    opacity: 1;
-    transform: translateY(0);
-    position: relative;
-    bottom: auto;
-    left: auto;
-    width: 100%;
-    margin-top: 10px;
-    padding: 8px 0;
-    font-size: 0.78rem;
-    background-color: #111111;
-    color: #ffffff;
-    box-shadow: none;
+    padding: 16px;
   }
 
   .cat-product-sizes-placeholder {
-    display: none;
+    display: block;
+  }
+
+  .cat-product-image-container {
+    position: relative;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .cat-action-add-to-cart-btn {
+    position: absolute;
+    bottom: 12px;
+    left: 5%;
+    width: 90%;
+    margin-top: 0;
+    padding: 12px 8px;
+    font-size: 0.85rem;
+    background-color: rgba(255, 255, 255, 0.95);
+    color: #111111;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(12px);
+    transition: opacity 0.25s ease, transform 0.25s ease, background-color 0.2s ease, color 0.2s ease;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    z-index: 10;
+  }
+
+  .cat-product-display-card:focus-within .cat-action-add-to-cart-btn,
+  .cat-product-display-card:active .cat-action-add-to-cart-btn,
+  .cat-product-display-card:hover .cat-action-add-to-cart-btn {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0);
+    background-color: #88a069;
+    color: #ffffff;
   }
 }

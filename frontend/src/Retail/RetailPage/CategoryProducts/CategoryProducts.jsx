@@ -71,17 +71,31 @@ const CategoryProducts = () => {
         const allProducts = Array.isArray(returned) ? returned : returned.products || returned.data || [];
 
         // Filter active products
-        const activeOnlyProducts = allProducts.filter(
+        let activeOnlyProducts = allProducts.filter(
           (product) => product.status === "active" || product.status === undefined
         );
 
-        // Pre-populate default size selection for each product (first available size)
+        // Client-side fallback filter for Search Query across name, category, item, collection, and description
+        if (searchQuery && searchQuery.trim() !== "") {
+          const query = searchQuery.trim().toLowerCase();
+          activeOnlyProducts = activeOnlyProducts.filter((product) => {
+            const matchesName = product.productName?.toLowerCase().includes(query);
+            const matchesCategory = product.category?.toLowerCase().includes(query);
+            const matchesItem = product.item?.toLowerCase().includes(query);
+            const matchesCollection = (product.collect || product.collection)?.toLowerCase().includes(query);
+            const matchesDescription = product.description?.toLowerCase().includes(query);
+
+            return matchesName || matchesCategory || matchesItem || matchesCollection || matchesDescription;
+          });
+        }
+
+        // Pre-populate default size selection for each product
         const initialSizes = {};
         activeOnlyProducts.forEach((prod) => {
           const prodId = prod._id || prod.id;
           const available = getAvailableSizes(prod);
           if (available.length > 0) {
-            initialSizes[prodId] = available[0]; // Default to first available size (e.g. "S" or "M")
+            initialSizes[prodId] = available[0]; // Default to first available size
           }
         });
 
@@ -98,7 +112,7 @@ const CategoryProducts = () => {
     fetchFilteredProducts();
   }, [selectedCategory, selectedCollection, filter, searchQuery]);
 
-  // Handle user changing size dropdown/button on a specific product card
+  // Handle size selection for a product card
   const handleSizeChange = (productId, newSize, event) => {
     event.stopPropagation();
     setSelectedSizes((prev) => ({
@@ -128,14 +142,18 @@ const CategoryProducts = () => {
     const productId = product._id || product.id;
     const availableSizes = getAvailableSizes(product);
 
-    // Get selected size from state or fallback to first size/Standard
+    // Get selected size from state or fallback to first size / Standard
     const chosenSize = selectedSizes[productId] || availableSizes[0] || "Standard";
 
-    // Call addToCart passing (productId, quantity, size)
     const success = await addToCart(productId, 1, chosenSize);
 
     if (success) {
-      toast.success(`${product.productName} (${chosenSize}) added to cart!`);
+      const isOther = chosenSize.toString().trim().toLowerCase() === "other";
+      toast.success(
+        isOther
+          ? `${product.productName} added to cart!`
+          : `${product.productName} (${chosenSize}) added to cart!`
+      );
     } else {
       toast.error("Failed to add item to cart. Try again.");
     }
@@ -143,9 +161,13 @@ const CategoryProducts = () => {
 
   if (loading) {
     return (
-      <div className="cat-grid-status-box">
-        <p className="cat-status-message">Loading premium collections...</p>
-      </div>
+      <>
+        <Navbar />
+        <div className="cat-grid-status-box" style={{ padding: "100px 20px", textAlign: "center" }}>
+          <p className="cat-status-message">Loading premium collections...</p>
+        </div>
+        <Footer />
+      </>
     );
   }
 
@@ -158,7 +180,7 @@ const CategoryProducts = () => {
   };
 
   const getHeaderSubtitle = () => {
-    if (searchQuery) return `Showing ${products.length} results for "${searchQuery}".`;
+    if (searchQuery) return `Showing ${products.length} result${products.length === 1 ? "" : "s"} for "${searchQuery}".`;
     if (filter === "newest") return "Showing the latest arrival products.";
     if (selectedCollection) return `Products from the ${selectedCollection} collection.`;
     if (selectedCategory) return `Products in the ${selectedCategory} category.`;
@@ -194,6 +216,14 @@ const CategoryProducts = () => {
                 const availableSizes = getAvailableSizes(product);
                 const currentSelectedSize = selectedSizes[productId] || availableSizes[0];
 
+                const isSizeOther =
+                  currentSelectedSize &&
+                  currentSelectedSize.toString().trim().toLowerCase() === "other";
+
+                const hasOnlyOtherSize =
+                  availableSizes.length > 0 &&
+                  availableSizes.every((sz) => sz.toString().trim().toLowerCase() === "other");
+
                 return (
                   <div
                     key={productId || index}
@@ -217,7 +247,9 @@ const CategoryProducts = () => {
                       >
                         {isOutOfStock
                           ? "Out of Stock"
-                          : `Add to Cart ${currentSelectedSize ? `(${currentSelectedSize})` : ""}`}
+                          : isSizeOther || !currentSelectedSize
+                          ? "Add to Cart"
+                          : `Add to Cart (${currentSelectedSize})`}
                       </button>
                     </div>
 
@@ -228,8 +260,8 @@ const CategoryProducts = () => {
                       </h3>
                       <p className="cat-product-meta-price">{price}</p>
 
-                      {/* Render Size Selector Badges if product has sizes */}
-                      {availableSizes.length > 0 ? (
+                      {/* Render Size Selector Badges */}
+                      {availableSizes.length > 0 && !hasOnlyOtherSize ? (
                         <div
                           className="cat-product-sizes-row"
                           onClick={(e) => e.stopPropagation()}
@@ -246,7 +278,6 @@ const CategoryProducts = () => {
                           ))}
                         </div>
                       ) : (
-                        /* Invisible height preservation placeholder to align grid heights uniformly */
                         <div className="cat-product-sizes-placeholder" />
                       )}
                     </div>
@@ -255,8 +286,8 @@ const CategoryProducts = () => {
               })}
             </div>
           ) : (
-            <div className="cat-empty-state-box">
-              <p className="cat-empty-text">No active products found matching your description.</p>
+            <div className="cat-empty-state-box" style={{ padding: "60px 20px", textAlign: "center" }}>
+              <p className="cat-empty-text">No active products found matching your search or filters.</p>
             </div>
           )}
         </div>

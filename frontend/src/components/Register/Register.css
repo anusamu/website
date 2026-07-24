@@ -1,0 +1,493 @@
+/* ==========================================================================
+   1. BRAND ARCHITECTURE & VARIABLES
+   ========================================================================== */
+:root {
+  --figma-neutral-bg: #f9f8f4;
+  --figma-green-accent: #656e5b;
+  --figma-green-hover: #4d5446;
+  --figma-charcoal: #2b2b2b;
+  --figma-muted-grey: #767676;
+  --border-color: #e2dfd5;
+}
+
+/* ==========================================================================
+   2. GLOBAL LAYOUT FRAMEWORK (REPAIRED SCROLLING & HEIGHT)
+   ========================================================================== */
+.register-container {
+  height: 100vh;
+  max-height: 100vh;
+  display: flex;
+  background-color: var(--figma-neutral-bg);
+  font-family: "Didot", "Playfair Display", "Georgia", serif;
+  color: var(--figma-charcoal);
+  overflow: hidden; /* Hard cut to eliminate entire page-level body scroll */
+}
+
+.form-section {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem 1.5rem;
+  background-color: #ffffff;
+  z-index: 10;
+  height: 100%;
+  box-sizing: border-box;
+  overflow-y: auto; /* FIX: Allows smooth inner vertical scrolling whenever form overflows viewport */
+}
+
+@media (min-width: 1024px) {
+  .form-section {
+    flex: 0 0 45%;
+    border-right: 1px solid var(--border-color);
+    padding: 2rem 3rem; /* Reduced padding slightly to give content breathing room */
+    overflow-y: auto; /* FIX: Removed overflow-y: hidden so the submit button is never clipped on desktop */
+  }
+}
+
+.form-wrapper {
+  width: 100%;
+  max-width: 24rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  margin: auto 0; /* Keeps form nicely centered when screen height is ample */
+}
+
+/* ==========================================================================
+   3. TYPOGRAPHY & HEADERS
+   ========================================================================== */
+.brand-header {
+  margin-bottom: 1.25rem; /* Reduced bottom margin to tighten form footprint */
+}
+
+.brand-logo {
+  font-size: 0.85rem;
+  letter-spacing: 0.25em;
+  font-weight: 400;
+  color: var(--figma-charcoal);
+  margin-bottom: 0.75rem;
+  font-family: system-ui, -apple-system, sans-serif;
+  text-transform: uppercase;
+}
+
+.form-title {
+  font-size: 2.25rem;
+  font-weight: 400;
+  letter-spacing: -0.01em;
+  margin-bottom: 0.35rem;
+}
+
+.form-subtitle {
+  font-family: system-ui, -apple-system, sans-serif;
+  font-size: 0.875rem;
+  color: var(--figma-muted-grey);
+}
+
+.accent-link {
+  color: var(--figma-green-accent);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  transition: color 0.2s ease;
+}
+
+.accent-link:hover {
+  color: var(--figma-green-hover);
+}
+
+/* ==========================================================================
+   4. FORM ELEMENTS & CONTROLS
+   ========================================================================== */
+.register-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem; /* Tightened from 1.5rem to fit all fields + phone number comfortably */
+  font-family: system-ui, -apple-system, sans-serif;
+}
+
+.input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.input-label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-weight: 500;
+  color: var(--figma-charcoal);
+}
+
+.form-input {
+  width: 100%;
+  padding: 0.6rem 0; /* Slightly tighter vertical padding */
+  border: none;
+  border-bottom: 1px solid var(--border-color);
+  background-color: transparent;
+  font-size: 0.95rem;
+  color: var(--figma-charcoal);
+  transition: border-color 0.2s ease;
+  box-sizing: border-box;
+}
+
+.form-input:focus {
+  outline: none;
+  border-bottom-color: var(--figma-green-accent);
+}
+
+.form-input::placeholder {
+  color: #c4c2ba;
+  font-size: 0.875rem;
+}
+
+.input-invalid {
+  border-bottom-color: #b91c1c;
+}
+
+.error-text {
+  font-size: 0.75rem;
+  color: #b91c1c;
+  margin-top: 0.25rem;
+}
+
+/* ==========================================================================
+   5. PREMIUM PASSWORD DESIGN MODULE
+   ========================================================================== */
+.luxury-password-group {
+  position: relative;
+  margin-bottom: 0.25rem;
+}
+
+.label-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.premium-badge-text {
+  font-size: 0.725rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  background-color: transparent;
+  transition: all 0.35s cubic-bezier(0.25, 1, 0.5, 1);
+  animation: fadeInText 0.2s ease-out;
+}
+
+.password-wrapper {
+  position: relative;
+  display: flex;
+  width: 100%;
+}
+
+.premium-input-wrapper {
+  border-bottom: 1px solid var(--border-color);
+  transition: border-color 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.premium-input-wrapper:focus-within {
+  border-bottom-color: var(--figma-green-accent);
+}
+
+.premium-input {
+  border-bottom: none !important;
+  padding-right: 2.25rem;
+  letter-spacing: 0.15em;
+}
+
+/* Fluid Animated Tracking Strip */
+.luxury-tracker-panel {
+  margin-top: 0.5rem;
+  animation: slideDownIn 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.luxury-progress-track {
+  width: 100%;
+  height: 4px;
+  background-color: #f1ede4;
+  border-radius: 99px;
+  overflow: hidden;
+  position: relative;
+}
+
+.luxury-progress-fluid {
+  height: 100%;
+  width: 0%;
+  border-radius: 99px;
+  transition: width 0.45s cubic-bezier(0.25, 1, 0.5, 1), 
+              background-color 0.4s cubic-bezier(0.25, 1, 0.5, 1),
+              box-shadow 0.4s ease;
+}
+
+/* Dynamic State Metrics & Micro Glows */
+.strength-weak { 
+  background-color: #ef4444; 
+  box-shadow: 0 0 8px rgba(239, 68, 68, 0.4); 
+}
+.strength-weak-text { 
+  color: #ef4444; 
+  background-color: rgba(239, 68, 68, 0.08);
+}
+
+.strength-good { 
+  background-color: #f59e0b; 
+  box-shadow: 0 0 8px rgba(245, 158, 11, 0.4); 
+}
+.strength-good-text { 
+  color: #d97706; 
+  background-color: rgba(245, 158, 11, 0.08);
+}
+
+.strength-strong { 
+  background-color: #3b82f6; 
+  box-shadow: 0 0 8px rgba(59, 130, 246, 0.4); 
+}
+.strength-strong-text { 
+  color: #2563eb; 
+  background-color: rgba(59, 130, 246, 0.08);
+}
+
+.strength-very-strong { 
+  background-color: #10b981; 
+  box-shadow: 0 0 10px rgba(16, 185, 129, 0.5); 
+}
+.strength-very-strong-text { 
+  color: #059669; 
+  background-color: rgba(16, 185, 129, 0.1);
+}
+
+/* Checklist Details */
+.luxury-checklist {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 0.4rem;
+}
+
+.check-node {
+  font-size: 0.68rem;
+  letter-spacing: 0.02em;
+  color: #c4c2ba;
+  transition: color 0.3s ease;
+}
+
+.check-node.active {
+  color: var(--figma-green-accent);
+  font-weight: 500;
+}
+
+/* ==========================================================================
+   6. BLUE & BLACK LUXURY EYE CONTROLS
+   ========================================================================== */
+.luxury-eye-combination {
+  position: relative;
+}
+
+.password-toggle-premium {
+  position: absolute;
+  right: 0;
+  bottom: 8px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--figma-muted-grey);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s ease;
+}
+
+.luxury-eye-btn {
+  bottom: 6px;
+  background: transparent;
+  padding: 4px;
+  border-radius: 50%;
+  background-color: rgba(43, 43, 43, 0.02);
+  transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.luxury-eye-btn:hover {
+  background-color: rgba(37, 99, 235, 0.06);
+  transform: scale(1.05);
+}
+
+.eye-icon-svg {
+  display: block;
+  transition: transform 0.3s ease;
+}
+
+.eye-outer-black {
+  fill: #1a1a1a !important;
+  transition: fill 0.3s ease;
+}
+
+.eye-iris-blue {
+  fill: #2563eb !important;
+  filter: drop-shadow(0 0 2px rgba(37, 99, 235, 0.6));
+  transition: fill 0.3s ease, filter 0.3s ease;
+}
+
+.eye-slash-blue {
+  fill: #3b82f6 !important;
+  transition: fill 0.3s ease;
+}
+
+.luxury-eye-btn:active .eye-icon-svg {
+  transform: scale(0.92);
+}
+
+.luxury-eye-btn.eye-active .eye-outer-black {
+  fill: #0a0a0a !important;
+}
+
+.luxury-eye-btn.eye-active:hover .eye-iris-blue {
+  fill: #1d4ed8 !important;
+  filter: drop-shadow(0 0 4px rgba(29, 78, 216, 0.8));
+}
+
+/* ==========================================================================
+   7. CHECKBOX & BUTTON MECHANICS
+   ========================================================================== */
+.checkbox-container {
+  margin-top: 0.25rem;
+}
+
+.checkbox-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+}
+
+.checkbox-input {
+  accent-color: var(--figma-green-accent);
+  margin-top: 0.125rem;
+  cursor: pointer;
+}
+
+.checkbox-label {
+  font-size: 0.825rem;
+  color: var(--figma-muted-grey);
+  line-height: 1.4;
+}
+
+.submit-btn {
+  background-color: var(--figma-green-accent);
+  color: #ffffff;
+  border: none;
+  padding: 0.9rem;
+  font-size: 0.85rem;
+  letter-spacing: 0.15em;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  margin-top: 0.5rem;
+  width: 100%;
+}
+
+.submit-btn:hover {
+  background-color: var(--figma-green-hover);
+}
+
+.submit-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.alert-error {
+  padding: 0.75rem;
+  background-color: #fff5f5;
+  color: #c53030;
+  border-left: 2px solid #c53030;
+  font-size: 0.875rem;
+}
+
+/* ==========================================================================
+   8. LOOKBOOK PANE INTERFACE (CONTAINED FRAME)
+   ========================================================================== */
+.lookbook-pane {
+  display: none;
+  flex: 1;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 3rem 4rem;
+  position: relative;
+  height: 100%;
+  box-sizing: border-box;
+}
+
+@media (min-width: 1024px) {
+  .lookbook-pane {
+    display: flex;
+  }
+}
+
+.lookbook-grid {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2.5rem;
+  flex-grow: 1;
+  max-width: 90%;
+  margin: 0 auto;
+  height: 60vh;
+}
+
+.lookbook-image-frame {
+  flex: 1;
+  height: 100%;
+  max-height: 55vh;
+  aspect-ratio: 3/4;
+  overflow: hidden;
+  background-color: #eae8e1;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.04);
+  transition: opacity 0.3s ease-in-out;
+}
+
+.dynamic-offset {
+  transform: translateY(2rem);
+}
+
+.lookbook-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.fade-in { opacity: 1; }
+.fade-out { opacity: 0; }
+
+.lookbook-footer {
+  margin-top: 2rem;
+  text-align: center;
+}
+
+.collection-title {
+  font-size: 1.1rem;
+  letter-spacing: 0.15em;
+  font-weight: 400;
+  margin-bottom: 0.25rem;
+}
+
+.collection-sub {
+  font-family: system-ui, -apple-system, sans-serif;
+  font-size: 0.8rem;
+  color: var(--figma-muted-grey);
+  font-style: italic;
+}
+
+/* ==========================================================================
+   9. ANIMATION KEYFRAMES
+   ========================================================================== */
+@keyframes slideDownIn {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeInText {
+  from { opacity: 0; transform: scale(0.96); }
+  to { opacity: 1; transform: scale(1); }
+}

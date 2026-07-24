@@ -172,73 +172,86 @@ background-color: var(--color-dark-accent);
 /* ==========================================================================
    Search Input Container Unit (Exact Image Form Component Replication)
    ========================================================================== */
-.nav-search-popdown-container {
- 
-  /* Initial hidden state values */
- 
-  overflow: hidden;
 
-  transform: translateY(-8px);
-  /* Ultra-smooth hardware-accelerated transition profiles */
-  transition: max-height 0.4s cubic-bezier(0.16, 1, 0.3, 1),
-              opacity 0.35s cubic-bezier(0.16, 1, 0.3, 1),
-              transform 0.4s cubic-bezier(0.16, 1, 0.3, 1),
-              visibility 0.4s;
+.nav-search-popdown-container {
+  overflow: hidden;
+  max-height: 0;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-10px);
+  background: transparent; /* Full transparency */
+  
+  /* Smooth hardware-accelerated transitions */
+  transition: 
+    max-height 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+    opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+    visibility 0.4s;
 }
 
-/* Active State Trigger when icon is clicked */
+/* Active Expanded State */
 .nav-search-popdown-container.expanded {
-  max-height: 90px; 
+  max-height: 120px; 
   opacity: 1;
   visibility: visible;
   transform: translateY(0);
-  padding: 20px 50px 50px 50px;
+  padding: 50px 20px;
 }
 
 /* ==========================================================================
-   Internal Search Bar Container & Elements (Exact Form Component)
+   Transparent Oval Search Bar Wrapper & Controls
    ========================================================================== */
 .nav-search-inner-wrapper {
-  max-width: 1200px;
+  max-width: 760px;
   margin: 0 auto;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0; /* Flush alignment matches seamless block format */
   width: 100%;
 }
 
+/* Outer Unified Transparent Oval Shell */
 .nav-search-input-field-box {
   position: relative;
   display: flex;
   align-items: center;
   flex: 1;
-  max-width: 780px;
-  background-color: #fcfbfa; 
-  border: 1px solid #d8d3c9; 
-  border-right: none; 
-  border-top-left-radius: 2px;
-  border-bottom-left-radius: 2px;
-  padding: 0 16px;
-  height: 48px; 
+  background-color: rgba(255, 255, 255, 0.15); /* Light translucent tint */
+  backdrop-filter: blur(12px); /* Glassmorphism effect for readability */
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(208, 22, 22, 0.3); /* Subtle outer border */
+  border-radius: 9999px; /* Oval shape */
+  padding: 4px 6px 4px 18px;
+  height: 50px;
   box-sizing: border-box;
-  transition: border-color 0.2s cubic-bezier(0.25, 1, 0.5, 1), 
-              background-color 0.2s cubic-bezier(0.25, 1, 0.5, 1);
+  transition: 
+    border-color 0.25s ease,
+    background-color 0.25s ease,
+    box-shadow 0.25s ease;
 }
 
+/* Focused State Glow */
 .nav-search-input-field-box:focus-within {
-  border-color: #88a069; 
-  background-color: #ffffff;
+  background-color: rgba(255, 255, 255, 0.25);
+  border-color: #88a069;
+  box-shadow: 0 0 0 4px rgba(136, 160, 105, 0.2);
 }
 
+/* Left Search Icon */
 .nav-search-inside-icon {
-  color: #8d877e;
-  margin-right: 12px;
+  color: #555555;
+  margin-right: 10px;
   flex-shrink: 0;
   display: flex;
   align-items: center;
+  transition: color 0.2s ease;
 }
 
+.nav-search-input-field-box:focus-within .nav-search-inside-icon {
+  color: #88a069;
+}
+
+/* Text Input Field */
 .nav-search-text-input {
   width: 100%;
   border: none;
@@ -246,42 +259,72 @@ background-color: var(--color-dark-accent);
   background: transparent;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   font-size: 0.95rem;
+  font-weight: 500;
   color: #111111;
   padding: 0;
 }
 
 .nav-search-text-input::placeholder {
-  color: #b5aea4; 
-  font-weight: 300;
+  color: #777777;
+  font-weight: 400;
 }
 
+/* Oval Action Button Inside the Shell */
 .nav-search-submit-action-btn {
-  background-color: #88a069; 
+  background-color: #88a069;
   color: #ffffff;
-  border: 1px solid #88a069; 
+  border: none;
   outline: none;
-  border-top-right-radius: 2px;
-  border-bottom-right-radius: 2px;
-  height: 48px;
-  padding: 0 42px; 
+  border-radius: 9999px; /* Oval style */
+  height: 40px;
+  padding: 0 26px;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  font-size: 0.95rem;
-  font-weight: 500;
-  letter-spacing: 0.04em;
+  font-size: 0.9rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   white-space: nowrap;
-  box-sizing: border-box;
-  transition: background-color 0.25s cubic-bezier(0.16, 1, 0.3, 1), 
-              border-color 0.25s cubic-bezier(0.16, 1, 0.3, 1),
-              transform 0.1s ease;
+  flex-shrink: 0;
+  transition: 
+    background-color 0.2s ease,
+    transform 0.15s ease,
+    box-shadow 0.2s ease;
 }
 
 .nav-search-submit-action-btn:hover {
-  background-color: #768d5a; 
-  border-color: #768d5a;
+  background-color: #768d5a;
+  box-shadow: 0 4px 14px rgba(118, 141, 90, 0.35);
+}
+
+.nav-search-submit-action-btn:active {
+  transform: scale(0.96);
+}
+
+/* ==========================================================================
+   Responsive Mobile Adjustments
+   ========================================================================== */
+@media (max-width: 640px) {
+  .nav-search-popdown-container.expanded {
+    padding: 12px;
+  }
+
+  .nav-search-input-field-box {
+    height: 44px;
+    padding-left: 14px;
+  }
+
+  .nav-search-submit-action-btn {
+    height: 34px;
+    padding: 0 16px;
+    font-size: 0.85rem;
+  }
+
+  .nav-search-text-input {
+    font-size: 0.875rem;
+  }
 }
 
 /* Responsive adjustments */

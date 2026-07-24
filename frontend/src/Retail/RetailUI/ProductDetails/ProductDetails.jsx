@@ -63,6 +63,11 @@ const ProductDetails = () => {
 
   const availableSizes = product ? normalizeSizes(product.sizes) : [];
 
+  // Check if available sizes are strictly 'other' (case-insensitive)
+  const hasOnlyOther =
+    availableSizes.length > 0 &&
+    availableSizes.every((s) => String(s).trim().toLowerCase() === "other");
+
   // Calculate total stock count directly from size objects or database field
   const getStockCount = () => {
     if (!product) return 0;
@@ -85,19 +90,24 @@ const ProductDetails = () => {
   const handleAddToCartClick = () => {
     if (!product || isOutOfStock) return;
 
-    if (availableSizes.length > 0 && !selectedSize) {
+    // Determine target size: fallback to 'other' or first size if sizes are hidden or marked as 'other'
+    const sizeToPass = selectedSize || (hasOnlyOther ? "other" : availableSizes[0] || "Standard");
+
+    if (availableSizes.length > 0 && !hasOnlyOther && !selectedSize) {
       toast.warning("Please select a size first.");
       return;
     }
 
-    addToCart(product, 1, selectedSize);
+    addToCart(product, 1, sizeToPass);
     toast.success(`${product.productName} added to cart!`);
   };
 
   const handleBuyNow = () => {
     if (!product || isOutOfStock) return;
 
-    if (availableSizes.length > 0 && !selectedSize) { 
+    const sizeToPass = selectedSize || (hasOnlyOther ? "other" : availableSizes[0] || "OS");
+
+    if (availableSizes.length > 0 && !hasOnlyOther && !selectedSize) { 
       toast.warning("Please select a size before proceeding to checkout."); 
       return; 
     }
@@ -106,7 +116,7 @@ const ProductDetails = () => {
       state: { 
         checkoutItems: [{
           product: product,
-          size: selectedSize || "OS",
+          size: sizeToPass,
           quantity: 1,
           price: product.price
         }],
@@ -257,8 +267,8 @@ const ProductDetails = () => {
 
             <hr className="pdp-divider" />
 
-            {/* Available Sizes Selection */}
-            {availableSizes.length > 0 && (
+            {/* Render Size Selection ONLY if available sizes exist and are not 'other' */}
+            {availableSizes.length > 0 && !hasOnlyOther && (
               <div className="pdp-attributes">
                 <span className="pdp-attribute-label">Select Size</span>
                 <div className="attribute-chips">

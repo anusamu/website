@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../../api";
@@ -36,67 +35,50 @@ function Login() {
         password: loginData.password,
       });
 
-      alert(res.data.message);
-
+      alert(res.data.message || "OTP sent to registered email!");
       setUserEmail(res.data.email);
-
       setStep(2);
     } catch (error) {
       console.log("Backend Error:", error.response?.data);
-
-      alert(
-        error.response?.data?.message ||
-          "Login Failed"
-      );
+      alert(error.response?.data?.message || "Login Failed");
     } finally {
       setLoading(false);
     }
   };
 
   // VERIFY OTP
- const handleVerifyOtp = async (e) => {
-  e.preventDefault();
+  const handleVerifyOtp = async (e) => {
+    e.preventDefault();
 
-  try {
-    setLoading(true);
+    try {
+      setLoading(true);
 
-    const res = await api.post("/verify-login-otp", {
-      email: userEmail,
-      otp,
-    });
+      const res = await api.post("/verify-login-otp", {
+        email: userEmail,
+        otp,
+      });
 
-    alert(res.data.message);
+      alert(res.data.message || "Logged in successfully!");
 
-    // Save JWT Token
-    localStorage.setItem("token", res.data.token);
+      localStorage.setItem("token", res.data.token);
+      localStorage.setItem("user", JSON.stringify(res.data.user));
 
-    // Save Full User Data
-    localStorage.setItem(
-      "user",
-      JSON.stringify(res.data.user)
-    );
+      const role = res.data.user.role?.toLowerCase();
 
-    const role = res.data.user.role?.toLowerCase();
-
-    if (role === "admin" || role === "superadmin") {
-      navigate("/admindashboard");
-    } else {
-      navigate("/");
+      if (role === "admin" || role === "superadmin") {
+        navigate("/admindashboard");
+      } else {
+        navigate("/");
+      }
+    } catch (error) {
+      console.log("OTP Verify Error:", error.response?.data);
+      alert(error.response?.data?.message || "OTP Verification Failed");
+    } finally {
+      setLoading(false);
     }
-  } catch (error) {
-    console.log(
-      "OTP Verify Error:",
-      error.response?.data
-    );
+  };
 
-    alert(
-      error.response?.data?.message ||
-        "OTP Verification Failed"
-    );
-  } finally {
-    setLoading(false);
-  }
-};
+  // GOOGLE LOGIN HANDLER
   const handleGoogleResponse = async (response) => {
     if (!response?.credential) {
       return alert("Google login failed");
@@ -130,9 +112,7 @@ function Login() {
   useEffect(() => {
     const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 
-    if (!googleClientId) {
-      return;
-    }
+    if (!googleClientId) return;
 
     const script = document.createElement("script");
     script.src = "https://accounts.google.com/gsi/client";
@@ -153,6 +133,7 @@ function Login() {
             theme: "outline",
             size: "large",
             width: "100%",
+            shape: "pill",
           }
         );
       }
@@ -163,72 +144,95 @@ function Login() {
     };
   }, []);
 
+  // MATCHED LUXURY E-COMMERCE STYLES
   const styles = {
-    container: {
-      maxWidth: "420px",
-      margin: "60px auto",
-      padding: "35px 30px",
-      borderRadius: "12px",
+    pageWrapper: {
+      minHeight: "100vh",
       backgroundColor: "#ffffff",
-      boxShadow:
-        "0 8px 24px rgba(0, 0, 0, 0.08)",
-      fontFamily:
-        '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
-      color: "#333",
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "center",
+      justifyContent: "center",
+      padding: "2rem 1rem",
+      fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+      color: "#2b2b2b",
+    },
+
+    brandHeader: {
+      fontSize: "1.35rem",
+      fontFamily: '"Playfair Display", "Didot", "Georgia", serif',
+      letterSpacing: "0.02em",
+      color: "#1a1a1a",
+      marginBottom: "3.5rem",
+      fontWeight: "400",
+      textAlign: "center",
+    },
+
+    formCard: {
+      width: "100%",
+      maxWidth: "360px",
+      display: "flex",
+      flexDirection: "column",
     },
 
     heading: {
-      fontSize: "26px",
-      fontWeight: "700",
-      marginBottom: "8px",
+      fontSize: "1.75rem",
+      fontFamily: '"Playfair Display", "Didot", "Georgia", serif',
+      fontWeight: "400",
+      marginBottom: "0.35rem",
       color: "#1a1a1a",
-      textAlign: "center",
+      letterSpacing: "-0.01em",
     },
 
     subheading: {
-      fontSize: "14px",
-      color: "#666",
-      textAlign: "center",
-      marginBottom: "24px",
+      fontSize: "0.875rem",
+      color: "#767676",
+      marginBottom: "1.75rem",
+      lineHeight: "1.4",
     },
 
     inputGroup: {
-      marginBottom: "16px",
+      marginBottom: "0.85rem",
+      position: "relative",
     },
 
     input: {
       width: "100%",
-      padding: "12px 14px",
-      fontSize: "15px",
-      border: "1px solid #dcdcdc",
-      borderRadius: "8px",
+      padding: "0.85rem 1.15rem",
+      fontSize: "0.925rem",
+      border: "1px solid #d1d5db",
+      borderRadius: "10px",
       boxSizing: "border-box",
       outline: "none",
+      color: "#1a1a1a",
+      backgroundColor: "#ffffff",
+      transition: "border-color 0.2s ease",
     },
 
-    button: {
+    primaryButton: {
       width: "100%",
-      padding: "12px",
-      fontSize: "16px",
-      fontWeight: "600",
-      color: "#fff",
-      backgroundColor: loading
-        ? "#a0c4ff"
-        : "#4f46e5",
+      padding: "0.9rem",
+      fontSize: "0.925rem",
+      fontWeight: "500",
+      color: "#ffffff",
+      backgroundColor: loading ? "#a3ac98" : "#8c967d", // Muted luxury sage green
       border: "none",
-      borderRadius: "8px",
-      cursor: loading
-        ? "not-allowed"
-        : "pointer",
-      marginTop: "10px",
+      borderRadius: "10px",
+      cursor: loading ? "not-allowed" : "pointer",
+      marginTop: "0.5rem",
+      transition: "background-color 0.2s ease",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      gap: "0.5rem",
     },
 
     dividerRow: {
       display: "flex",
       alignItems: "center",
       justifyContent: "center",
-      gap: "12px",
-      margin: "24px 0 16px",
+      gap: "1rem",
+      margin: "1.5rem 0",
     },
 
     dividerLine: {
@@ -238,185 +242,172 @@ function Login() {
     },
 
     dividerText: {
-      color: "#6b7280",
-      fontSize: "14px",
-      fontWeight: "600",
+      color: "#9ca3af",
+      fontSize: "0.8rem",
+      fontWeight: "400",
+      textTransform: "lowercase",
     },
 
     googleWrapper: {
-      display: "flex",
-      justifyContent: "center",
-      marginBottom: "14px",
-    },
-
-    googleButton: {
       width: "100%",
-    },
-
-    smallText: {
-      textAlign: "center",
-      color: "#6b7280",
-      fontSize: "13px",
-      marginBottom: "18px",
+      marginBottom: "1.25rem",
     },
 
     footerText: {
       textAlign: "center",
-      marginTop: "24px",
-      fontSize: "14px",
-      color: "#666",
+      marginTop: "1.75rem",
+      fontSize: "0.825rem",
+      color: "#6b7280",
     },
 
     linkButton: {
       background: "none",
       border: "none",
-      color: "#4f46e5",
-      fontWeight: "600",
+      color: "#656e5b",
+      fontWeight: "500",
       padding: 0,
-      marginLeft: "5px",
+      marginLeft: "6px",
       cursor: "pointer",
       textDecoration: "underline",
+      textUnderlineOffset: "3px",
     },
+
+    termsText: {
+      textAlign: "center",
+      fontSize: "0.75rem",
+      color: "#9ca3af",
+      marginTop: "2.5rem",
+    }
   };
 
   return (
-    <div style={styles.container}>
-      {step === 1 ? (
-        <>
-          <h2 style={styles.heading}>
-            Welcome Back
-          </h2>
+    <div style={styles.pageWrapper}>
+      {/* Brand Heading */}
+      <h1 style={styles.brandHeader}>RajaGopal Handloom Online</h1>
 
-          <p style={styles.subheading}>
-            Please enter your details to sign in.
-          </p>
+      <div style={styles.formCard}>
+        {step === 1 ? (
+          <>
+            <h2 style={styles.heading}>Sign in</h2>
+            <p style={styles.subheading}>Sign in or create an account</p>
 
-          <form onSubmit={handleLogin}>
-            <div style={styles.inputGroup}>
-              <input
-                type="text"
-                name="emailOrPhone"
-                placeholder="Email or Phone Number"
-                value={loginData.emailOrPhone}
-                onChange={handleChange}
-                required
-                style={styles.input}
-              />
+            <form onSubmit={handleLogin}>
+              <div style={styles.inputGroup}>
+                <input
+                  type="text"
+                  name="emailOrPhone"
+                  placeholder="Email or Phone number"
+                  value={loginData.emailOrPhone}
+                  onChange={handleChange}
+                  required
+                  style={styles.input}
+                />
+              </div>
+
+              <div style={styles.inputGroup}>
+                <input
+                  type="password"
+                  name="password"
+                  placeholder="Password"
+                  value={loginData.password}
+                  onChange={handleChange}
+                  required
+                  style={styles.input}
+                />
+              </div>
+
+              <button
+                type="submit"
+                disabled={loading}
+                style={styles.primaryButton}
+              >
+                {loading ? "Continuing..." : "Continue with shop"}
+                {!loading && (
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                    <polyline points="12 5 19 12 12 19"></polyline>
+                  </svg>
+                )}
+              </button>
+            </form>
+
+            <div style={styles.dividerRow}>
+              <span style={styles.dividerLine} />
+              <span style={styles.dividerText}>or</span>
+              <span style={styles.dividerLine} />
             </div>
 
-            <div style={styles.inputGroup}>
-              <input
-                type="password"
-                name="password"
-                placeholder="Password"
-                value={loginData.password}
-                onChange={handleChange}
-                required
-                style={styles.input}
-              />
+            <div style={styles.googleWrapper}>
+              <div id="google-signin" />
             </div>
 
-            <button
-              type="submit"
-              disabled={loading}
-              style={styles.button}
-            >
-              {loading
-                ? "Please wait..."
-                : "Sign In"}
-            </button>
-          </form>
+            <p style={styles.footerText}>
+              Don't have an account?
+              <button
+                type="button"
+                style={styles.linkButton}
+                onClick={() => navigate("/register")}
+              >
+                Register
+              </button>
+            </p>
+          </>
+        ) : (
+          <>
+            <h2 style={styles.heading}>Verify OTP</h2>
+            <p style={styles.subheading}>
+              An authentication code has been sent to{" "}
+              <strong style={{ color: "#1a1a1a" }}>{userEmail}</strong>
+            </p>
 
-          <div style={styles.dividerRow}>
-            <span style={styles.dividerLine} />
-            <span style={styles.dividerText}>OR</span>
-            <span style={styles.dividerLine} />
-          </div>
+            <form onSubmit={handleVerifyOtp}>
+              <div style={styles.inputGroup}>
+                <input
+                  type="text"
+                  placeholder="Enter 6-digit OTP"
+                  value={otp}
+                  onChange={(e) => setOtp(e.target.value)}
+                  required
+                  style={{
+                    ...styles.input,
+                    textAlign: "center",
+                    letterSpacing: "0.25em",
+                    fontWeight: "600",
+                  }}
+                />
+              </div>
 
-          <div style={styles.googleWrapper}>
-            <div id="google-signin" style={styles.googleButton} />
-          </div>
+              <button
+                type="submit"
+                disabled={loading}
+                style={styles.primaryButton}
+              >
+                {loading ? "Verifying..." : "Verify & Sign In"}
+              </button>
+            </form>
 
-          <p style={styles.smallText}>
-            Continue with Google to sign in faster without OTP.
-          </p>
+            <p style={styles.footerText}>
+              Need to change email?
+              <button
+                type="button"
+                style={styles.linkButton}
+                onClick={() => setStep(1)}
+              >
+                Go Back
+              </button>
+            </p>
+          </>
+        )}
 
-          <p style={styles.footerText}>
-            Don't have an account?
-            <button
-              type="button"
-              style={styles.linkButton}
-              onClick={() =>
-                navigate("/register")
-              }
-            >
-              Register
-            </button>
-          </p>
-        </>
-      ) : (
-        <>
-          <h2 style={styles.heading}>
-            Verify OTP
-          </h2>
-
-          <p style={styles.subheading}>
-            An authentication code has been sent
-            to
-            <strong
-              style={{
-                color: "#1a1a1a",
-              }}
-            >
-              {" "}
-              {userEmail}
-            </strong>
-          </p>
-
-          <form onSubmit={handleVerifyOtp}>
-            <div style={styles.inputGroup}>
-              <input
-                type="text"
-                placeholder="Enter 6-Digit OTP"
-                value={otp}
-                onChange={(e) =>
-                  setOtp(e.target.value)
-                }
-                required
-                style={{
-                  ...styles.input,
-                  textAlign: "center",
-                  letterSpacing: "2px",
-                }}
-              />
-            </div>
-
-            <button
-              type="submit"
-              disabled={loading}
-              style={styles.button}
-            >
-              {loading
-                ? "Verifying..."
-                : "Verify OTP"}
-            </button>
-          </form>
-
-          <p style={styles.footerText}>
-            Made a mistake?
-            <button
-              type="button"
-              style={styles.linkButton}
-              onClick={() => setStep(1)}
-            >
-              Go Back
-            </button>
-          </p>
-        </>
-      )}
+        <p style={styles.termsText}>
+          By continuing, you agree to our{" "}
+          <a href="#terms" style={{ color: "inherit", textDecoration: "underline" }}>
+            Terms of Service
+          </a>
+        </p>
+      </div>
     </div>
   );
 }
 
 export default Login;
-
