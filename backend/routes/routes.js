@@ -10,6 +10,8 @@ const { addProduct, getProducts, getAllProductsAdmin, updateProduct, changeStatu
 const { createAdmin, listAdmins, updateAdmin, deleteAdmin } = require("../controllers/adminAuth");
 const { getCart, addToCart, removeFromCart } = require("../controllers/CartController");
 
+
+
 // ===================== AUTH =====================
 router.post("/register", auth.register);
 router.post("/login", auth.login);
@@ -57,4 +59,16 @@ router.post("/orders/create", protect, orderController.createOrder);
 router.get("/admin/orders/retail", protect, authorize("SuperAdmin", "admin"), orderController.getRetailOrders);
 router.get("/admin/orders/wholesale", protect, authorize("SuperAdmin", "admin"), orderController.getWholesaleOrders);
 router.put("/admin/update-status/:orderId", protect, authorize("SuperAdmin", "admin"), orderController.updateOrderStatus);
+
+
+
+
+
+
+
+
+
+
+
+
 module.exports = router;

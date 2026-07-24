@@ -1,0 +1,122 @@
+/* ==========================================================================
+   Floating Flowers — Reusable Ambient Background Animation
+   ========================================================================== */
+.floating-flowers {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  pointer-events: none; /* container itself never blocks clicks */
+  z-index: 1;
+}
+
+.floating-flowers .flower {
+  position: absolute;
+  bottom: -60px;
+  font-size: 1.4rem;
+  opacity: 0;
+  cursor: pointer;
+  pointer-events: auto; /* flowers themselves ARE clickable */
+  will-change: transform, opacity;
+  animation-name: floatUpDrift;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.04));
+  transition: transform 0.15s ease;
+}
+
+.floating-flowers .flower:hover {
+  transform: scale(1.2);
+}
+
+/* Hide flower instantly on click, animation resumes fresh after class removal */
+.floating-flowers .flower.popped {
+  opacity: 0 !important;
+  transform: scale(0) !important;
+  transition: opacity 0.15s ease, transform 0.15s ease;
+}
+
+@keyframes floatUpDrift {
+  0% {
+    transform: translate(0, 0) rotate(0deg);
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.75;
+  }
+  50% {
+    transform: translate(30px, -50vh) rotate(180deg);
+    opacity: 0.6;
+  }
+  90% {
+    opacity: 0.3;
+  }
+  100% {
+    transform: translate(-20px, -105vh) rotate(360deg);
+    opacity: 0;
+  }
+}
+
+/* Faster durations + shorter delays = noticeably more active sky */
+.flower.f1  { left: 3%;  font-size: 1.1rem; animation-duration: 10s; animation-delay: 0s; }
+.flower.f2  { left: 10%; font-size: 1.6rem; animation-duration: 12s; animation-delay: 1s; }
+.flower.f3  { left: 18%; font-size: 1rem;   animation-duration: 9s;  animation-delay: 2s; }
+.flower.f4  { left: 26%; font-size: 1.3rem; animation-duration: 11s; animation-delay: 0.5s; }
+.flower.f5  { left: 34%; font-size: 1.5rem; animation-duration: 13s; animation-delay: 3s; }
+.flower.f6  { left: 42%; font-size: 1.1rem; animation-duration: 10s; animation-delay: 1.5s; }
+.flower.f7  { left: 50%; font-size: 1.4rem; animation-duration: 12s; animation-delay: 4s; }
+.flower.f8  { left: 58%; font-size: 1rem;   animation-duration: 9s;  animation-delay: 0.8s; }
+.flower.f9  { left: 66%; font-size: 1.6rem; animation-duration: 13s; animation-delay: 2.5s; }
+.flower.f10 { left: 74%; font-size: 0.9rem; animation-duration: 8s;  animation-delay: 3.5s; }
+.flower.f11 { left: 80%; font-size: 1.2rem; animation-duration: 11s; animation-delay: 1.2s; }
+.flower.f12 { left: 86%; font-size: 1.5rem; animation-duration: 10s; animation-delay: 4.5s; }
+.flower.f13 { left: 92%; font-size: 1rem;   animation-duration: 9s;  animation-delay: 2.2s; }
+.flower.f14 { left: 96%; font-size: 1.3rem; animation-duration: 12s; animation-delay: 0.3s; }
+.flower.f15 { left: 46%; font-size: 0.9rem; animation-duration: 8s;  animation-delay: 5s; }
+.flower.f16 { left: 14%; font-size: 1.2rem; animation-duration: 11s; animation-delay: 3.8s; }
+
+@media (max-width: 840px) {
+  .flower.f11, .flower.f12, .flower.f13, .flower.f14, .flower.f15, .flower.f16 {
+    display: none;
+  }
+}
+@media (max-width: 550px) {
+  .flower.f7, .flower.f8, .flower.f9, .flower.f10 {
+    display: none;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .floating-flowers { display: none; }
+}
+
+/* ==========================================================================
+   Click Burst / Split Animation
+   ========================================================================== */
+.burst-origin {
+  position: absolute;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+}
+
+.burst-particle {
+  position: absolute;
+  top: 0;
+  left: 0;
+  font-size: 1rem;
+  transform: translate(-50%, -50%);
+  animation: burstFly 0.6s ease-out forwards;
+}
+
+@keyframes burstFly {
+  0% {
+    opacity: 1;
+    transform: translate(-50%, -50%) rotate(var(--angle)) translateX(0) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) rotate(var(--angle)) translateX(55px) scale(0.4);
+  }
+}

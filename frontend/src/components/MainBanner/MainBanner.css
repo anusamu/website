@@ -5,12 +5,11 @@
   position: relative;
   padding-top:55%;
   width: 100%;
-  height: 85vh; /* Standard desktop immersive viewport height scale */
-  min-height: 600px;
+  height: 80%;
+
   background-color: #fbf9f6;
   overflow: hidden;
 }
-
 /* Base slide layer mechanics for transition engine cross-fades */
 .hero-slide {
   position: absolute;
@@ -69,11 +68,12 @@
   position: relative;
 }
 
-.hero-raw-img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: center center;
+.hero-raw-img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    object-position:center;
+    aspect-ratio:4/5;
 }
 
 /* Seamless feather blend effect cutting over into the text panel area */

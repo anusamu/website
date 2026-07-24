@@ -6,7 +6,7 @@ import api from "../../../api";
 import { useCart } from "../../../components/Context/CartContext";
 import { toast } from "react-toastify";
 import Footer from "../../../components/Footer/Footer";
-
+import FloatingFlowers from "../../../components/FloatingFlowers/FloatingFlowers"
 const CategoryProducts = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -192,7 +192,7 @@ const CategoryProducts = () => {
       <Navbar />
       <section className="cat-products-section">
         <div className="cat-ambient-bg-glow" />
-
+  <FloatingFlowers />
         <div className="cat-products-container">
           <header className="cat-grid-header">
             <h1 className="cat-grid-title">{getHeaderTitle()}</h1>
