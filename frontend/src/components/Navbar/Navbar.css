@@ -306,6 +306,26 @@ background-color: var(--color-dark-accent);
 /* ==========================================================================
    Responsive Mobile Adjustments
    ========================================================================== */
+
+   /* Ensure proper spacing on mobile headers */
+@media (max-width: 900px) {
+  /* Prevent header items from squeezing together */
+  .navbar-appbar {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    padding-left: 16px !important;
+    padding-right: 16px !important;
+  }
+
+  /* Keep the right-side icons contained */
+  .nav-action-tray {
+    display: flex;
+    align-items: center;
+    gap: 12px; /* Standard spacing between tray icons */
+    margin-left: auto; /* Pushes tray cleanly to the right */
+  }
+}
 @media (max-width: 640px) {
   .nav-search-popdown-container.expanded {
     padding: 12px;
@@ -357,6 +377,15 @@ background-color: var(--color-dark-accent);
     align-items: stretch;
     gap: 10px;
     width: 100%;
+  }
+
+  .navbar-appbar {
+    padding-left: 8px !important;
+    padding-right: 12px !important;
+  }
+
+  .nav-action-tray {
+    gap: 3px; /* Slightly tighter gap on very small phones */
   }
 
   .nav-search-input-field-box {

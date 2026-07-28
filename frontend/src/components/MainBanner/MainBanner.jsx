@@ -50,7 +50,7 @@ const MainBanner = () => {
               
               <div className="hero-btn-group">
                 <button 
-                  onClick={() => navigate("/products")} 
+                  onClick={() => navigate("/shop")} 
                   className="btn-shop-collection"
                 >
                   Shop Collection

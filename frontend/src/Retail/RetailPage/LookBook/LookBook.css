@@ -1,0 +1,61 @@
+@keyframes spinSlow {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes floatPulse {
+  0%, 100% {
+    transform: scale(1) translate(0, 0);
+  }
+  50% {
+    transform: scale(1.08) translate(-15px, 15px);
+  }
+}
+
+.animate-spin-slow {
+  animation: spinSlow 12s linear infinite;
+}
+
+.ambient-mesh .mesh-orb {
+  animation: floatPulse 10s ease-in-out infinite alternate;
+}
+
+.ambient-mesh .orb-2 {
+  animation-delay: -5s;
+}
+
+/* Enable hardware acceleration & clean layer targeting */
+.cloud-card {
+  will-change: transform, opacity, filter, z-index;
+  backface-visibility: hidden;
+  touch-action: manipulation;
+  transform-style: preserve-3d;
+}
+
+.cloud-card:hover {
+  cursor: pointer !important;
+}
+
+/* Clear & Evident Image Rendering */
+.card-image {
+  transform: none !important;
+  transition: none !important;
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: crisp-edges;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+/* Detail panel scrollbar styles */
+.detail-panel::-webkit-scrollbar {
+  width: 4px;
+}
+
+.detail-panel::-webkit-scrollbar-thumb {
+  background-color: rgba(179, 135, 56, 0.3);
+  border-radius: 9999px;
+}

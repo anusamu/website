@@ -19,6 +19,7 @@ import Cart from "./Retail/RetailPage/Cart/Cart";
 import Wishlist from "./Retail/RetailPage/Wishlist/Wishlist";
 import Checkout from "./Retail/RetailPage/Checkout/Checkout";
 import MainOrder from "./Admin/AdminPage/MainOrder/MainOrder";
+import LuxuryLookbook from "./Retail/RetailPage/LookBook/LookBook";
 
 
 function App() {
@@ -39,7 +40,7 @@ function App() {
       <Route path="/cart" element={<Cart/>} />
        <Route path="/myWishlist" element={<Wishlist/>} />
        <Route path="/checkout" element={<Checkout/>} />
-
+<Route path="/lookbook" element={<LuxuryLookbook/>} />
 
 
 

@@ -28,7 +28,7 @@ import {
 import { useCart } from "../Context/CartContext";
 import { toast } from "react-toastify";
 import "./Navbar.css";
-import RajagopalLogo from '../../assets/Rajagopal handloom.png';
+import RajagopalLogo from '../../assets/Rajagopalhandlooom.png';
 
 const Navbar = () => {
   const navigate = useNavigate();
@@ -146,11 +146,15 @@ const executeSearch = () => {
           </Box>
 
           <Link to="/" >
-            <img 
-              src={RajagopalLogo} 
-              alt="Rajagopal Handloom Logo" 
-              style={{ height: "50px", objectFit: "contain" }} 
-            />
+        <img
+  src={RajagopalLogo}
+  alt="Rajagopal Handloom Logo"
+  style={{
+    width: "160px",
+    height: "70px",
+    objectFit: "contain",
+  }}
+/>
           </Link>
 
           {/* Desktop Navigation Links */}

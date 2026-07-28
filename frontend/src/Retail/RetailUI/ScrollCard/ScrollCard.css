@@ -1,188 +1,450 @@
-/* ==========================================================================
-   Main Layout & Wrappers
-   ========================================================================== */
+/* Light Sandalwood Palette Custom Variables */
+:root {
+  --sandalwood-bg: #f7f4f0;
+  --sandalwood-card-bg: #EFE6D5;
+  --sandalwood-border: #E0D3BC;
+  --sandalwood-accent: #f7f5f1;
+  --sandalwood-dark: #2A2118;
+  --sandalwood-muted: #6B5E52;
+}
+
+/* Global Wrapper */
 .main-wrapper {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
-    Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
-  background-color: #ffffff;
-padding: 40px 0 0 0;
-margin-bottom: -10px;
-
-}
-
-/* Status Loading / Error Fallbacks */
-.status-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 300px;
-  background-color: #f4f1f1;
-}
-
-.status-text {
-  font-size: 1rem;
-  color: #71717a;
-  letter-spacing: 0.05em;
-}
-
-.status-text.error {
-  color: #ef4444;
-}
-
-/* ==========================================================================
-   Infinite Marquee Scroller (Horizontal Trail)
-   ========================================================================== */
-.scroll-container {
-  overflow: hidden;
   width: 100%;
-  background-color: #ffffff;
-  padding: 20px 0;
+  background-color: var(--sandalwood-bg);
 }
 
-.scroll-track {
+/* --- REDESIGNED SCROLL CARD SECTION --- */
+.scroll-card-section {
+  position: relative;
+  width: 100%;
+  padding-top: 2.5rem;
+  padding-bottom: 2.5rem;
+  background-color: var(--sandalwood-bg);
+  color: var(--sandalwood-dark);
+  overflow: hidden;
+  user-select: none;
+}
+
+@media (min-width: 768px) {
+  .scroll-card-section {
+    padding-top: 3.5rem;
+    padding-bottom: 3.5rem;
+  }
+}
+
+/* Atmospheric Backdrop Glows */
+.scroll-card-backdrop {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.glow-orb {
+  position: absolute;
+  border-radius: 9999px;
+}
+
+.glow-orb-primary {
+  top: 50%;
+  left: 25%;
+  transform: translateY(-50%);
+  width: 400px;
+  height: 400px;
+  background-color: rgba(200, 157, 84, 0.12);
+  filter: blur(120px);
+}
+
+.glow-orb-secondary {
+  bottom: 1rem;
+  right: 25%;
+  width: 300px;
+  height: 300px;
+  background-color: rgba(122, 143, 120, 0.1);
+  filter: blur(100px);
+}
+
+/* Header Elements */
+.scroll-card-header {
+  position: relative;
+  z-index: 20;
+  max-width: 80rem;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+  margin-bottom: 1.5rem;
   display: flex;
-  width: max-content;
+  flex-direction: column;
+  gap: 0.75rem;
 }
 
-.scroll-marquee {
+@media (min-width: 768px) {
+  .scroll-card-header {
+    flex-direction: row;
+    align-items: flex-end;
+    justify-content: space-between;
+  }
+}
+
+.scroll-card-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.2rem 0.65rem;
+  border-radius: 9999px;
+  background-color: rgba(42, 33, 24, 0.05);
+  border: 1px solid rgba(42, 33, 24, 0.1);
+  font-size: 0.625rem;
+  text-transform: uppercase;
+  letter-spacing: 0.25em;
+  color: var(--sandalwood-accent);
+  font-weight: 600;
+  backdrop-filter: blur(12px);
+  margin-bottom: 0.5rem;
+}
+
+.scroll-card-title {
+  font-family: serif;
+  font-size: 1.75rem;
+  line-height: 2rem;
+  color: var(--sandalwood-dark);
+  font-weight: 300;
+  letter-spacing: 0.025em;
+}
+
+@media (min-width: 768px) {
+  .scroll-card-title {
+    font-size: 2.5rem;
+    line-height: 1;
+  }
+}
+
+.scroll-card-title-highlight {
+  font-style: italic;
+  font-weight: 400;
+  color: var(--sandalwood-accent);
+}
+
+.scroll-card-instruction {
   display: flex;
-  gap: 24px; /* Even spacing between cards */
-  padding-left: 12px;
-  animation: marquee 8s linear infinite;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.75rem;
+  color: var(--sandalwood-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
 }
 
-.scroll-marquee:hover {
-  animation-play-state: paused; /* Pauses slightly on hover for smooth interaction */
-}
-
-@keyframes marquee {
-  0% { transform: translateX(0); }
-  100% { transform: translateX(-50%); }
-}
-
-/* ==========================================================================
-   Category Card Item (Matches Screenshot Perfectly)
-   ========================================================================== */
-.card-item {
+/* Loader & Error States */
+.scroll-card-loader-container {
+  width: 100%;
+  padding-top: 4rem;
+  padding-bottom: 4rem;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: space-between;
-  width: 270px;
-  height: 300px;
-  background-color: #f1efea; /* Exact warm ivory/cream background */
-  border-radius: 12px;
-  padding: 16px;
-  cursor: pointer;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02); /* Extremely faint shadow */
+  justify-content: center;
+  background-color: var(--sandalwood-bg);
+  color: var(--sandalwood-dark);
 }
 
-.card-item:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.05);
+.scroll-card-spinner {
+  width: 2.5rem;
+  height: 2.5rem;
+  border: 2px solid var(--sandalwood-accent);
+  border-top-color: transparent;
+  border-radius: 9999px;
+  animation: spin 1s linear infinite;
+  margin-bottom: 0.75rem;
 }
 
-.card-image-wrapper {
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.scroll-card-loader-text {
+  font-family: serif;
+  font-size: 0.875rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--sandalwood-accent);
+}
+
+.scroll-card-error-container {
   width: 100%;
-  height: 220px; /* Fixed frame height for correct layout */
-  border-radius: 16px;
-  overflow: hidden;
-  background-color: #f4f4f5;
+  padding-top: 3rem;
+  padding-bottom: 3rem;
+  text-align: center;
+  background-color: var(--sandalwood-bg);
 }
 
-.card-img {
+.scroll-card-error-text {
+  font-family: serif;
+  color: #b91c1c;
+}
+
+/* Marquee Track */
+.scroll-card-marquee-stage {
+  position: relative;
+  z-index: 20;
+  width: 100%;
+  overflow: hidden;
+  padding-top: 1rem;
+  padding-bottom: 1.5rem;
+}
+
+.scroll-card-marquee-track {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  width: max-content;
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+}
+
+/* Card Styling (Sandalwood themed, full card dimension preserved) */
+.scroll-card-3d-item {
+  position: relative;
+  width: 280px;
+  aspect-ratio: 3 / 4;
+  border-radius: 1.5rem;
+  overflow: hidden;
+  cursor: pointer;
+  border: 1px solid var(--sandalwood-border);
+  background-color: var(--sandalwood-card-bg);
+  box-shadow: 0 15px 20px -5px rgba(42, 33, 24, 0.08);
+  transition: border-color 0.4s ease;
+}
+
+@media (min-width: 768px) {
+  .scroll-card-3d-item {
+    width: 320px;
+  }
+}
+
+.scroll-card-3d-item:hover {
+  border-color: var(--sandalwood-accent);
+}
+
+.scroll-card-img-wrapper {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.scroll-card-img {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  object-position: center;
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.scroll-card-3d-item:hover .scroll-card-img {
+  transform: scale(1.08);
+}
+
+.scroll-card-img-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(42, 33, 24, 0.85) 0%, rgba(42, 33, 24, 0.2) 50%, transparent 100%);
+  transition: opacity 0.3s ease;
+}
+
+/* Card Overlays */
+.scroll-card-tag {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  z-index: 20;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  background-color: rgba(247, 241, 229, 0.85);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(42, 33, 24, 0.1);
+  font-size: 0.625rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--sandalwood-dark);
+  font-weight: 600;
+}
+
+.scroll-card-action-btn {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  z-index: 20;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 9999px;
+  background-color: rgba(247, 241, 229, 0.85);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(42, 33, 24, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--sandalwood-dark);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+}
+
+.scroll-card-3d-item:hover .scroll-card-action-btn {
+  background-color: var(--sandalwood-accent);
+  color: #ffffff;
+}
+
+.scroll-card-details {
+  position: absolute;
+  bottom: 1.25rem;
+  left: 1.25rem;
+  right: 1.25rem;
+  z-index: 20;
+  color: #ffffff;
+}
+
+.scroll-card-sublabel {
+  font-size: 0.625rem;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: #e5c183;
+  font-weight: 600;
   display: block;
 }
 
-.card-title {
-  font-size: 0.85rem;
-  font-weight: 600;
-  color: #27272a;
-  text-align: center;
-  margin: 0;
-  padding-top: 12px;
-  letter-spacing: 0.06em; /* Elegant text spacing */
-  text-transform: capitalize;
+.scroll-card-item-title {
+  font-family: serif;
+  font-size: 1.35rem;
+  line-height: 1.75rem;
+  color: #ffffff;
+  margin-top: 0.2rem;
+  transition: color 0.3s ease;
 }
 
-/* ==========================================================================
-   Variants Grid Area (Drill down view)
-   ========================================================================== */
+.scroll-card-3d-item:hover .scroll-card-item-title {
+  color: #F7F1E5;
+}
+
+.scroll-card-item-subtext {
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.75);
+  font-weight: 300;
+  margin-top: 0.2rem;
+}
+
+.scroll-card-border-glow {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  border-radius: 1.5rem;
+  border: 1px solid transparent;
+  transition: border-color 0.4s ease;
+}
+
+.scroll-card-3d-item:hover .scroll-card-border-glow {
+  border-color: rgba(179, 135, 56, 0.4);
+}
+
+/* --- PRESERVED DRILL DOWN VARIANT SECTION STYLES --- */
 .variants-section {
-  max-width: 1200px;
-  margin: 60px auto 0 auto;
-  padding: 0 24px;
+  padding: 3rem 1.5rem;
+  max-width: 80rem;
+  margin: 0 auto;
 }
 
 .variants-header {
+  margin-bottom: 2rem;
   text-align: center;
-  margin-bottom: 40px;
 }
 
 .variants-header h2 {
-  font-size: 1.8rem;
-  font-weight: 500;
-  color: #18181b;
-  letter-spacing: 0.05em;
-  margin-bottom: 8px;
+  font-family: serif;
+  font-size: 2rem;
+  color: var(--sandalwood-dark);
 }
 
 .variants-header p {
-  font-size: 0.95rem;
-  color: #71717a;
+  color: var(--sandalwood-muted);
+  font-size: 0.9rem;
 }
 
-.variants-grid {
+.cat-products-layout-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 32px 24px;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 1.5rem;
 }
 
-/* Individual Variant Cards */
-.variant-card {
-  display: flex;
-  flex-direction: column;
-  background-color: #fcfbf7; /* Shared uniform background */
-  border-radius: 12px;
-  padding: 16px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+.cat-product-display-card {
+  background: var(--sandalwood-card-bg);
+  border: 1px solid var(--sandalwood-border);
+  border-radius: 1rem;
+  overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-.variant-image-wrapper {
+.cat-product-display-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
+}
+
+.cat-product-image-container {
+  position: relative;
   width: 100%;
-  height: 240px;
-  border-radius: 8px;
+  aspect-ratio: 3 / 4;
   overflow: hidden;
 }
 
-.variant-img {
+.cat-product-display-img {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  transition: transform 0.5s ease;
 }
 
-.variant-details {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  padding-top: 14px;
+.cat-product-display-card:hover .cat-product-display-img {
+  transform: scale(1.05);
 }
 
-.variant-name {
-  font-size: 0.85rem;
+.cat-action-add-to-cart-btn {
+  position: absolute;
+  bottom: 0.75rem;
+  left: 0.75rem;
+  right: 0.75rem;
+  padding: 0.6rem;
+  background-color: var(--sandalwood-dark);
+  color: #ffffff;
+  border: none;
+  border-radius: 0.5rem;
+  font-size: 0.8rem;
   font-weight: 600;
-  color: #27272a;
-  margin: 0;
-  letter-spacing: 0.04em;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
 }
 
-.variant-price {
+.cat-action-add-to-cart-btn:hover:not(:disabled) {
+  background-color: var(--sandalwood-accent);
+}
+
+.cat-action-add-to-cart-btn:disabled {
+  background-color: #9ca3af;
+  cursor: not-allowed;
+}
+
+.cat-product-meta-details {
+  padding: 1rem;
+}
+
+.cat-product-meta-title {
+  font-size: 0.95rem;
+  color: var(--sandalwood-dark);
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+}
+
+.cat-product-meta-price {
   font-size: 0.9rem;
-  font-weight: 500;
-  color: #71717a;
-  margin: 0;
+  color: var(--sandalwood-accent);
+  font-weight: 700;
 }

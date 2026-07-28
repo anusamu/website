@@ -37,7 +37,7 @@ import {
 } from "@mui/material";
 
 import "./Sidebar.css";
-import RajagopalLogo from '../../../assets/Rajagopal handloom.png';
+import RajagopalLogo from '../../../assets/Rajagopalhandlooom.png';
 
 const AdminSidebar = ({
   desktopOpen,

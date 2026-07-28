@@ -1,9 +1,11 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { motion } from 'framer-motion';
+import { Sparkles, ArrowUpRight, Compass } from 'lucide-react';
 import { useCart } from '../../../components/Context/CartContext';
 import { toast } from 'react-toastify';
-import './ScrollCard.css';
 import api from '../../../api';
+import './ScrollCard.css';
 
 function ScrollCard() {
   const [allProducts, setAllProducts] = useState([]); 
@@ -11,6 +13,7 @@ function ScrollCard() {
   const [selectedType, setSelectedType] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [isPaused, setIsPaused] = useState(false);
   const variantsRef = useRef(null);
   
   const navigate = useNavigate();
@@ -35,8 +38,15 @@ function ScrollCard() {
         const uniqueTypeMap = {};
         productsArray.forEach((product) => {
           const productType = product.type?.trim();
-          if (productType && !uniqueTypeMap[productType]) {
-            uniqueTypeMap[productType] = product;
+          if (productType) {
+            if (!uniqueTypeMap[productType]) {
+              uniqueTypeMap[productType] = {
+                ...product,
+                itemCount: 1
+              };
+            } else {
+              uniqueTypeMap[productType].itemCount += 1;
+            }
           }
         });
 
@@ -75,7 +85,7 @@ function ScrollCard() {
   };
 
   const handleAddToCartClick = async (product, event) => {
-    event.stopPropagation(); // Prevents layout link from routing to details page
+    event.stopPropagation();
     
     const isLoggedIn = !!localStorage.getItem("token");
     if (!isLoggedIn) {
@@ -97,45 +107,75 @@ function ScrollCard() {
 
   if (loading) {
     return (
-      <div className="status-container">
-        <p className="status-text">Loading collections from database...</p>
+      <div className="scroll-card-loader-container">
+        <div className="scroll-card-spinner" />
+        <p className="scroll-card-loader-text">Loading collections from database...</p>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="status-container">
-        <p className="status-text error">Error: {error}</p>
+      <div className="scroll-card-error-container">
+        <p className="scroll-card-error-text">Error: {error}</p>
       </div>
     );
   }
 
+  // Marquee looping items
+  const marqueeItems = [...categories, ...categories, ...categories];
+
   return (
     <div className="main-wrapper">
-      {/* INFINITE SCROLLING TRAIL */}
-      <div className="scroll-container">
-        <div className="scroll-track">
-          <div className="scroll-marquee">
-            {categories.map((item, index) => (
-              <CardItem 
-                key={`main-${item._id || index}`} 
-                item={item} 
-                onClick={() => handleCategoryClick(item.type)} 
-              />
-            ))}
-            {categories.map((item, index) => (
-              <CardItem 
-                key={`clone-${item._id || index}`} 
-                item={item} 
-                onClick={() => handleCategoryClick(item.type)} 
-              />
-            ))}
-          </div>
+      {/* REDESIGNED LIGHT SANDALWOOD HERO MARQUEE SECTION */}
+      <section className="scroll-card-section">
+        {/* Soft Sandalwood Backdrop Orbs */}
+        <div className="scroll-card-backdrop">
+          <div className="glow-orb glow-orb-primary" />
+          <div className="glow-orb glow-orb-secondary" />
         </div>
-      </div>
 
-      {/* VARIANTS DRILL DOWN GRID AREA */}
+        {/* Header */}
+        <div className="scroll-card-header">
+          <div>
+          
+            <h2 className="scroll-card-title">
+              Explore <span className="scroll-card-title-highlight">Collections</span>
+            </h2>
+          </div>
+
+      </div>
+        <div 
+          className="scroll-card-marquee-stage"
+          onMouseEnter={() => setIsPaused(true)}
+          onMouseLeave={() => setIsPaused(false)}
+        >
+          <motion.div
+            className="scroll-card-marquee-track"
+            animate={{
+              x: isPaused ? undefined : ['0%', '-33.333%']
+            }}
+            transition={{
+              x: {
+                repeat: Infinity,
+                repeatType: 'loop',
+                duration: Math.max(categories.length * 8, 25),
+                ease: 'linear'
+              }
+            }}
+          >
+            {marqueeItems.map((item, index) => (
+              <CardItem 
+                key={`item-${item._id || item.type}-${index}`} 
+                item={item} 
+                onClick={() => handleCategoryClick(item.type)} 
+              />
+            ))}
+          </motion.div>
+        </div>
+      </section>
+
+      {/* VARIANTS DRILL DOWN GRID AREA (ORIGINAL UNCHANGED) */}
       {selectedType && (
         <div className="variants-section" ref={variantsRef}>
           <div className="variants-header">
@@ -143,7 +183,6 @@ function ScrollCard() {
             <p>Explore all beautifully crafted variants in this collection.</p>
           </div>
           
-          {/* Changed standard grid layout container styling target */}
           <div className="cat-products-layout-grid">
             {displayedVariants.map((variant, index) => (
               <VariantCard 
@@ -160,23 +199,41 @@ function ScrollCard() {
   );
 }
 
-// Scroller item component
+// REDESIGNED SCROLLER CARD ITEM (Upward & Forward lift, no side tilt)
 function CardItem({ item, onClick }) {
   const displayImage = item.images && item.images.length > 0 
     ? item.images[0] 
-    : 'https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&q=80&w=400';
+    : 'https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&q=80&w=600';
 
   return (
-    <div className="card-item" onClick={onClick}>
-      <div className="card-image-wrapper">
-        <img src={displayImage} alt={item.type} className="card-img" loading="lazy" />
+    <motion.div 
+      className="scroll-card-3d-item group" 
+      onClick={onClick}
+      whileHover={{ y: -12, scale: 1.02 }}
+      whileTap={{ y: -6, scale: 0.98 }}
+      transition={{ type: 'spring', stiffness: 260, damping: 20 }}
+    >
+      <div className="scroll-card-img-wrapper">
+        <img src={displayImage} alt={item.type} className="scroll-card-img" loading="lazy" />
+        <div className="scroll-card-img-overlay" />
       </div>
-      <h3 className="card-title">{item.type}</h3>
-    </div>
+
+      {/* Direct Action Icon */}
+   
+
+      {/* Card Details Overlay */}
+      <div className="scroll-card-details">
+    
+        <h3 className="scroll-card-item-title">{item.type}</h3>
+        <p className="scroll-card-item-subtext">Tap to explore collection</p>
+      </div>
+
+      <div className="scroll-card-border-glow" />
+    </motion.div>
   );
 }
 
-// PREMIUM UPGRADED VARIANT CARD COMPONENT
+// PREMIUM UPGRADED VARIANT CARD COMPONENT (ORIGINAL UNCHANGED)
 function VariantCard({ variant, onCardClick, onAddToCartClick }) {
   const displayImage = variant.images && variant.images.length > 0 
     ? variant.images[0] 
@@ -187,7 +244,6 @@ function VariantCard({ variant, onCardClick, onAddToCartClick }) {
 
   return (
     <div className="cat-product-display-card">
-      {/* Interactive Image Frame */}
       <div 
         className="cat-product-image-container"
         onClick={() => onCardClick(variant._id || variant.id)}
@@ -200,7 +256,6 @@ function VariantCard({ variant, onCardClick, onAddToCartClick }) {
           loading="lazy" 
         />
         
-        {/* Animated Add to Cart Action strip overlay inside image footprint */}
         <button 
           className="cat-action-add-to-cart-btn"
           disabled={variant.stockStatus === "Out Of Stock"}
@@ -210,7 +265,6 @@ function VariantCard({ variant, onCardClick, onAddToCartClick }) {
         </button>
       </div>
 
-      {/* Typography Profile underneath Image container boundary */}
       <div className="cat-product-meta-details">
         <h3 className="cat-product-meta-title">{title}</h3>
         <p className="cat-product-meta-price">{price}</p>
