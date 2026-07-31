@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import { toast } from "react-toastify";
 import {
   Paper,
   Table,
@@ -152,24 +153,46 @@ const ProductList = () => {
       console.log(error.response?.data || error.message);
     }
   };
+const handleDelete = async (id, e) => {
+  if (e) e.stopPropagation(); // Prevent opening detail view
 
-  const handleDelete = async (id, e) => {
-    if (e) e.stopPropagation(); // Prevent opening detail view
-    const confirmDelete = window.confirm("Are you sure you want to delete this product?");
-    if (!confirmDelete) return;
+  const confirmDelete = window.confirm("Are you sure you want to delete this product?");
+  if (!confirmDelete) return;
 
-    try {
-      const token = localStorage.getItem("token");
-      await axios.delete(`http://localhost:5000/api/products/delete/${id}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      fetchProducts();
-    } catch (error) {
-      console.log(error.response?.data || error.message);
+  try {
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+      toast.warning("Session expired. Please log in again.");
+      return;
     }
-  };
+
+    const response = await axios.delete(`http://localhost:5000/api/products/delete/${id}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (response.data.success) {
+      toast.success(response.data.message || "Product deleted successfully!");
+      fetchProducts(); // Refresh product list
+    }
+  } catch (error) {
+    console.error("Delete error:", error.response?.data || error.message);
+
+    // Extract exact message from backend
+    const errorMessage = error.response?.data?.message;
+
+    // Show custom toast if access denied or fallback to server message
+    if (error.response?.status === 403) {
+      toast.error(errorMessage || "Access Denied: Only SuperAdmin can delete products!");
+    } else if (error.response?.status === 404) {
+      toast.error("Product not found.");
+    } else {
+      toast.error(errorMessage || "Failed to delete product. Please try again.");
+    }
+  }
+};
 
   if (loading) {
     return (

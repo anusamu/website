@@ -16,6 +16,7 @@
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",
+    "exceljs": "^4.4.0",
     "express": "^5.2.1",
     "google-auth-library": "^9.15.1",
     "jsonwebtoken": "^9.0.3",
@@ -24,6 +25,8 @@
     "multer": "^2.2.0",
     "multer-storage-cloudinary": "^4.0.0",
     "nodemailer": "^9.0.1",
+    "pdfkit": "^0.19.1",
+    "pdfkit-table": "^0.2.11",
     "razorpay": "^2.9.8"
   }
 }

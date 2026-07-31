@@ -4,6 +4,7 @@ import Navbar from "../../../components/Navbar/Navbar";
 import "./ShopPage.css";
 import api from "../../../api"; 
 import Footer from "../../../components/Footer/Footer";
+import FloatingFlowers from "../../../components/FloatingFlowers/FloatingFlowers"
 
 const fallbackImages = [
   "https://i.postimg.cc/T3vt3jXP/MENS.jpg",
@@ -85,9 +86,11 @@ const ShopPage = () => {
   };
 
   return (
-    <>
+    <><FloatingFlowers />
       <Navbar />
+ 
       <div className="shop-page-container">
+       
         <header className="shop-header">
           <p className="shop-tagline">Rooted in tradition, designed for every celebration.</p>
           <h1 className="shop-main-title">Shop by Category</h1>
@@ -196,7 +199,7 @@ const ShopPage = () => {
                     key={collectItem._id || index} 
                     className="category-card season-card" 
                     onClick={() => handleCollectionClick(title)}
-                  >
+                  ><FloatingFlowers />
                     <div className="image-wrapper">
                       <img src={displayImage} alt={title} loading="lazy" />
                     </div>

@@ -120,3 +120,17 @@
     transform: translate(-50%, -50%) rotate(var(--angle)) translateX(55px) scale(0.4);
   }
 }
+/* Add these styles to your existing FloatingFlowers.css file */
+
+.floating-flowers .flower .floating-img {
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
+  user-select: none;
+  pointer-events: none;
+}
+
+/* Ensure hover smooth effect works on images as well */
+.floating-flowers .flower:hover .floating-img {
+  transform: scale(1.15);
+}

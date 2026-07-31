@@ -20,7 +20,9 @@ import Wishlist from "./Retail/RetailPage/Wishlist/Wishlist";
 import Checkout from "./Retail/RetailPage/Checkout/Checkout";
 import MainOrder from "./Admin/AdminPage/MainOrder/MainOrder";
 import LuxuryLookbook from "./Retail/RetailPage/LookBook/LookBook";
-
+import About from "./Retail/RetailPage/About/About";
+import AdminFloatingManager from "./Admin/AdminPage/AdminFloatingManager/AdminFloatingManager";
+import ReportSection from "./Admin/AdminPage/ReportSection/ReportSection";
 
 function App() {
   return (
@@ -40,7 +42,8 @@ function App() {
       <Route path="/cart" element={<Cart/>} />
        <Route path="/myWishlist" element={<Wishlist/>} />
        <Route path="/checkout" element={<Checkout/>} />
-<Route path="/lookbook" element={<LuxuryLookbook/>} />
+       <Route path="/lookbook" element={<LuxuryLookbook/>} />
+       <Route path="/about" element={<About/>} />
 
 
 
@@ -54,7 +57,8 @@ function App() {
            <Route path="/inactiveproducts" element={<InactiveProduct/>} />
            <Route path="/addAdmin" element={<AddAdmin/>} />
            <Route path="/orders" element={<MainOrder/>} />
-         
+           <Route path="/ui" element={<AdminFloatingManager/>} />
+          <Route path="/reports" element={<ReportSection/>} />
         </Route>
       </Routes>
    

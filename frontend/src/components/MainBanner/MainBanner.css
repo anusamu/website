@@ -56,7 +56,7 @@
 
 /* Right Column: Fluidly consumes 55% of total screen layout workspace */
 .hero-image-col {
-  flex: 55;
+  flex: 40;
   position: relative;
   width: 100%;
   height: 100%;

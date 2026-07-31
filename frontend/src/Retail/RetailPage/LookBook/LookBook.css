@@ -1,34 +1,83 @@
+/* ═══════════════════════════════════════════════
+   LookBook — Light Airy Green Theme
+   Color Palette:
+     Background:  #F8FAFC (slate-50)
+     Surface:     #FFFFFF
+     Primary:     #899D6E (sage green)
+     Primary Lt:  #B2C29D (sage green light)
+     Text:        #1E293B (slate-800)
+     Text Muted:  #64748B (slate-500)
+     Border:      #E2E8F0 (slate-200)
+     Accent BG:   #F3F6F0 (sage green tint)
+   ═══════════════════════════════════════════════ */
+
+/* ── Animations ────────────────────────────────── */
+
 @keyframes spinSlow {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
 }
 
 @keyframes floatPulse {
-  0%, 100% {
-    transform: scale(1) translate(0, 0);
-  }
-  50% {
-    transform: scale(1.08) translate(-15px, 15px);
-  }
+  0%, 100% { transform: scale(1) translate(0, 0); }
+  50%      { transform: scale(1.08) translate(-15px, 15px); }
+}
+
+@keyframes shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
 }
 
 .animate-spin-slow {
   animation: spinSlow 12s linear infinite;
 }
 
+/* ── Wrapper (shared) ──────────────────────────── */
+
+.lookbook-wrapper {
+  background: #F8FAFC;
+  color: #1E293B;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  /* Prevent header overlap when auto-scrolling */
+  padding-top: 5rem;
+}
+
+/* ── Loading & Error ───────────────────────────── */
+
+.lookbook-loading {
+  background: #F8FAFC;
+  color: #1E293B;
+}
+
+.lookbook-spinner {
+  color: #899d6e;
+}
+
+.lookbook-loading-text {
+  color: #899d6e;
+}
+
+.lookbook-error-text {
+  color: #899d6e;
+}
+
+/* ── Ambient Mesh (Desktop) ────────────────────── */
+
 .ambient-mesh .mesh-orb {
   animation: floatPulse 10s ease-in-out infinite alternate;
 }
 
+.ambient-mesh .orb-1 {
+  background: rgba(137, 157, 110, 0.1);
+}
+
 .ambient-mesh .orb-2 {
+  background: rgba(137, 157, 110, 0.06);
   animation-delay: -5s;
 }
 
-/* Enable hardware acceleration & clean layer targeting */
+/* ── Cloud Cards (Desktop) ─────────────────────── */
+
 .cloud-card {
   will-change: transform, opacity, filter, z-index;
   backface-visibility: hidden;
@@ -40,7 +89,43 @@
   cursor: pointer !important;
 }
 
-/* Clear & Evident Image Rendering */
+.cloud-card--idle {
+  border: 1px solid rgba(226, 232, 240, 0.8);
+}
+
+.cloud-card--idle:hover {
+  border-color: #899d6e;
+  box-shadow: 0 25px 50px -12px rgba(137, 157, 110, 0.2);
+}
+
+.cloud-card--active {
+  border: 3px solid #899d6e;
+  box-shadow:
+    0 0 0 8px rgba(137, 157, 110, 0.15),
+    0 25px 50px -12px rgba(137, 157, 110, 0.25);
+  /* Scroll padding for active Desktop card popouts */
+  scroll-margin-top: 90px;
+}
+
+/* Card gradient overlay */
+.card-gradient {
+  background: linear-gradient(to top, rgba(15, 23, 42, 0.75) 0%, rgba(15, 23, 42, 0.15) 40%, transparent 100%);
+}
+
+/* Category tag on cards */
+.category-tag {
+  color: #FFFFFF;
+  background: rgba(137, 157, 110, 0.9);
+}
+
+/* Hover indicator bubble */
+.hover-indicator {
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid #E2E8F0;
+  color: #1E293B;
+}
+
+/* Image rendering */
 .card-image {
   transform: none !important;
   transition: none !important;
@@ -50,12 +135,413 @@
   -webkit-backface-visibility: hidden;
 }
 
-/* Detail panel scrollbar styles */
+/* ── Detail Panel (Desktop) ────────────────────── */
+
+.detail-panel {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid #E2E8F0;
+  box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.08);
+  /* Ensure details stay under fixed navbar but above content */
+  z-index: 40;
+  scroll-margin-top: 90px;
+}
+
 .detail-panel::-webkit-scrollbar {
   width: 4px;
 }
 
 .detail-panel::-webkit-scrollbar-thumb {
-  background-color: rgba(179, 135, 56, 0.3);
+  background-color: rgba(137, 157, 110, 0.85);
   border-radius: 9999px;
+}
+
+.detail-panel-category {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.25em;
+  color: #899d6e;
+  font-weight: 700;
+  border: 1px solid rgba(137, 157, 110, 0.25);
+  padding: 4px 12px;
+  border-radius: 9999px;
+  background: #F3F6F0;
+}
+
+.detail-panel-close-btn {
+  color: rgba(30, 41, 59, 0.4);
+}
+
+.detail-panel-close-btn:hover {
+  background: rgba(30, 41, 59, 0.06);
+  color: #1E293B;
+}
+
+.detail-panel-title {
+  color: #1E293B;
+}
+
+.detail-panel-desc {
+  color: #64748B;
+}
+
+.detail-panel-footer {
+  border-top: 1px solid #E2E8F0;
+}
+
+.detail-panel-price-label {
+  color: #64748B;
+}
+
+.detail-panel-price {
+  color: #1E293B;
+}
+
+.detail-panel-btn-icon {
+  background: #FFFFFF;
+  border: 1px solid #E2E8F0;
+  color: #1E293B;
+}
+
+.detail-panel-btn-icon:hover {
+  background: #899d6e;
+  border-color: #899d6e;
+  color: #FFFFFF;
+}
+
+.detail-panel-btn-shop {
+  background: #899d6e;
+  color: #FFFFFF;
+}
+
+.detail-panel-btn-shop:hover {
+  background: #75875d;
+  box-shadow: 0 10px 25px -5px rgba(137, 157, 110, 0.4);
+}
+
+/* ═══════════════════════════════════════════════
+   MOBILE LAYOUT
+   ═══════════════════════════════════════════════ */
+
+.lookbook-mobile-wrapper {
+  min-height: 100vh;
+  padding-bottom: 2rem;
+  overflow-x: hidden;
+  /* Top padding to accommodate fixed headers/navbars */
+  padding-top: 1rem;
+}
+
+/* ── Mobile Header ─────────────────────────────── */
+
+.lookbook-mobile-header {
+  text-align: center;
+  padding: 1rem 1.5rem 1rem;
+}
+
+.lookbook-mobile-eyebrow {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.3em;
+  color: #899d6e;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.lookbook-mobile-title {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #1E293B;
+  line-height: 1.1;
+}
+
+.lookbook-mobile-subtitle {
+  font-size: 12px;
+  color: #94A3B8;
+  margin-top: 4px;
+  font-weight: 400;
+}
+
+/* ── Mobile Grid ───────────────────────────────── */
+
+.lookbook-mobile-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px; /* Reduced gap between cards */
+  padding: 0 10px;
+}
+
+/* When a card is active, it spans full width */
+.lookbook-mobile-card-wrapper:has(.lookbook-mobile-card--active) {
+  grid-column: 1 / -1;
+  /* Scroll offset for fixed navbar */
+  scroll-margin-top: 80px; 
+}
+
+/* ── Mobile Card ───────────────────────────────── */
+
+.lookbook-mobile-card {
+  position: relative;
+  border-radius: 16px;
+  overflow: hidden;
+  cursor: pointer;
+  aspect-ratio: 3 / 4;
+  background: #FFFFFF;
+  border: 1.5px solid #E2E8F0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  -webkit-tap-highlight-color: transparent;
+  transition: border-color 0.25s ease, box-shadow 0.25s ease;
+  scroll-margin-top: 80px;
+}
+
+.lookbook-mobile-card--active {
+  border-color: #899d6e;
+  box-shadow:
+    0 0 0 4px rgba(137, 157, 110, 0.15),
+    0 12px 32px rgba(137, 157, 110, 0.2);
+  aspect-ratio: 3 / 4;
+  max-height: 380px;
+}
+
+.lookbook-mobile-card-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+}
+
+/* Card overlay — always visible on mobile */
+.lookbook-mobile-card-overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 10px 10px;
+  background: linear-gradient(to top, rgba(15, 23, 42, 0.75) 0%, transparent 100%);
+  pointer-events: none;
+}
+
+.lookbook-mobile-card-category {
+  display: inline-block;
+  font-size: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: #FFFFFF;
+  background: rgba(137, 157, 110, 0.85);
+  padding: 2px 8px;
+  border-radius: 9999px;
+  font-weight: 600;
+  margin-bottom: 2px;
+}
+
+.lookbook-mobile-card-title {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 13px;
+  color: #FFFFFF;
+  font-weight: 600;
+  line-height: 1.25;
+  margin: 0;
+}
+
+.lookbook-mobile-card-price {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.85);
+  font-weight: 500;
+  margin-top: 2px;
+}
+
+/* Tap hint icon */
+.lookbook-mobile-tap-hint {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #899d6e;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  animation: pulse-hint 2s ease-in-out infinite;
+}
+
+@keyframes pulse-hint {
+  0%, 100% { transform: translateY(0); opacity: 0.7; }
+  50%      { transform: translateY(3px); opacity: 1; }
+}
+
+/* ── Mobile Detail Panel (tightly beneath active card) ──────────── */
+
+.lookbook-mobile-detail {
+  overflow: hidden;
+  border-radius: 16px;
+  margin-top: 8px; /* Tight distance between image card and details */
+  scroll-margin-top: 80px; /* Safe distance under navigation bar */
+}
+
+.lookbook-mobile-detail-inner {
+  background: #FFFFFF;
+  border: 1px solid #E2E8F0;
+  border-radius: 16px;
+  padding: 12px 14px; /* Reduced internal padding to tighten height */
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+}
+
+.lookbook-mobile-detail-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+}
+
+.lookbook-mobile-detail-category {
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: #899d6e;
+  font-weight: 700;
+  background: #F3F6F0;
+  border: 1px solid rgba(137, 157, 110, 0.2);
+  padding: 2px 8px;
+  border-radius: 9999px;
+}
+
+.lookbook-mobile-detail-close {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: none;
+  background: #F1F5F9;
+  color: #64748B;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+
+.lookbook-mobile-detail-close:hover {
+  background: #E2E8F0;
+  color: #1E293B;
+}
+
+.lookbook-mobile-detail-title {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 1.2rem;
+  color: #1E293B;
+  font-weight: 700;
+  line-height: 1.2;
+  margin: 0 0 4px;
+}
+
+.lookbook-mobile-detail-desc {
+  font-size: 11px;
+  line-height: 1.5;
+  color: #64748B;
+  margin: 0;
+}
+
+.lookbook-mobile-detail-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid #F1F5F9;
+}
+
+.lookbook-mobile-detail-price-label {
+  font-size: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: #94A3B8;
+  font-weight: 600;
+  margin: 0 0 2px;
+}
+
+.lookbook-mobile-detail-price {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #1E293B;
+}
+
+.lookbook-mobile-detail-actions {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.lookbook-mobile-btn-icon {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 1px solid #E2E8F0;
+  background: #FFFFFF;
+  color: #1E293B;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.lookbook-mobile-btn-icon:hover {
+  background: #899d6e;
+  border-color: #899d6e;
+  color: #FFFFFF;
+}
+
+.lookbook-mobile-btn-shop {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 14px;
+  height: 34px;
+  border-radius: 9999px;
+  border: none;
+  background: #899d6e;
+  color: #FFFFFF;
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 3px 10px rgba(137, 157, 110, 0.3);
+}
+
+.lookbook-mobile-btn-shop:hover {
+  background: #75875d;
+  box-shadow: 0 4px 14px rgba(137, 157, 110, 0.4);
+}
+
+/* ── Very small screens ────────────────────────── */
+
+@media (max-width: 380px) {
+  .lookbook-mobile-grid {
+    grid-template-columns: 1fr;
+    gap: 8px;
+    padding: 0 8px;
+  }
+
+  .lookbook-mobile-card {
+    aspect-ratio: 4 / 5;
+  }
+
+  .lookbook-mobile-detail-footer {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .lookbook-mobile-detail-actions {
+    width: 100%;
+    justify-content: flex-end;
+  }
 }

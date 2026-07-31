@@ -1,4 +1,5 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ShoppingBag, X, Move, ExternalLink, Loader2 } from 'lucide-react';
 import API from '../../../api'; // Import your configured axios instance
@@ -6,11 +7,27 @@ import './LookBook.css';
 import Navbar from '../../../components/Navbar/Navbar';
 import Footer from '../../../components/Footer/Footer';
 
-// Helper to generate distributed 3D spatial coordinates for dynamic backend arrays
-const generateCloudPositions = (count) => {
+// Hook to detect mobile viewport
+const useIsMobile = (breakpoint = 768) => {
+  const [isMobile, setIsMobile] = useState(
+    typeof window !== 'undefined' ? window.innerWidth < breakpoint : false
+  );
+
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < breakpoint);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, [breakpoint]);
+
+  return isMobile;
+};
+
+// Helper to generate distributed 3D spatial coordinates
+const generateCloudPositions = (count, isMobile) => {
   const positions = [];
-  const radiusX = 400;
-  const radiusY = 200;
+  // Use a smaller spread radius on mobile so cards don't go off-screen
+  const radiusX = isMobile ? (typeof window !== 'undefined' ? window.innerWidth * 0.35 : 180) : 400;
+  const radiusY = isMobile ? (typeof window !== 'undefined' ? window.innerHeight * 0.25 : 250) : 200;
 
   for (let i = 0; i < count; i++) {
     const angle = (i / count) * Math.PI * 2;
@@ -28,8 +45,9 @@ const generateCloudPositions = (count) => {
   return positions;
 };
 
-export default function LookBook() {
-  const [products, setProducts] = useState([]);
+function LookBook() {
+  const navigate = useNavigate();
+  const [rawProducts, setRawProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -37,6 +55,8 @@ export default function LookBook() {
   const [hoveredIndex, setHoveredIndex] = useState(null);
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
   const containerRef = useRef(null);
+
+  const isMobile = useIsMobile();
 
   // Fetch active products from backend
   useEffect(() => {
@@ -46,27 +66,7 @@ export default function LookBook() {
         const response = await API.get('/products');
 
         if (response.data && response.data.products) {
-          const fetchedItems = response.data.products;
-          const layoutPositions = generateCloudPositions(fetchedItems.length);
-
-          const mappedLooks = fetchedItems.map((prod, idx) => ({
-            id: prod._id || `prod-${idx}`,
-            title: prod.productName || 'Handloom Silk Saree',
-            price: prod.sellingPrice 
-              ? `₹${prod.sellingPrice}` 
-              : prod.price 
-                ? `₹${prod.price}` 
-                : '₹1,940',
-            category: prod.category || 'Handloom',
-            description: prod.description || 'Handcrafted with authentic Kerala weave patterns. Features pure natural fibers, hand-dyed tones, and traditional zari work.',
-            img: Array.isArray(prod.images) && prod.images.length > 0 
-              ? prod.images[0] 
-              : (prod.imageUrl || 'https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&q=80&w=800'),
-            pos: layoutPositions[idx] || { x: 0, y: 0, z: 0, r: 0, s: 1 },
-            size: 'w-[210px] aspect-[3/4]'
-          }));
-
-          setProducts(mappedLooks);
+          setRawProducts(response.data.products);
         }
       } catch (err) {
         console.error('Failed to fetch lookbook products:', err);
@@ -79,8 +79,33 @@ export default function LookBook() {
     fetchProducts();
   }, []);
 
+  // Compute mapped looks and positions dynamically based on mobile state
+  const products = useMemo(() => {
+    if (!rawProducts.length) return [];
+    
+    const layoutPositions = generateCloudPositions(rawProducts.length, isMobile);
+
+    return rawProducts.map((prod, idx) => ({
+      id: prod._id || `prod-${idx}`,
+      title: prod.productName || 'Handloom Silk Saree',
+      price: prod.sellingPrice 
+        ? `₹${prod.sellingPrice}` 
+        : prod.price 
+          ? `₹${prod.price}` 
+          : '₹1,940',
+      category: prod.category || 'Handloom',
+      description: prod.description || 'Handcrafted with authentic Kerala weave patterns. Features pure natural fibers, hand-dyed tones, and traditional zari work.',
+      img: Array.isArray(prod.images) && prod.images.length > 0 
+        ? prod.images[0] 
+        : (prod.imageUrl || 'https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&q=80&w=800'),
+      pos: layoutPositions[idx] || { x: 0, y: 0, z: 0, r: 0, s: 1 },
+      size: isMobile ? 'w-[160px] aspect-[3/4]' : 'w-[210px] aspect-[3/4]'
+    }));
+  }, [rawProducts, isMobile]);
+
   const handleMouseMove = (e) => {
-    if (!containerRef.current || activeIndex !== null) return;
+    // Disable mouse parallax on mobile or when a card is focused
+    if (!containerRef.current || activeIndex !== null || isMobile) return;
     const rect = containerRef.current.getBoundingClientRect();
     const x = (e.clientX - rect.left) / rect.width - 0.5;
     const y = (e.clientY - rect.top) / rect.height - 0.5;
@@ -90,13 +115,19 @@ export default function LookBook() {
   const isFocused = activeIndex !== null;
   const activeLook = isFocused ? products[activeIndex] : null;
 
+  const handleViewProduct = (productId) => {
+    if (productId) {
+      navigate(`/product/${productId}`);
+    }
+  };
+
   if (loading) {
     return (
       <>
         <Navbar />
-        <div className="w-full h-screen bg-[#F7F1E5] flex flex-col items-center justify-center text-[#2A2118]">
-          <Loader2 className="w-8 h-8 animate-spin text-[#B38738] mb-3" />
-          <p className="font-serif text-sm tracking-widest uppercase text-[#B38738]">Loading Collection...</p>
+        <div className="lookbook-loading w-full h-screen flex flex-col items-center justify-center">
+          <Loader2 className="lookbook-spinner w-8 h-8 animate-spin mb-3" />
+          <p className="lookbook-loading-text font-serif text-sm tracking-widest uppercase">Loading Collection...</p>
         </div>
         <Footer />
       </>
@@ -107,8 +138,8 @@ export default function LookBook() {
     return (
       <>
         <Navbar />
-        <div className="w-full h-screen bg-[#F7F1E5] flex items-center justify-center text-[#2A2118]">
-          <p className="font-serif text-base">{error || 'No active looks available right now.'}</p>
+        <div className="lookbook-loading w-full h-screen flex items-center justify-center">
+          <p className="font-serif text-base lookbook-error-text">{error || 'No active looks available right now.'}</p>
         </div>
         <Footer />
       </>
@@ -124,25 +155,25 @@ export default function LookBook() {
         onClick={() => {
           if (isFocused) setActiveIndex(null);
         }}
-        className="lookbook-wrapper relative w-full min-h-screen bg-[#F7F1E5] text-[#2A2118] overflow-hidden font-sans select-none"
+        className="lookbook-wrapper relative w-full min-h-screen overflow-hidden font-sans select-none"
       >
         {/* Ambient Lighting Background */}
         <div 
           className="ambient-mesh absolute inset-0 pointer-events-none opacity-80 z-0"
-          style={{ transform: `translate3d(${mousePos.x * -40}px, ${mousePos.y * -40}px, 0)` }}
+          style={{ transform: isMobile ? 'none' : `translate3d(${mousePos.x * -40}px, ${mousePos.y * -40}px, 0)` }}
         >
-          <div className="mesh-orb orb-1 absolute top-1/4 left-1/4 w-[650px] h-[650px] bg-[#B38738]/15 rounded-full blur-[160px] pointer-events-none" />
-          <div className="mesh-orb orb-2 absolute bottom-1/4 right-1/4 w-[550px] h-[550px] bg-[#7A8F78]/15 rounded-full blur-[140px] pointer-events-none" />
+          <div className="mesh-orb orb-1 absolute top-1/4 left-1/4 w-[400px] md:w-[650px] h-[400px] md:h-[650px] rounded-full blur-[100px] md:blur-[160px] pointer-events-none" />
+          <div className="mesh-orb orb-2 absolute bottom-1/4 right-1/4 w-[300px] md:w-[550px] h-[300px] md:h-[550px] rounded-full blur-[80px] md:blur-[140px] pointer-events-none" />
         </div>
 
         {/* 3D Stage Container */}
         <main className="relative w-full h-screen flex items-center justify-center z-10 pointer-events-none">
           <motion.div 
             className="stage-canvas relative w-full max-w-6xl h-full flex items-center justify-center pointer-events-none"
-            style={{ perspective: 1200, transformStyle: 'preserve-3d' }}
+            style={{ perspective: isMobile ? 800 : 1200, transformStyle: 'preserve-3d' }}
             animate={{
-              rotateX: isFocused ? 0 : mousePos.y * -16,
-              rotateY: isFocused ? 0 : mousePos.x * 16,
+              rotateX: isFocused || isMobile ? 0 : mousePos.y * -16,
+              rotateY: isFocused || isMobile ? 0 : mousePos.x * 16,
             }}
             transition={{ type: 'spring', stiffness: 45, damping: 25 }}
           >
@@ -152,16 +183,19 @@ export default function LookBook() {
               const isOther = isFocused && !isActive;
 
               // Positioning transforms for Pop-Out effect
-              let targetX = isFocused ? (isActive ? -260 : look.pos.x * 2.2) : look.pos.x;
-              let targetY = isFocused ? (isActive ? 0 : look.pos.y * 2.2) : look.pos.y;
+              let targetX = isFocused ? (isActive ? (isMobile ? 0 : -260) : look.pos.x * 2.2) : look.pos.x;
+              let targetY = isFocused ? (isActive ? (isMobile ? -140 : 0) : look.pos.y * 2.2) : look.pos.y;
               let targetZ = isFocused 
-                ? (isActive ? 320 : look.pos.z - 700) 
-                : (isHovered ? look.pos.z + 100 : look.pos.z);
+                ? (isActive ? (isMobile ? 150 : 320) : look.pos.z - 700) 
+                : (isHovered ? look.pos.z + (isMobile ? 50 : 100) : look.pos.z);
               let targetR = isFocused ? (isActive ? 0 : look.pos.r * 2) : look.pos.r;
               let targetScale = isFocused 
-                ? (isActive ? 1.4 : look.pos.s * 0.55) 
+                ? (isActive ? (isMobile ? 1.25 : 1.4) : look.pos.s * 0.55) 
                 : (isHovered ? look.pos.s * 1.15 : look.pos.s);
               let targetOpacity = isFocused ? (isActive ? 1 : 0.12) : 1;
+
+              // Only show card info on desktop hover OR when card is clicked/active
+              const showCardInfo = isActive || (isHovered && !isMobile);
 
               return (
                 <motion.div
@@ -170,7 +204,7 @@ export default function LookBook() {
                   onMouseLeave={() => setHoveredIndex(null)}
                   onClick={(e) => {
                     e.stopPropagation();
-                    setActiveIndex(index);
+                    setActiveIndex(index === activeIndex ? null : index);
                   }}
                   animate={{
                     x: targetX,
@@ -179,7 +213,7 @@ export default function LookBook() {
                     scale: targetScale,
                     rotateZ: targetR,
                     opacity: targetOpacity,
-                    filter: isOther ? 'blur(10px)' : 'blur(0px)'
+                    filter: isOther ? 'blur(100px)' : 'blur(0px)'
                   }}
                   transition={{ 
                     type: 'spring', 
@@ -191,13 +225,12 @@ export default function LookBook() {
                     transformStyle: 'preserve-3d',
                     zIndex: isActive ? 999 : (isHovered ? 500 : Math.floor(look.pos.z + 500))
                   }}
-                  className={`cloud-card absolute rounded-[28px] overflow-hidden shadow-2xl cursor-pointer pointer-events-auto transition-shadow duration-300 ${look.size} ${
+                  className={`cloud-card absolute rounded-[24px] md:rounded-[28px] overflow-hidden shadow-2xl cursor-pointer pointer-events-auto transition-shadow duration-300 ${look.size} ${
                     isActive 
-                      ? 'active-card border-[3px] border-[#B38738] ring-8 ring-[#B38738]/20 shadow-[#B38738]/30' 
-                      : 'border border-white/80 hover:border-[#B38738] hover:shadow-2xl'
+                      ? 'active-card cloud-card--active' 
+                      : 'cloud-card--idle'
                   }`}
                 >
-                  {/* Static Inner Layer: No floating animation inside card */}
                   <div className="w-full h-full relative pointer-events-none">
                     <img 
                       src={look.img} 
@@ -205,19 +238,19 @@ export default function LookBook() {
                       className="card-image w-full h-full object-cover object-center pointer-events-none"
                     />
                     
-                    <div className={`card-gradient absolute inset-0 bg-gradient-to-t from-[#2A2118]/90 via-[#2A2118]/20 to-transparent pointer-events-none transition-opacity duration-300 ${isActive || isHovered ? 'opacity-100' : 'opacity-0'}`} />
+                    <div className={`card-gradient absolute inset-0 pointer-events-none transition-opacity duration-300 ${showCardInfo ? 'opacity-100' : 'opacity-0'}`} />
 
-                    <div className={`card-info absolute bottom-4 left-4 right-4 text-white pointer-events-none transition-all duration-300 ${isActive || isHovered ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2'}`}>
-                      <span className="category-tag text-[9px] uppercase tracking-[0.2em] text-[#EFE6D5] font-semibold block bg-[#B38738]/90 w-max px-2.5 py-0.5 rounded-full backdrop-blur-md mb-1 pointer-events-none">
+                    <div className={`card-info absolute bottom-3 left-3 right-3 md:bottom-4 md:left-4 md:right-4 text-white pointer-events-none transition-all duration-300 ${showCardInfo ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2'}`}>
+                      <span className="category-tag text-[8px] md:text-[9px] uppercase tracking-[0.2em] font-semibold block w-max px-2 py-0.5 md:px-2.5 md:py-0.5 rounded-full backdrop-blur-md mb-1 pointer-events-none">
                         {look.category}
                       </span>
-                      <h3 className="font-serif text-base md:text-lg text-white font-medium leading-tight pointer-events-none">
+                      <h3 className="font-serif text-sm md:text-lg text-white font-medium leading-tight pointer-events-none">
                         {look.title}
                       </h3>
                     </div>
 
-                    {!isFocused && (
-                      <div className={`hover-indicator absolute top-3 right-3 w-7 h-7 rounded-full bg-white/90 backdrop-blur-md border border-white flex items-center justify-center text-[#2A2118] pointer-events-none transition-opacity duration-200 ${isHovered ? 'opacity-100' : 'opacity-0'}`}>
+                    {(!isFocused && !isMobile) && (
+                      <div className={`hover-indicator absolute top-3 right-3 w-7 h-7 rounded-full backdrop-blur-md flex items-center justify-center pointer-events-none transition-opacity duration-200 ${isHovered ? 'opacity-100' : 'opacity-0'}`}>
                         <Move className="w-3.5 h-3.5 pointer-events-none" />
                       </div>
                     )}
@@ -231,46 +264,50 @@ export default function LookBook() {
           <AnimatePresence>
             {isFocused && (
               <motion.div
-                initial={{ opacity: 0, x: 80, scale: 0.95 }}
-                animate={{ opacity: 1, x: 0, scale: 1 }}
-                exit={{ opacity: 0, x: 80, scale: 0.95 }}
+                initial={isMobile ? { opacity: 0, y: 40, x: '-50%', scale: 0.95 } : { opacity: 0, x: 80, y: '-50%', scale: 0.95 }}
+                animate={isMobile ? { opacity: 1, y: 0, x: '-50%', scale: 1 } : { opacity: 1, x: 0, y: '-50%', scale: 1 }}
+                exit={isMobile ? { opacity: 0, y: 40, x: '-50%', scale: 0.95 } : { opacity: 0, x: 80, y: '-50%', scale: 0.95 }}
                 transition={{ type: 'spring', stiffness: 75, damping: 20, delay: 0.08 }}
                 onClick={(e) => e.stopPropagation()}
-                className="detail-panel absolute right-6 md:right-16 top-1/2 -translate-y-1/2 z-50 w-80 md:w-96 bg-[#EFE6D5]/95 backdrop-blur-2xl border border-[#E0D3BC] p-8 rounded-[32px] shadow-2xl pointer-events-auto"
+                className={`detail-panel absolute z-50 p-6 md:p-8 rounded-[24px] md:rounded-[32px] shadow-2xl pointer-events-auto ${
+                  isMobile 
+                    ? 'bottom-10 left-1/2 w-[92%] max-w-md' 
+                    : 'right-6 md:right-16 top-1/2 w-80 md:w-96'
+                }`}
               >
-                <div className="flex justify-between items-center mb-4">
-                  <span className="text-[10px] uppercase tracking-[0.25em] text-[#B38738] font-bold border border-[#B38738]/30 px-3 py-1 rounded-full bg-white/60">
+                <div className="flex justify-between items-center mb-3 md:mb-4">
+                  <span className="detail-panel-category">
                     {activeLook?.category}
                   </span>
                   <button 
                     onClick={() => setActiveIndex(null)} 
-                    className="p-1.5 rounded-full hover:bg-[#2A2118]/10 text-[#2A2118]/60 hover:text-[#2A2118] transition-colors"
+                    className="detail-panel-close-btn p-1.5 rounded-full transition-colors"
                   >
-                    <X className="w-5 h-5" />
+                    <X className="w-4 h-4 md:w-5 md:h-5" />
                   </button>
                 </div>
                 
-                <h4 className="font-serif text-3xl text-[#2A2118] mt-2 leading-tight">
+                <h4 className="detail-panel-title font-serif text-2xl md:text-3xl mt-1 md:mt-2 leading-tight">
                   {activeLook?.title}
                 </h4>
                 
-                <p className="text-xs text-[#6B5E52] font-light mt-3 leading-relaxed">
+                <p className="detail-panel-desc text-[11px] md:text-xs font-light mt-2 md:mt-3 leading-relaxed">
                   {activeLook?.description}
                 </p>
                 
-                <div className="mt-8 pt-6 border-t border-[#E0D3BC] flex justify-between items-end">
+                <div className="detail-panel-footer mt-5 md:mt-8 pt-4 md:pt-6 flex justify-between items-end">
                   <div>
-                    <p className="text-[10px] uppercase tracking-widest text-[#6B5E52] mb-1 font-semibold">Price</p>
-                    <span className="font-serif text-2xl font-bold text-[#2A2118]">{activeLook?.price}</span>
+                    <p className="detail-panel-price-label text-[9px] md:text-[10px] uppercase tracking-widest mb-1 font-semibold">Price</p>
+                    <span className="detail-panel-price font-serif text-xl md:text-2xl font-bold">{activeLook?.price}</span>
                   </div>
                   
                   <div className="flex gap-2">
-                    <button className="p-3 bg-white border border-[#E0D3BC] text-[#2A2118] rounded-full hover:bg-[#B38738] hover:text-white transition-all shadow-md">
-                      <ExternalLink className="w-4 h-4" />
-                    </button>
-                    <button className="px-5 py-3 bg-[#2A2118] text-white text-xs uppercase tracking-widest rounded-full hover:bg-[#B38738] transition-all flex items-center gap-2 shadow-xl hover:shadow-[#B38738]/20">
-                      <ShoppingBag className="w-4 h-4" />
-                      <span>Shop Look</span>
+                    <button 
+                      onClick={() => handleViewProduct(activeLook?.id)}
+                      className="detail-panel-btn-shop px-4 md:px-5 py-2.5 md:py-3 text-[10px] md:text-xs uppercase tracking-widest rounded-full transition-all flex items-center gap-2 shadow-xl cursor-pointer"
+                    >
+                      <ShoppingBag className="w-3.5 h-3.5 md:w-4 md:h-4" />
+                      <span>View</span>
                     </button>
                   </div>
                 </div>
@@ -283,3 +320,5 @@ export default function LookBook() {
     </>
   );
 }
+
+export default LookBook;

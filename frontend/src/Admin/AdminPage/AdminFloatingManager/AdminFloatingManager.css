@@ -1,0 +1,199 @@
+/* ==========================================================================
+   Admin Floating Animation Manager Styles
+   ========================================================================== */
+
+.admin-floating-container {
+  max-width: 1000px;
+  margin: 30px auto;
+  padding: 30px;
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  color: #2d3748;
+}
+
+.admin-floating-container h2 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #1a202c;
+  margin-bottom: 24px;
+  padding-bottom: 12px;
+  border-bottom: 2px solid #edf2f7;
+}
+
+/* --- Form Layout --- */
+.admin-floating-form {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  background-color: #f8fafc;
+  padding: 20px;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  margin-bottom: 32px;
+  align-items: center;
+}
+
+.admin-floating-form input[type="text"],
+.admin-floating-form select,
+.admin-floating-form input[type="file"] {
+  width: 100%;
+  padding: 10px 14px;
+  font-size: 0.9rem;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  background-color: #ffffff;
+  color: #334155;
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  box-sizing: border-box;
+}
+
+.admin-floating-form input[type="text"]:focus,
+.admin-floating-form select:focus {
+  border-color: #88a069;
+  box-shadow: 0 0 0 3px rgba(136, 160, 105, 0.15);
+}
+
+.admin-floating-form input[type="file"] {
+  padding: 8px;
+  font-size: 0.85rem;
+  background: #ffffff;
+  cursor: pointer;
+}
+
+.admin-floating-form button[type="submit"] {
+  grid-column: 1 / -1;
+  background-color: #88a069;
+  color: #ffffff;
+  border: none;
+  padding: 12px 20px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.1s ease;
+  justify-self: end;
+  margin-top: 8px;
+}
+
+.admin-floating-form button[type="submit"]:hover {
+  background-color: #748b57;
+}
+
+.admin-floating-form button[type="submit"]:active {
+  transform: scale(0.98);
+}
+
+/* --- Items List Table --- */
+.admin-items-list h3 {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #2d3748;
+  margin-bottom: 16px;
+}
+
+.admin-items-list table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  background-color: #ffffff;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid #e2e8f0;
+}
+
+.admin-items-list th {
+  background-color: #f1f5f9;
+  color: #475569;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 12px 16px;
+  font-weight: 600;
+}
+
+.admin-items-list td {
+  padding: 14px 16px;
+  border-bottom: 1px solid #e2e8f0;
+  font-size: 0.9rem;
+  vertical-align: middle;
+}
+
+.admin-items-list tr:last-child td {
+  border-bottom: none;
+}
+
+.admin-items-list tr:hover {
+  background-color: #f8fafc;
+}
+
+/* --- Item Preview Styling --- */
+.admin-preview-img {
+  width: 36px;
+  height: 36px;
+  object-fit: contain;
+  border-radius: 4px;
+  border: 1px solid #e2e8f0;
+  background-color: #ffffff;
+  padding: 2px;
+  display: block;
+}
+
+/* Status Column Styling */
+.admin-items-list td:nth-child(4) {
+  font-weight: 600;
+  font-size: 0.85rem;
+}
+
+/* --- Action Buttons --- */
+.admin-items-list td button {
+  padding: 6px 12px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  border-radius: 4px;
+  border: 1px solid #cbd5e1;
+  background-color: #ffffff;
+  color: #334155;
+  cursor: pointer;
+  margin-right: 8px;
+  transition: all 0.2s ease;
+}
+
+.admin-items-list td button:hover {
+  background-color: #f1f5f9;
+  border-color: #94a3b8;
+}
+
+.admin-items-list td button.btn-delete {
+  color: #e53e3e;
+  border-color: #feb2b2;
+  background-color: #fff5f5;
+}
+
+.admin-items-list td button.btn-delete:hover {
+  background-color: #fed7d7;
+  border-color: #fc8181;
+}
+
+/* --- Responsive Layout Adjustments --- */
+@media (max-width: 768px) {
+  .admin-floating-container {
+    padding: 16px;
+  }
+
+  .admin-floating-form {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-floating-form button[type="submit"] {
+    width: 100%;
+  }
+
+  .admin-items-list table {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+}

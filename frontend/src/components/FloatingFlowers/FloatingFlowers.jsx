@@ -1,87 +1,82 @@
-import React, { useState, useCallback, useRef } from "react";
+import React, { useState, useCallback, useRef, useEffect } from "react";
 import "./FloatingFlowers.css";
 
-const DEFAULT_FLOWERS = ["🌸", "🌼"];
-let burstIdCounter = 0;
-
-/**
- * Reusable ambient floating-flower background animation.
- * Drop <FloatingFlowers /> as the first child inside any
- * `position: relative` section/container that has overflow: hidden.
- *
- * Props:
- *  - count: number of flowers to render (default 16)
- *  - flowers: array of emoji/characters to cycle through
- *  - particleSymbol: what the burst particles look like on click
- */
-const FloatingFlowers = ({
-  count = 16,
-  flowers = DEFAULT_FLOWERS,
-  particleSymbol = "✨",
-}) => {
+const FloatingFlowers = ({ count = 16 }) => {
+  // 1. ALL Hooks declared at the top level in exact order
   const containerRef = useRef(null);
   const [bursts, setBursts] = useState([]);
+  const [activeItems, setActiveItems] = useState([]);
 
-  const items = Array.from({ length: count }, (_, i) => ({
-    id: i + 1,
-    symbol: flowers[i % flowers.length],
-  }));
+  // Fetch active items from backend
+  useEffect(() => {
+    fetch("http://localhost:5000/api/floating/active")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.success && data.data.length > 0) {
+          setActiveItems(data.data);
+        }
+      })
+      .catch((err) => console.error("Error loading animation items:", err));
+  }, []);
 
-  const handleFlowerClick = useCallback((e) => {
+  // 2. useCallback MUST be placed BEFORE any 'if/return' checks
+  const handleFlowerClick = useCallback((e, particleSymbol) => {
+    if (!containerRef.current) return;
+
     const containerRect = containerRef.current.getBoundingClientRect();
     const flowerRect = e.currentTarget.getBoundingClientRect();
 
     const x = flowerRect.left - containerRect.left + flowerRect.width / 2;
     const y = flowerRect.top - containerRect.top + flowerRect.height / 2;
 
-    const burstId = burstIdCounter++;
+    const burstId = Date.now() + Math.random();
     const particleCount = 8;
 
-    const particles = Array.from({ length: particleCount }, (_, i) => {
-      const angle = (360 / particleCount) * i;
-      return { pid: i, angle };
-    });
+    const particles = Array.from({ length: particleCount }, (_, i) => ({
+      pid: i,
+      angle: (360 / particleCount) * i,
+    }));
 
-    setBursts((prev) => [...prev, { burstId, x, y, particles }]);
+    setBursts((prev) => [...prev, { burstId, x, y, particles, particleSymbol }]);
 
-    // Briefly hide the clicked flower, then let it respawn via CSS animation restart
     const flowerEl = e.currentTarget;
     flowerEl.classList.add("popped");
-    setTimeout(() => {
-      flowerEl.classList.remove("popped");
-    }, 600);
-
-    // Clean up burst particles after their animation finishes
+    setTimeout(() => flowerEl.classList.remove("popped"), 600);
     setTimeout(() => {
       setBursts((prev) => prev.filter((b) => b.burstId !== burstId));
     }, 700);
   }, []);
 
+  // 3. NOW you can safely do conditional checks/early returns
+  if (activeItems.length === 0) return null;
+
+  // Build items array by cycling through fetched items
+  const items = Array.from({ length: count }, (_, i) => ({
+    id: i + 1,
+    ...activeItems[i % activeItems.length],
+  }));
+
   return (
     <div className="floating-flowers" aria-hidden="true" ref={containerRef}>
-      {items.map((item) => (
+      {items.map((item, idx) => (
         <span
-          key={item.id}
-          className={`flower f${item.id}`}
-          onClick={handleFlowerClick}
+          key={`${item._id}-${idx}`}
+          className={`flower f${(idx % 16) + 1}`}
+          onClick={(e) => handleFlowerClick(e, item.particleSymbol || "✨")}
         >
-          {item.symbol}
+          {item.type === "image" ? (
+            <img src={`http://localhost:5000${item.content}`} alt={item.title} className="floating-img" />
+          ) : (
+            item.content
+          )}
         </span>
       ))}
 
       {bursts.map((burst) => (
-        <span
-          key={burst.burstId}
-          className="burst-origin"
-          style={{ left: burst.x, top: burst.y }}
-        >
+        <span key={burst.burstId} className="burst-origin" style={{ left: burst.x, top: burst.y }}>
           {burst.particles.map((p) => (
-            <span
-              key={p.pid}
-              className="burst-particle"
-              style={{ "--angle": `${p.angle}deg` }}
-            >
-              {particleSymbol}
+            <span key={p.pid} className="burst-particle" style={{ "--angle": `${p.angle}deg` }}>
+              {burst.particleSymbol}
             </span>
           ))}
         </span>
