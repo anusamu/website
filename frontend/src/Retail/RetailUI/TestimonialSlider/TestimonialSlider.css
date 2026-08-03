@@ -7,7 +7,7 @@
   --text-dark: #111111;
   --text-muted: #5e5a51;
   
-  /* Definitive layout widths to achieve exactly 2 cards on screen with gaps */
+  /* Layout dimensions */
   --card-width: 620px; 
   --card-gap: 28px;
 }
@@ -50,6 +50,7 @@
   gap: var(--card-gap);
   width: max-content;
   transform: translateX(0);
+  will-change: transform;
 }
 
 /* Triggers shift to the left by exactly one element size */
@@ -73,16 +74,17 @@
   transition: opacity 0.5s ease;
 }
 
-/* Optional soft opacity for the upcoming card peeking onto screen */
 .testimonial-card.is-peek {
   opacity: 0.85; 
 }
 
-/* Left Media Frame - Increased layout size proportions */
+/* Left Media Frame */
 .testimonial-image-wrapper {
   flex: 0 0 46%;
-  height: 440px; /* Enhanced larger presentation height */
+  width: 46%;
+  height: 440px;
   overflow: hidden;
+  position: relative;
 }
 
 .testimonial-img {
@@ -127,11 +129,11 @@
 }
 
 /* ==========================================================================
-   Mobile Responsive Reflow Mechanics
+   Mobile Responsive Mechanics & Image Preservation
    ========================================================================== */
 @media (max-width: 1300px) {
   :root {
-    --card-width: 460px; /* Fits desktop layouts downscale comfortably */
+    --card-width: 460px;
   }
   .slider-container-window {
     width: calc((var(--card-width) * 2) + var(--card-gap));
@@ -145,21 +147,69 @@
 }
 
 @media (max-width: 980px) {
-  /* Dynamic conversion down to 1 active larger center card view on tablet frames */
+  :root {
+    --card-gap: 20px;
+  }
+
+  .testimonial-section {
+    padding: 60px 0;
+  }
+
+  .testimonial-section-title {
+    font-size: 2.2rem;
+    margin-bottom: 35px;
+  }
+
   .slider-container-window {
-    width: 90%;
+    width: 90vw;
     max-width: 500px;
   }
+
   .testimonial-card {
-    flex: 0 0 100%;
-    width: 100%;
-    flex-direction: column;
+    flex: 0 0 90vw;
+    width: 90vw;
+    max-width: 500px;
+    flex-direction: column; /* Stack image top, text bottom */
   }
+
+  /* Correct shift behavior on mobile to match dynamic card size */
   .testimonial-slider-track.is-shifting {
     transform: translateX(calc(-100% - var(--card-gap)));
   }
+
+  /* Force image wrapper to maintain aspect ratio and prevent collapsing */
   .testimonial-image-wrapper {
-    flex: 0 0 280px;
+    flex: 0 0 auto;
     width: 100%;
+    height: 280px; /* Explicit height ensures mobile browsers render image */
+  }
+
+  .testimonial-content {
+    padding: 28px 24px;
+  }
+}
+
+@media (max-width: 480px) {
+  .testimonial-section-title {
+    font-size: 1.75rem;
+    margin-bottom: 25px;
+  }
+
+  .testimonial-image-wrapper {
+    height: 230px; /* Adjusted height for mobile screens */
+  }
+
+  .testimonial-content {
+    padding: 20px 16px;
+  }
+
+  .testimonial-card-title {
+    font-size: 1.1rem;
+    margin-bottom: 10px;
+  }
+
+  .testimonial-text {
+    font-size: 0.85rem;
+    line-height: 1.6;
   }
 }

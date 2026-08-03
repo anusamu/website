@@ -23,6 +23,10 @@ import LuxuryLookbook from "./Retail/RetailPage/LookBook/LookBook";
 import About from "./Retail/RetailPage/About/About";
 import AdminFloatingManager from "./Admin/AdminPage/AdminFloatingManager/AdminFloatingManager";
 import ReportSection from "./Admin/AdminPage/ReportSection/ReportSection";
+import Contact from "./Retail/RetailPage/Contact/Contact";
+import AdminFeedbackPage from "./Admin/AdminPage/Feedback/AdminFeedbackPage";
+import Blog from "./Retail/RetailPage/Blog/Blog";
+import BlogDetail from "./Retail/RetailPage/Blog/BlogDetail";
 
 function App() {
   return (
@@ -36,6 +40,7 @@ function App() {
 
         {/* Retail Customer */}
         <Route path="/" element={<Home />} />
+        <Route path="/contact" element={<Contact />} />
         <Route path="/category-products" element={<CategoryProducts/>} />
       <Route path="/shop" element={<ShopPage/>} />
       <Route path="/product/:id" element={<ProductDetails/>} />
@@ -44,6 +49,8 @@ function App() {
        <Route path="/checkout" element={<Checkout/>} />
        <Route path="/lookbook" element={<LuxuryLookbook/>} />
        <Route path="/about" element={<About/>} />
+       <Route path="/blog" element={<Blog />} />
+       <Route path="/blog/:id" element={<BlogDetail />} />
 
 
 
@@ -59,6 +66,7 @@ function App() {
            <Route path="/orders" element={<MainOrder/>} />
            <Route path="/ui" element={<AdminFloatingManager/>} />
           <Route path="/reports" element={<ReportSection/>} />
+          <Route path="/feedbacks" element={<AdminFeedbackPage/>} />
         </Route>
       </Routes>
    

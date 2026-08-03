@@ -395,33 +395,32 @@
 }
 
 /* Upgraded Typography Alignment */
-.pdp-similar-meta-details {
+.pdp-similar-meta {
   display: flex;
   flex-direction: column;
-  padding: 14px 2px 0 2px;
-  gap: 5px;
+  padding: 12px 14px;
+  gap: 4px;
+  background: #f7eeca;
+  border-radius: 0 0 12px 12px; /* Curves bottom corners */
+  border-top: 1px solid #f1f5f9;
 }
-
-.pdp-similar-title {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  font-size: 1rem;
-  font-weight: 400;
-  color: #2c2c2c;
-  margin: 0;
-  line-height: 1.4;
+/* Optional: Make child elements look crisp */
+.pdp-similar-meta .title {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #1e293b;
+  line-height: 1.3;
+  /* Truncate text neatly if it's too long */
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-.pdp-similar-price {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  font-size: 1rem;
+.pdp-similar-meta .price {
+  font-size: 0.85rem;
   font-weight: 600;
-  color: #111111;
-  margin: 0;
+  color: #0f172a;
 }
-
 .pdp-section-divider {
   border: 0;
   height: 1px;

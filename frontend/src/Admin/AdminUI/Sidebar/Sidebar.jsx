@@ -34,7 +34,9 @@ import {
   useTheme,
   AppBar,
   Toolbar,
+  Badge,
 } from "@mui/material";
+import api from "../../../api";
 
 import "./Sidebar.css";
 import RajagopalLogo from '../../../assets/Rajagopalhandlooom.png';
@@ -51,6 +53,25 @@ const AdminSidebar = ({
   const navigate = useNavigate();
   const location = useLocation();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
+
+  const [notificationCounts, setNotificationCounts] = React.useState({ orders: 0, feedbacks: 0 });
+
+  React.useEffect(() => {
+    const fetchNotifications = async () => {
+      try {
+        const res = await api.get("/admin/notifications/summary");
+        if (res.data.success) {
+          setNotificationCounts(res.data.data);
+        }
+      } catch (err) {
+        console.error("Error fetching notifications", err);
+      }
+    };
+    
+    fetchNotifications();
+    const interval = setInterval(fetchNotifications, 30000); // Poll every 30 seconds
+    return () => clearInterval(interval);
+  }, []);
 
   const user = JSON.parse(localStorage.getItem("user")) || {};
   const adminName = `${user.firstName || ""} ${user.lastName || ""}`.trim();
@@ -172,7 +193,16 @@ const AdminSidebar = ({
                       justifyContent: "center",
                     }}
                   >
-                    {item.icon}
+                    <Badge 
+                      badgeContent={
+                        item.path === "/orders" ? notificationCounts.orders :
+                        item.path === "/feedbacks" ? notificationCounts.feedbacks : 0
+                      } 
+                      color="error"
+                      sx={{ "& .MuiBadge-badge": { fontSize: 10, minWidth: 16, height: 16, padding: "0 4px" } }}
+                    >
+                      {item.icon}
+                    </Badge>
                   </ListItemIcon>
 
                   {isExpanded && (

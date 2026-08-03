@@ -83,10 +83,29 @@ router.put("/admin/update-status/:orderId", protect, authorize("SuperAdmin", "ad
 
 // ===================== REPORT =====================
 router.get('/reports/data', reportController.getReportData);
+router.get('/admin/notifications/summary', protect, authorize("SuperAdmin", "admin"), reportController.getNotificationSummary);
 // GET /api/reports/download/excel?type=active-products
 router.get('/reports/download/excel', reportController.downloadExcelReport);
 // GET /api/reports/download/pdf?type=active-products
 router.get('/reports/download/pdf', reportController.downloadPdfReport);
+const reviewController = require('../controllers/reviewController');
+const feedbackController = require('../controllers/feedbackController');
+
+// ===================== REVIEWS =====================
+router.post("/reviews/:productId", protect, reviewController.addReview);
+router.get("/reviews/:productId/eligibility", protect, reviewController.checkEligibility);
+router.get("/reviews/:productId", reviewController.getProductReviews);
+router.get("/admin/reviews", protect, authorize("SuperAdmin", "admin"), reviewController.getAllReviews);
+router.put("/admin/reviews/:id", protect, authorize("SuperAdmin", "admin"), reviewController.updateReview);
+router.delete("/admin/reviews/:id", protect, authorize("SuperAdmin", "admin"), reviewController.deleteReview);
+router.put("/admin/products/:id/toggle-reviews", protect, authorize("SuperAdmin", "admin"), reviewController.toggleProductReviews);
+
+// ===================== FEEDBACK =====================
+// Public (or protect if you want logged-in only)
+router.post("/feedback", feedbackController.submitFeedback);
+router.get("/admin/feedbacks", protect, authorize("SuperAdmin", "admin"), feedbackController.getAllFeedback);
+router.put("/admin/feedbacks/:id", protect, authorize("SuperAdmin", "admin"), feedbackController.updateFeedbackStatus);
+router.delete("/admin/feedbacks/:id", protect, authorize("SuperAdmin", "admin"), feedbackController.deleteFeedback);
 
 
 
@@ -98,5 +117,13 @@ router.get('/reports/download/pdf', reportController.downloadPdfReport);
 
 
 
+const blogController = require('../controllers/blogController');
+
+// ===================== BLOGS =====================
+router.post("/blogs", protect, authorize("SuperAdmin", "admin"), upload.any(), blogController.createBlog);
+router.get("/blogs", blogController.getBlogs);
+router.get("/blogs/:id", blogController.getBlogById);
+router.put("/blogs/:id", protect, authorize("SuperAdmin", "admin"), upload.any(), blogController.updateBlog);
+router.delete("/blogs/:id", protect, authorize("SuperAdmin", "admin"), blogController.deleteBlog);
 
 module.exports = router;

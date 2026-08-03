@@ -35,7 +35,7 @@
 /* ── Wrapper (shared) ──────────────────────────── */
 
 .lookbook-wrapper {
-  background: #F8FAFC;
+  background: #f5f2d9;
   color: #1E293B;
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
   /* Prevent header overlap when auto-scrolling */
@@ -318,7 +318,7 @@
   bottom: 0;
   left: 0;
   right: 0;
-  padding: 10px 10px;
+  padding: 10 px 10px;
   background: linear-gradient(to top, rgba(15, 23, 42, 0.75) 0%, transparent 100%);
   pointer-events: none;
 }

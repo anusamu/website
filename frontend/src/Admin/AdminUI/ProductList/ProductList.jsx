@@ -153,6 +153,21 @@ const ProductList = () => {
       console.log(error.response?.data || error.message);
     }
   };
+
+  const handleToggleProductReviews = async (productId, currentStatus, e) => {
+    if (e) e.stopPropagation();
+    try {
+      const token = localStorage.getItem("token");
+      await api.put(`/admin/products/${productId}/toggle-reviews`, { reviewsEnabled: !currentStatus }, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      toast.success(`Reviews ${!currentStatus ? "enabled" : "disabled"} for product`);
+      fetchProducts();
+    } catch (err) {
+      toast.error("Failed to toggle product reviews");
+    }
+  };
+
 const handleDelete = async (id, e) => {
   if (e) e.stopPropagation(); // Prevent opening detail view
 
@@ -243,6 +258,7 @@ const handleDelete = async (id, e) => {
               <TableCell>Stock</TableCell>
               <TableCell>Stock Status</TableCell>
               <TableCell>Status</TableCell>
+              <TableCell>Reviews</TableCell>
               <TableCell align="center">Action</TableCell>
             </TableRow>
           </TableHead>
@@ -297,6 +313,16 @@ const handleDelete = async (id, e) => {
                     />
                     <Typography variant="caption" display="block">
                       {product.status}
+                    </Typography>
+                  </TableCell>
+                  <TableCell onClick={(e) => e.stopPropagation()}>
+                    <Switch
+                      checked={product.reviewsEnabled !== false}
+                      onChange={(e) => handleToggleProductReviews(product._id, product.reviewsEnabled !== false, e)}
+                      color="primary"
+                    />
+                    <Typography variant="caption" display="block">
+                      {product.reviewsEnabled !== false ? "On" : "Off"}
                     </Typography>
                   </TableCell>
                   <TableCell align="center" onClick={(e) => e.stopPropagation()}>

@@ -465,7 +465,7 @@ const Checkout = () => {
             sx={{ mt: 3, bgcolor: '#000' }} 
             onClick={() => { 
               setShowInvoice(false); 
-              navigate('/'); 
+              navigate("/category-products"); 
             }}
           >
             Continue Shopping

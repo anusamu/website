@@ -61,15 +61,16 @@ function ShopByPattern() {
         const rawData = response.data?.products || response.data;
         const productsArray = Array.isArray(rawData) ? rawData : [];
 
-        // Deduplicate or gather fields matching distinct patterns values
-        const uniquePatternsMap = {};
+        // DEDUPLICATION: Gather exactly ONE product per distinct material (or pattern fallback)
+        const uniqueMaterialMap = {};
         productsArray.forEach((prod) => {
-          if (prod.pattern && !uniquePatternsMap[prod.pattern.toLowerCase()]) {
-            uniquePatternsMap[prod.pattern.toLowerCase()] = prod;
+          const matKey = (prod.material || prod.pattern || "").trim().toLowerCase();
+          if (matKey && !uniqueMaterialMap[matKey]) {
+            uniqueMaterialMap[matKey] = prod;
           }
         });
         
-        const filteredPatterns = Object.values(uniquePatternsMap);
+        const filteredPatterns = Object.values(uniqueMaterialMap);
         setPatterns(filteredPatterns.length > 0 ? filteredPatterns : productsArray.slice(0, 6));
         setError(null);
       } catch (err) {
@@ -160,7 +161,7 @@ function ShopByPattern() {
                 const windowItems = len === 1 ? [patterns[mid]] : len === 2 ? [patterns[left], patterns[mid]] : [patterns[left], patterns[mid], patterns[right]];
 
                 return windowItems.map((item, wi) => {
-                  const patternValue = item.pattern || "Traditional";
+                  const patternValue = item.material || item.pattern || "Pattern";
                   const displayImage = item.materialImage || item.image || item.imageUrl || (item.images && item.images[0]) || 'https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&q=80&w=400';
                   const isFeaturedCard = (windowItems.length === 3 && wi === 1) || (windowItems.length === 2 && wi === 1) || windowItems.length === 1;
 

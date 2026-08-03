@@ -1,0 +1,143 @@
+/* ==========================================================================
+   Design Tokens & Theme Interoperability
+   If your global stylesheet defines these variables, it will inherit automatically.
+   ========================================================================== */
+:root {
+  --primary-color: #899d6e;      /* Theme Sage/Primary Color */
+  --primary-dark: #75875d;       /* Theme Hover Color */
+  --primary-light-bg: #f3f6f0;   /* Theme Tint background */
+  --page-bg: #f8fafc;            /* Neutral Light Background */
+  --text-dark: #1e293b;          /* Text Slate Dark */
+  --text-muted: #64748b;         /* Text Slate Muted */
+  --border-color: #e2e8f0;       /* Border Slate Light */
+}
+
+/* Page Root Framework */
+.contact-page-root {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: var(--page-bg);
+}
+
+.contact-main-wrapper {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.contact-container {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* ==========================================================================
+   Typography & Headers
+   ========================================================================== */
+.contact-title {
+  color: var(--text-dark);
+  letter-spacing: -0.02em;
+  font-family: 'Playfair Display', Georgia, serif;
+}
+
+.contact-subtitle {
+  color: var(--text-muted);
+  line-height: 1.6;
+}
+
+/* ==========================================================================
+   Card Styling
+   ========================================================================== */
+.contact-card {
+  background: #ffffff !important;
+  border: 1px solid var(--border-color) !important;
+  border-radius: 16px !important;
+  padding: 36px 32px !important;
+  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.04) !important;
+  transition: box-shadow 0.3s ease;
+}
+
+/* ==========================================================================
+   Form Inputs Integrated with Brand Colors
+   ========================================================================== */
+.contact-textfield .MuiOutlinedInput-root {
+  border-radius: 10px;
+  background-color: var(--page-bg);
+  transition: all 0.2s ease;
+}
+
+.contact-textfield .MuiOutlinedInput-root:hover {
+  background-color: #ffffff;
+}
+
+.contact-textfield .MuiOutlinedInput-root.Mui-focused {
+  background-color: #ffffff;
+}
+
+.contact-textfield .MuiOutlinedInput-notchedOutline {
+  border-color: var(--border-color);
+}
+
+.contact-textfield .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline {
+  border-color: var(--primary-color);
+}
+
+.contact-textfield .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline {
+  border-color: var(--primary-color);
+  border-width: 1.5px;
+}
+
+.contact-textfield .MuiInputLabel-root {
+  color: var(--text-muted);
+}
+
+.contact-textfield .MuiInputLabel-root.Mui-focused {
+  color: var(--primary-color);
+  font-weight: 600;
+}
+
+/* ==========================================================================
+   Action Buttons
+   ========================================================================== */
+.contact-submit-btn {
+  color: #ffffff !important;
+  padding: 12px 48px !important;
+  border-radius: 50px !important;
+  text-transform: none !important;
+  font-size: 1rem !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.01em;
+  min-height: 48px;
+  width: 100%;
+  max-width: 260px;
+  transition: all 0.25s ease !important;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08) !important;
+}
+
+.contact-submit-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 20px -4px rgba(0, 0, 0, 0.15) !important;
+}
+
+.contact-submit-btn:active {
+  transform: translateY(0);
+}
+
+/* ==========================================================================
+   Mobile Responsive Rules
+   ========================================================================== */
+@media (max-width: 600px) {
+  .contact-card {
+    padding: 24px 18px !important;
+    border-radius: 12px !important;
+  }
+.contact-header {
+    text-align: center;
+    padding: 34px  !important;
+  }
+  .contact-submit-btn {
+    max-width: 100%;
+    width: 100%;
+  }
+}

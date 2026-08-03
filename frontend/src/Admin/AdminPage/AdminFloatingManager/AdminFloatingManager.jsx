@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from "react";
 import "./AdminFloatingManager.css";
+import AdminBlogManager from "../AdminBlogManager/AdminBlogManager";
 
 const AdminFloatingManager = () => {
+  const [activeTab, setActiveTab] = useState("floating"); // 'floating' or 'blog'
+  
   const [items, setItems] = useState([]);
   const [title, setTitle] = useState("");
   const [type, setType] = useState("emoji");
@@ -56,8 +59,25 @@ const AdminFloatingManager = () => {
   };
 
   return (
-    <div className="admin-floating-container">
-      <h2>Manage Floating Animation Items</h2>
+    <div className="ui-editz-container" style={{ padding: '20px' }}>
+      <div style={{ display: 'flex', gap: '10px', marginBottom: '20px' }}>
+        <button 
+          onClick={() => setActiveTab("floating")}
+          style={{ padding: '10px 20px', background: activeTab === 'floating' ? '#111' : '#f1f1f1', color: activeTab === 'floating' ? '#fff' : '#333', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
+        >
+          Floating Animation
+        </button>
+        <button 
+          onClick={() => setActiveTab("blog")}
+          style={{ padding: '10px 20px', background: activeTab === 'blog' ? '#111' : '#f1f1f1', color: activeTab === 'blog' ? '#fff' : '#333', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
+        >
+          Blog Manager
+        </button>
+      </div>
+
+      {activeTab === "floating" && (
+        <div className="admin-floating-container">
+          <h2>Manage Floating Animation Items</h2>
 
       <form onSubmit={handleSubmit} className="admin-floating-form">
         <input
@@ -70,7 +90,7 @@ const AdminFloatingManager = () => {
 
         <select value={type} onChange={(e) => setType(e.target.value)}>
           <option value="emoji">Emoji</option>
-          <option value="image">Image File</option>
+          
         </select>
 
         {type === "emoji" ? (
@@ -133,6 +153,12 @@ const AdminFloatingManager = () => {
           </tbody>
         </table>
       </div>
+        </div>
+      )}
+
+      {activeTab === "blog" && (
+        <AdminBlogManager />
+      )}
     </div>
   );
 };

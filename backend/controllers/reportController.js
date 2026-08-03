@@ -267,3 +267,45 @@ exports.downloadPdfReport = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+// GET Notification Summary for Sidebar
+exports.getNotificationSummary = async (req, res) => {
+  try {
+    const AppFeedback = require('../models/AppFeedback');
+    const Order = require('../models/Order');
+    
+    // Fetch all paid orders and populate user role to apply strict visibility filters
+    const allPaidOrders = await Order.find({ status: 'Paid' }).populate('userId', 'role');
+    
+    let validOrderCount = 0;
+
+    allPaidOrders.forEach(o => {
+      const role = o.userId?.role;
+      const isRetailType = o.orderType === 'retail' || !o.orderType;
+      
+      // Retail logic from getRetailOrders
+      if (isRetailType && (!role || role === 'user' || role === 'retail')) {
+        validOrderCount++;
+      }
+      // Wholesale logic from getWholesaleOrders
+      else if (role === 'wholesale') {
+        validOrderCount++;
+      }
+    });
+
+    const newOrdersCount = validOrderCount;
+    
+    // Unread feedbacks/mail
+    const newFeedbacksCount = await AppFeedback.countDocuments({ status: 'unread' });
+
+    res.status(200).json({ 
+      success: true, 
+      data: {
+        orders: newOrdersCount,
+        feedbacks: newFeedbacksCount
+      }
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};

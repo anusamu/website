@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
 
 // Separated External CSS File Linkage
@@ -7,11 +7,12 @@ import "./Footer.css";
 
 export default function Footer() {
   const [email, setEmail] = useState("");
+  const navigate = useNavigate();
 
   const handleNewsletterSubmit = (e) => {
     e.preventDefault();
-    alert(`Newsletter subscription sequence triggered for: ${email}`);
-    setEmail("");
+    // Redirect to contact page and pass the entered email
+    navigate('/contact', { state: { email } });
   };
 
   return (
@@ -22,7 +23,7 @@ export default function Footer() {
         <div className="footer-newsletter-row">
           <div className="newsletter-title-box">
             <h3 className="newsletter-heading">
-              Subscribe to our Newsletter
+              Review the Application & Contact Us
             </h3>
           </div>
           <form onSubmit={handleNewsletterSubmit} className="newsletter-form">
@@ -75,7 +76,7 @@ export default function Footer() {
           <div>
             <h4 className="footer-column-title">Quick Links</h4>
             <ul className="footer-links-list">
-              {["About Us", "Brand Story", "Blogs", "Careers", "Store Locator"].map((item) => (
+              {["About Us", "Brand Story", "Blog", "Careers", "Store Locator"].map((item) => (
                 <li key={item}>
                   <Link to={`/${item.toLowerCase().replace(" ", "-")}`}>{item}</Link>
                 </li>

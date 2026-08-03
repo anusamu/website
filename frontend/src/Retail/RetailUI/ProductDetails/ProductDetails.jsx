@@ -14,6 +14,7 @@ import Navbar from "../../../components/Navbar/Navbar";
 import Footer from "../../../components/Footer/Footer";
 import { useWishlist } from "../../../components/Context/WishlistContext";
 import { useCart } from "../../../components/Context/CartContext";
+import ReviewForm from "../Review/ReviewForm";
 import "./ProductDetails.css";
 
 const ProductDetails = () => {
@@ -28,12 +29,9 @@ const ProductDetails = () => {
   const [mainImage, setMainImage] = useState("");
   const [loading, setLoading] = useState(true);
 
-  // Mock data for Customer Reviews UI
-  const [reviews] = useState([
-    { id: 1, name: "Arjun Sharma", rating: 5, date: "July 02, 2026", comment: "Absolutely love the quality! True to size and matches the pictures perfectly." },
-    { id: 2, name: "Priya Patel", rating: 4, date: "June 28, 2026", comment: "Very comfortable material. The shipping took a day longer than expected, but product is worth it." },
-    { id: 3, name: "Rohan Das", rating: 5, date: "June 15, 2026", comment: "Premium feel. Will definitely order from this collection again." }
-  ]);
+  const [reviews, setReviews] = useState([]);
+  const [reviewsLoading, setReviewsLoading] = useState(false);
+  const [isEligibleToReview, setIsEligibleToReview] = useState(false);
 
   // Safely normalizes sizes to array of strings (handles both object arrays and string arrays)
   const normalizeSizes = (sizes) => {
@@ -151,6 +149,33 @@ const ProductDetails = () => {
               setSimilarProducts(similarRes.data.products || []);
             }
           }
+          
+          // Fetch Reviews
+          if (productData.reviewsEnabled !== false) {
+            setReviewsLoading(true);
+            try {
+              const productId = productData._id || productData.id;
+              const revRes = await api.get(`/reviews/${productId}`);
+              if (revRes.data.success) {
+                setReviews(revRes.data.reviews || []);
+              }
+
+              // Check Eligibility if user is logged in
+              const token = localStorage.getItem("token");
+              if (token) {
+                const eligRes = await api.get(`/reviews/${productId}/eligibility`, {
+                  headers: { Authorization: `Bearer ${token}` }
+                });
+                if (eligRes.data.success && eligRes.data.eligible) {
+                  setIsEligibleToReview(true);
+                }
+              }
+            } catch (err) {
+              console.error("Error fetching reviews/eligibility", err);
+            } finally {
+              setReviewsLoading(false);
+            }
+          }
         }
       } catch (error) {
         console.error("Error loading page details:", error);
@@ -206,6 +231,34 @@ const ProductDetails = () => {
       )
     );
   };
+
+  const handleReviewAdded = (newReview) => {
+    // Optimistically update reviews list
+    const populatedReview = {
+      ...newReview,
+      user: { firstName: "You", lastName: "" }
+    };
+    setReviews([populatedReview, ...reviews]);
+  };
+
+  const calculateReviewStats = () => {
+    if (reviews.length === 0) return { avg: 0, dist: { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 } };
+    
+    let sum = 0;
+    const dist = { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 };
+    
+    reviews.forEach(r => {
+      sum += r.rating;
+      if (dist[r.rating] !== undefined) dist[r.rating]++;
+    });
+    
+    return {
+      avg: (sum / reviews.length).toFixed(1),
+      dist
+    };
+  };
+
+  const stats = calculateReviewStats();
 
   return (
     <>
@@ -401,62 +454,87 @@ const ProductDetails = () => {
         <hr className="pdp-section-divider" />
 
         {/* Customer Reviews UI Section */}
-        <div className="pdp-reviews-section">
-          <div className="pdp-reviews-header">
-            <h2 className="pdp-reviews-heading">Customer Reviews</h2>
-          </div>
-
-          <div className="pdp-reviews-container">
-            <div className="pdp-reviews-summary-card">
-              <div className="summary-score-block">
-                <span className="summary-average-num">4.7</span>
-                <div className="summary-stars-row">{renderStars(5)}</div>
-                <span className="summary-total-count">Based on {reviews.length} reviews</span>
-              </div>
-
-              <div className="summary-distribution-list">
-                <div className="dist-row">
-                  <span className="dist-label">5 star</span>
-                  <Box sx={{ width: "100%", mx: 1 }}>
-                    <LinearProgress variant="determinate" value={66} sx={{ height: 6, borderRadius: 3, bgcolor: "#F0F0F0", "& .MuiLinearProgress-bar": { bgcolor: "#FFB400" } }} />
-                  </Box>
-                  <span className="dist-percentage">66%</span>
-                </div>
-                <div className="dist-row">
-                  <span className="dist-label">4 star</span>
-                  <Box sx={{ width: "100%", mx: 1 }}>
-                    <LinearProgress variant="determinate" value={34} sx={{ height: 6, borderRadius: 3, bgcolor: "#F0F0F0", "& .MuiLinearProgress-bar": { bgcolor: "#FFB400" } }} />
-                  </Box>
-                  <span className="dist-percentage">34%</span>
-                </div>
-                {[3, 2, 1].map((star) => (
-                  <div className="dist-row" key={star}>
-                    <span className="dist-label">{star} star</span>
-                    <Box sx={{ width: "100%", mx: 1 }}>
-                      <LinearProgress variant="determinate" value={0} sx={{ height: 6, borderRadius: 3, bgcolor: "#F0F0F0" }} />
-                    </Box>
-                    <span className="dist-percentage">0%</span>
-                  </div>
-                ))}
-              </div>
+        {product.reviewsEnabled !== false ? (
+          <div className="pdp-reviews-section">
+            <div className="pdp-reviews-header">
+              <h2 className="pdp-reviews-heading">Customer Reviews</h2>
             </div>
 
-            <div className="pdp-reviews-feed">
-              {reviews.map((rev) => (
-                <div className="review-feed-card" key={rev.id}>
-                  <div className="review-card-top">
-                    <div className="review-user-info">
-                      <span className="review-username">{rev.name}</span>
-                      <div className="review-stars">{renderStars(rev.rating)}</div>
-                    </div>
-                    <span className="review-date">{rev.date}</span>
-                  </div>
-                  <p className="review-comment">{rev.comment}</p>
+            <div className="pdp-reviews-container">
+              <div className="pdp-reviews-summary-card">
+                <div className="summary-score-block">
+                  <span className="summary-average-num">{stats.avg}</span>
+                  <div className="summary-stars-row">{renderStars(Math.round(stats.avg))}</div>
+                  <span className="summary-total-count">Based on {reviews.length} reviews</span>
                 </div>
-              ))}
+
+                <div className="summary-distribution-list">
+                  {[5, 4, 3, 2, 1].map((star) => {
+                    const count = stats.dist[star] || 0;
+                    const percentage = reviews.length > 0 ? Math.round((count / reviews.length) * 100) : 0;
+                    return (
+                      <div className="dist-row" key={star}>
+                        <span className="dist-label">{star} star</span>
+                        <Box sx={{ width: "100%", mx: 1 }}>
+                          <LinearProgress 
+                            variant="determinate" 
+                            value={percentage} 
+                            sx={{ height: 6, borderRadius: 3, bgcolor: "#F0F0F0", "& .MuiLinearProgress-bar": { bgcolor: "#FFB400" } }} 
+                          />
+                        </Box>
+                        <span className="dist-percentage">{percentage}%</span>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
+              <div className="pdp-reviews-feed">
+                {/* Form to submit review only if eligible */}
+                {isEligibleToReview && (
+                  <ReviewForm productId={product._id || product.id} onReviewAdded={handleReviewAdded} />
+                )}
+
+                {reviewsLoading ? (
+                  <CircularProgress size={30} sx={{ display: 'block', mx: 'auto', mt: 4 }} />
+                ) : reviews.length === 0 ? (
+                  <Typography sx={{ mt: 4, color: "#666", fontStyle: "italic" }}>
+                    No reviews yet. Be the first to review this product!
+                  </Typography>
+                ) : (
+                  <Box sx={{ mt: 4 }}>
+                    {reviews.map((rev) => (
+                      <div className="review-feed-card" key={rev._id || rev.id}>
+                        <div className="review-card-top">
+                          <div className="review-user-info">
+                            <span className="review-username">
+                              {rev.user?.firstName} {rev.user?.lastName}
+                            </span>
+                            <div className="review-stars">{renderStars(rev.rating)}</div>
+                          </div>
+                          <span className="review-date">
+                            {new Date(rev.createdAt || rev.date).toLocaleDateString()}
+                          </span>
+                        </div>
+                        <p className="review-comment">{rev.comment}</p>
+                      </div>
+                    ))}
+                  </Box>
+                )}
+              </div>
             </div>
           </div>
-        </div>
+        ) : (
+          <Box sx={{ textAlign: 'center' }}>
+  <Typography 
+    variant="h6" 
+    color="textSecondary" 
+    sx={{ fontStyle: 'italic', fontWeight: 500 }}
+  >
+    Shop more to become one of our happy customers! 💖
+  </Typography>
+</Box>
+        )}
 
       </div>
       <Footer />

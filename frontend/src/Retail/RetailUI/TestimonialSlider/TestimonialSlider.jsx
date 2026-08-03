@@ -56,7 +56,7 @@ export default function TestimonialSlider() {
           return [...rest, first];
         });
         setIsAnimating(false);
-      }, 700); // Syncs with transition duration
+      }, 1000); // Syncs with transition duration
 
     }, 3500); // Interval step delay
 

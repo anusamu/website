@@ -33,7 +33,7 @@ export default function HandloomHero() {
             stories behind every weave.
           </p>
 
-          <button className="hero-action-btn" onClick={() => console.log('Explore clicked')}>
+          <button className="hero-action-btn" onClick={() => (window.location.href = '/shop')}>
             Explore Now
           </button>
         </div>
