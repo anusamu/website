@@ -138,15 +138,7 @@ const ProductList = () => {
       const token = localStorage.getItem("token");
       const newStatus = currentStatus === "active" ? "inactive" : "active";
 
-      await axios.put(
-        `http://localhost:5000/api/products/status/${productId}`,
-        { status: newStatus },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      await api.put(`/products/status/${productId}`, { status: newStatus });
 
       fetchProducts();
     } catch (error) {
@@ -182,11 +174,7 @@ const handleDelete = async (id, e) => {
       return;
     }
 
-    const response = await axios.delete(`http://localhost:5000/api/products/delete/${id}`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+    const response = await api.delete(`/products/delete/${id}`);
 
     if (response.data.success) {
       toast.success(response.data.message || "Product deleted successfully!");

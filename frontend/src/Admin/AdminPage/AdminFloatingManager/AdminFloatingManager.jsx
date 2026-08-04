@@ -12,8 +12,11 @@ const AdminFloatingManager = () => {
   const [file, setFile] = useState(null);
   const [particleSymbol, setParticleSymbol] = useState("✨");
 
+  const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+  const backendUrl = import.meta.env.VITE_API_URL ? import.meta.env.VITE_API_URL.replace('/api', '') : "http://localhost:5000";
+
   const fetchItems = () => {
-    fetch("http://localhost:5000/api/floating/all")
+    fetch(`${apiUrl}/floating/all`)
       .then((res) => res.json())
       .then((data) => data.success && setItems(data.data));
   };
@@ -35,7 +38,7 @@ const AdminFloatingManager = () => {
       formData.append("imageFile", file);
     }
 
-    const res = await fetch("http://localhost:5000/api/floating/create", {
+    const res = await fetch(`${apiUrl}/floating/create`, {
       method: "POST",
       body: formData,
     });
@@ -49,12 +52,12 @@ const AdminFloatingManager = () => {
   };
 
   const handleToggle = async (id) => {
-    await fetch(`http://localhost:5000/api/floating/toggle/${id}`, { method: "PATCH" });
+    await fetch(`${apiUrl}/floating/toggle/${id}`, { method: "PATCH" });
     fetchItems();
   };
 
   const handleDelete = async (id) => {
-    await fetch(`http://localhost:5000/api/floating/delete/${id}`, { method: "DELETE" });
+    await fetch(`${apiUrl}/floating/delete/${id}`, { method: "DELETE" });
     fetchItems();
   };
 
@@ -134,7 +137,7 @@ const AdminFloatingManager = () => {
                 <td>{item.type}</td>
                 <td>
                   {item.type === "image" ? (
-                    <img src={`http://localhost:5000${item.content}`} alt="" className="admin-preview-img" />
+                    <img src={`${backendUrl}${item.content}`} alt="" className="admin-preview-img" />
                   ) : (
                     item.content
                   )}

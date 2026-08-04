@@ -9,7 +9,8 @@ const FloatingFlowers = ({ count = 16 }) => {
 
   // Fetch active items from backend
   useEffect(() => {
-    fetch("http://localhost:5000/api/floating/active")
+    const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+    fetch(`${apiUrl}/floating/active`)
       .then((res) => res.json())
       .then((data) => {
         if (data.success && data.data.length > 0) {
@@ -65,7 +66,7 @@ const FloatingFlowers = ({ count = 16 }) => {
           onClick={(e) => handleFlowerClick(e, item.particleSymbol || "✨")}
         >
           {item.type === "image" ? (
-            <img src={`http://localhost:5000${item.content}`} alt={item.title} className="floating-img" />
+            <img src={`${import.meta.env.VITE_API_URL ? import.meta.env.VITE_API_URL.replace('/api', '') : "http://localhost:5000"}${item.content}`} alt={item.title} className="floating-img" />
           ) : (
             item.content
           )}
