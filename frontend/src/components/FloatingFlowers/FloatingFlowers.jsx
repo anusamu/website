@@ -1,11 +1,25 @@
 import React, { useState, useCallback, useRef, useEffect } from "react";
 import "./FloatingFlowers.css";
 
-const FloatingFlowers = ({ count = 16 }) => {
+const FloatingFlowers = ({ count = 22 }) => {
   // 1. ALL Hooks declared at the top level in exact order
   const containerRef = useRef(null);
   const [bursts, setBursts] = useState([]);
   const [activeItems, setActiveItems] = useState([]);
+  const [offsets, setOffsets] = useState({});
+
+  // Generate completely random, but non-overlapping horizontal positions (lanes) on mount
+  const [randomLefts] = useState(() => {
+    // Fixed shuffled lanes (stride of 9 out of 22) to guarantee maximum horizontal distance 
+    // This strictly prevents any two emojis that spawn near each other in time from being near each other horizontally
+    const lanes = [0, 9, 18, 5, 14, 1, 10, 19, 6, 15, 2, 11, 20, 7, 16, 3, 12, 21, 8, 17, 4, 13];
+    const lefts = {};
+    for (let i = 0; i < 22; i++) {
+      // 22 lanes = ~4.54% each. Add 1% padding and 1% jitter so they don't clip edges
+      lefts[i] = (lanes[i] * 4.54) + 1 + (Math.random() * 1);
+    }
+    return lefts;
+  });
 
   // Fetch active items from backend
   useEffect(() => {
@@ -21,7 +35,7 @@ const FloatingFlowers = ({ count = 16 }) => {
   }, []);
 
   // 2. useCallback MUST be placed BEFORE any 'if/return' checks
-  const handleFlowerClick = useCallback((e, particleSymbol) => {
+  const handleFlowerClick = useCallback((e, particleSymbol, idx) => {
     if (!containerRef.current) return;
 
     const containerRect = containerRef.current.getBoundingClientRect();
@@ -42,7 +56,14 @@ const FloatingFlowers = ({ count = 16 }) => {
 
     const flowerEl = e.currentTarget;
     flowerEl.classList.add("popped");
-    setTimeout(() => flowerEl.classList.remove("popped"), 600);
+    setTimeout(() => {
+      flowerEl.classList.remove("popped");
+      // Cycle to a new emoji seamlessly while hidden
+      setOffsets((prev) => ({
+        ...prev,
+        [idx]: (prev[idx] || 0) + 1
+      }));
+    }, 600);
     setTimeout(() => {
       setBursts((prev) => prev.filter((b) => b.burstId !== burstId));
     }, 700);
@@ -51,19 +72,24 @@ const FloatingFlowers = ({ count = 16 }) => {
   // 3. NOW you can safely do conditional checks/early returns
   if (activeItems.length === 0) return null;
 
-  // Build items array by cycling through fetched items
-  const items = Array.from({ length: count }, (_, i) => ({
-    id: i + 1,
-    ...activeItems[i % activeItems.length],
-  }));
+  // Build items array by cycling through fetched items with individual offsets
+  const items = Array.from({ length: count }, (_, i) => {
+    const offset = offsets[i] || 0;
+    const activeItem = activeItems[(i + offset) % activeItems.length];
+    return {
+      idx: i,
+      ...activeItem,
+    };
+  });
 
   return (
     <div className="floating-flowers" aria-hidden="true" ref={containerRef}>
-      {items.map((item, idx) => (
+      {items.map((item) => (
         <span
-          key={`${item._id}-${idx}`}
-          className={`flower f${(idx % 16) + 1}`}
-          onClick={(e) => handleFlowerClick(e, item.particleSymbol || "✨")}
+          key={`flower-slot-${item.idx}`} // Stable key prevents DOM destruction, allowing smooth fade-in
+          className={`flower f${(item.idx % 22) + 1}`}
+          style={{ left: `${randomLefts[item.idx]}%` }}
+          onClick={(e) => handleFlowerClick(e, item.particleSymbol || "✨", item.idx)}
         >
           {item.type === "image" ? (
             <img src={`${import.meta.env.VITE_API_URL ? import.meta.env.VITE_API_URL.replace('/api', '') : "http://localhost:5000"}${item.content}`} alt={item.title} className="floating-img" />

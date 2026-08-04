@@ -199,7 +199,7 @@ const ShopPage = () => {
                     key={collectItem._id || index} 
                     className="category-card season-card" 
                     onClick={() => handleCollectionClick(title)}
-                  ><FloatingFlowers />
+                  >
                     <div className="image-wrapper">
                       <img src={displayImage} alt={title} loading="lazy" />
                     </div>

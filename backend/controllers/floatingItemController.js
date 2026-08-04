@@ -4,7 +4,25 @@ const FloatingItem = require("../models/FloatingItem");
 exports.getActiveFloatingItems = async (req, res) => {
   try {
     const items = await FloatingItem.find({ isActive: true });
-    res.status(200).json({ success: true, data: items });
+    
+    // Split combined emojis (like "🌸🌺") into separate individual items for the frontend
+    const splitItems = [];
+    items.forEach(item => {
+      if (item.type === "emoji" && item.content) {
+        // Use Array.from to correctly split emojis including surrogate pairs
+        const emojis = Array.from(item.content).filter(e => e.trim());
+        emojis.forEach(emoji => {
+          splitItems.push({
+            ...item._doc,
+            content: emoji
+          });
+        });
+      } else {
+        splitItems.push(item);
+      }
+    });
+
+    res.status(200).json({ success: true, data: splitItems });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
