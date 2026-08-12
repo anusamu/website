@@ -12,7 +12,7 @@ import WeavingStories from "../.././RetailUI/WeavingStories/WeavingStories";
 const Home = () => {
   return (
     <div className="home-page-wrapper" style={styles.pageWrapper}>
-      <header>
+      <header style={styles.header}>
         <Navbar />
       </header>
 
@@ -25,7 +25,6 @@ const Home = () => {
         <HandloomHero/>
         <TestimonialSlider/>
         <WeavingStories/>
-        
       </main>
 
       <footer style={styles.footerPush}>
@@ -36,7 +35,7 @@ const Home = () => {
 };
 
 /* ==========================================================================
-   Seamless Layout Structural Styles
+   Premium Seamless Layout Structural Styles
    ========================================================================== */
 const styles = {
   pageWrapper: {
@@ -44,19 +43,26 @@ const styles = {
     flexDirection: "column",
     minHeight: "100vh",
     paddingTop: "0",
-    backgroundColor: "#ffffff",
+    backgroundColor: "#FAFAFA", // A premium soft background instead of harsh white
     overflowX: "hidden",
+  },
+  header: {
+    position: "relative",
+    zIndex: 10,
   },
   mainContent: {
     flex: 1,
     display: "flex",
     flexDirection: "column",
-    gap: "10px", 
-  /* Gaps completely removed so sections flow directly into each other */
+    gap: "0px", // Gaps completely removed for seamless premium flow
+    position: "relative",
+    zIndex: 5,
   },
   footerPush: {
     marginTop: "auto",
-  },
+    position: "relative",
+    zIndex: 10,
+  }
 };
 
 export default Home;

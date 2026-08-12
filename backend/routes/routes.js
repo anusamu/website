@@ -49,6 +49,12 @@ router.get("/cart", protect, getCart);
 router.post("/cart/add", protect, addToCart);
 router.post("/cart/remove", protect, removeFromCart);
 
+// ===================== WISHLIST =====================
+const { getWishlist, addToWishlist, removeFromWishlist } = require("../controllers/wishlistController");
+router.get("/wishlist", protect, getWishlist);
+router.post("/wishlist/add", protect, addToWishlist);
+router.post("/wishlist/remove", protect, removeFromWishlist);
+
 // ===================== PRODUCTS (ADMIN) =====================
 router.get("/products/admin/all", protect, authorize("admin"), getAllProductsAdmin);
 router.post("/products/add", protect, authorize("admin"), upload.array("images", 10), addProduct);

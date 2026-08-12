@@ -28,15 +28,20 @@ import AdminFeedbackPage from "./Admin/AdminPage/Feedback/AdminFeedbackPage";
 import Blog from "./Retail/RetailPage/Blog/Blog";
 import BlogDetail from "./Retail/RetailPage/Blog/BlogDetail";
 
+import SessionTimeout from "./components/SessionTimeout/SessionTimeout";
+
+// Global premium cursor
+import CustomCursor from "./components/CustomCursor/CustomCursor";
+
 function App() {
   return (
-  
+      <>
+      <CustomCursor />
+      <SessionTimeout />
       <Routes>
         {/* Authentication */}
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<RegisterForm/>} />
-
-
 
         {/* Retail Customer */}
         <Route path="/" element={<Home />} />
@@ -52,10 +57,6 @@ function App() {
        <Route path="/blog" element={<Blog />} />
        <Route path="/blog/:id" element={<BlogDetail />} />
 
-
-
-
-
         {/* Admin */}
         <Route element={<AdminLayout/>}>
           <Route path="/admindashboard" element={<Dashboard/>} />
@@ -69,40 +70,11 @@ function App() {
           <Route path="/feedbacks" element={<AdminFeedbackPage/>} />
         </Route>
       </Routes>
-   
+      </>
   );
 }
 
 export default App;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
   {/* Wholesale Customer */}
         {/* <Route

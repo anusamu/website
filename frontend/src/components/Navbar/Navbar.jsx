@@ -26,6 +26,7 @@ import {
   ListItemIcon,
 } from "@mui/material";
 import { useCart } from "../Context/CartContext";
+import { useWishlist } from "../Context/WishlistContext";
 import { toast } from "react-toastify";
 import "./Navbar.css";
 import RajagopalLogo from '../../assets/Rajagopalhandlooom.png';
@@ -36,6 +37,7 @@ const Navbar = () => {
   
   // Dynamic live count pulled directly from context
   const { cartCount, clearCartOnLogout } = useCart();
+  const { clearWishlistOnLogout } = useWishlist();
   
   const [user, setUser] = useState(null);
   const [isScrolled, setIsScrolled] = useState(false);
@@ -91,6 +93,8 @@ const Navbar = () => {
     localStorage.removeItem("user");
     setUser(null);
     clearCartOnLogout();
+    clearWishlistOnLogout();
+    window.dispatchEvent(new Event('authChange'));
     navigate("/");
   };
 

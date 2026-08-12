@@ -1,55 +1,81 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { toast } from "react-toastify";
+import api from "../../api"; // Axios instance configured with baseURL and auth headers
 
 const WishlistContext = createContext();
 
 export const WishlistProvider = ({ children }) => {
   const [wishlist, setWishlist] = useState([]);
 
-  // Load items safely from LocalStorage on mount
-  useEffect(() => {
-    const savedWishlist = localStorage.getItem("wishlist");
-    if (savedWishlist) {
-      try {
-        setWishlist(JSON.parse(savedWishlist));
-      } catch (e) {
-        console.error("Error parsing wishlist storage data:", e);
-      }
+  const fetchWishlist = async () => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      setWishlist([]);
+      return;
     }
+    try {
+      const res = await api.get("/wishlist", {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setWishlist(res.data?.items || []);
+    } catch (err) {
+      console.error("Error loading wishlist from server:", err);
+    }
+  };
+
+  useEffect(() => {
+    fetchWishlist();
   }, []);
 
-  const toggleWishlist = (product, showToast = true) => {
+  const toggleWishlist = async (product, showToast = true) => {
     if (!product) return;
-    const productId = product._id || product.id;
-
-    // 1. Determine if it is already added BEFORE shifting states
-    const isAlreadyAdded = wishlist.some(item => (item._id || item.id) === productId);
-    let updatedItems;
-
-    if (isAlreadyAdded) {
-      updatedItems = wishlist.filter(item => (item._id || item.id) !== productId);
-      // 2. Fire the toast OUTSIDE of the component state updater loop safely
+    const token = localStorage.getItem("token");
+    if (!token) {
       if (showToast) {
-        toast.info(`${product.productName || "Item"} removed from Wishlist.`);
+        toast.error("Please login to manage your wishlist.");
       }
-    } else {
-      updatedItems = [...wishlist, product];
-      if (showToast) {
-        toast.success(`${product.productName || "Item"} saved to Wishlist!`);
-      }
+      return;
     }
 
-    // 3. Save directly to your states
-    setWishlist(updatedItems);
-    localStorage.setItem("wishlist", JSON.stringify(updatedItems));
+    const productId = product._id || product.id;
+    const isAlreadyAdded = wishlist.some((item) => (item._id || item.id) === productId);
+
+    try {
+      if (isAlreadyAdded) {
+        const res = await api.post("/wishlist/remove", { productId }, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        setWishlist(res.data?.items || []);
+        if (showToast) {
+          toast.info(`${product.productName || "Item"} removed from Wishlist.`);
+        }
+      } else {
+        const res = await api.post("/wishlist/add", { productId }, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        setWishlist(res.data?.items || []);
+        if (showToast) {
+          toast.success(`${product.productName || "Item"} saved to Wishlist!`);
+        }
+      }
+    } catch (err) {
+      console.error("Error toggling wishlist:", err);
+      toast.error("Failed to update wishlist.");
+    }
   };
 
   const isInWishlist = (productId) => {
-    return wishlist.some(item => (item._id || item.id) === productId);
+    return wishlist.some((item) => (item._id || item.id) === productId);
+  };
+
+  const clearWishlistOnLogout = () => {
+    setWishlist([]);
   };
 
   return (
-    <WishlistContext.Provider value={{ wishlist, toggleWishlist, isInWishlist }}>
+    <WishlistContext.Provider
+      value={{ wishlist, toggleWishlist, isInWishlist, fetchWishlist, clearWishlistOnLogout }}
+    >
       {children}
     </WishlistContext.Provider>
   );

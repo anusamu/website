@@ -16,7 +16,9 @@ export const CartProvider = ({ children }) => {
       return;
     }
     try {
-      const res = await api.get("/cart");
+      const res = await api.get("/cart", {
+        headers: { Authorization: `Bearer ${token}` }
+      });
       setCart(res.data);
     } catch (err) {
       console.error("Error loading cart from server:", err);
@@ -71,6 +73,8 @@ const addToCart = async (param1, param2, param3) => {
       productId: String(cleanProductId),
       quantity: Number(quantity),
       size: String(size).trim(),
+    }, {
+      headers: { Authorization: `Bearer ${token}` }
     });
     setCart(res.data);
     return true;
@@ -90,6 +94,8 @@ const removeFromCart = async (productId, size = "Standard") => {
     const res = await api.post("/cart/remove", {
       productId: String(productId),
       size: String(size).trim(),
+    }, {
+      headers: { Authorization: `Bearer ${token}` }
     });
     setCart(res.data);
     return true;
