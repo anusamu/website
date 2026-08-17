@@ -8,10 +8,10 @@ const orderController = require('../controllers/orderController');
 const reportController = require('../controllers/reportController');
 const { createRazorpayOrder } = require("../controllers/paymentController");
 const { addCategory, addItem, addType, addCollect, getProductFormAttributes, getSimilarProducts } = require("../controllers/AttributesController");
-const { addProduct, getProducts, getAllProductsAdmin, updateProduct, changeStatus, deleteProduct, getProductById ,getProductsForShop } = require("../controllers/productController");
+const { addProduct, getProducts, getAllProductsAdmin, updateProduct, changeStatus, deleteProduct, getProductById, getProductsForShop } = require("../controllers/productController");
 const { createAdmin, listAdmins, updateAdmin, deleteAdmin } = require("../controllers/adminAuth");
 const { getCart, addToCart, removeFromCart } = require("../controllers/CartController");
-const {getActiveFloatingItems,getAllFloatingItems,createFloatingItem,toggleItemStatus,deleteFloatingItem,} = require("../controllers/floatingItemController");
+const { getActiveFloatingItems, getAllFloatingItems, createFloatingItem, toggleItemStatus, deleteFloatingItem, } = require("../controllers/floatingItemController");
 const storage = multer.diskStorage({
   destination: (req, file, cb) => cb(null, "uploads/"),
   filename: (req, file, cb) => cb(null, `${Date.now()}-${file.originalname}`),
@@ -125,11 +125,19 @@ router.delete("/admin/feedbacks/:id", protect, authorize("SuperAdmin", "admin"),
 
 const blogController = require('../controllers/blogController');
 
+const footerController = require('../controllers/footerController');
+
 // ===================== BLOGS =====================
 router.post("/blogs", protect, authorize("SuperAdmin", "admin"), upload.any(), blogController.createBlog);
 router.get("/blogs", blogController.getBlogs);
 router.get("/blogs/:id", blogController.getBlogById);
 router.put("/blogs/:id", protect, authorize("SuperAdmin", "admin"), upload.any(), blogController.updateBlog);
 router.delete("/blogs/:id", protect, authorize("SuperAdmin", "admin"), blogController.deleteBlog);
+
+
+
+// ===================== FOOTER (ADMIN & PUBLIC) =====================
+router.get("/footer", footerController.getFooterConfig);
+router.put("/admin/footer", protect, authorize("SuperAdmin", "admin"), footerController.updateFooterConfig);
 
 module.exports = router;

@@ -9,7 +9,7 @@
   height: 100vh;
   overflow: hidden;
   pointer-events: none; /* container itself never blocks clicks */
-  z-index: 50; /* High enough to overlay the page beautifully */
+  z-index: 0; /* Background layer: floats behind cards and main content */
 }
 
 .floating-flowers .flower {

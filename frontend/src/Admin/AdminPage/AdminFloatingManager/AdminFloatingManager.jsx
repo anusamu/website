@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from "react";
 import "./AdminFloatingManager.css";
 import AdminBlogManager from "../AdminBlogManager/AdminBlogManager";
+import AdminFooterManager from "./AdminFooterManager";
 
 const AdminFloatingManager = () => {
-  const [activeTab, setActiveTab] = useState("floating"); // 'floating' or 'blog'
-  
+  const [activeTab, setActiveTab] = useState("footer"); // 'footer', 'floating', or 'blog'
+
   const [items, setItems] = useState([]);
   const [title, setTitle] = useState("");
   const [type, setType] = useState("emoji");
@@ -13,7 +14,9 @@ const AdminFloatingManager = () => {
   const [particleSymbol, setParticleSymbol] = useState("✨");
 
   const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
-  const backendUrl = import.meta.env.VITE_API_URL ? import.meta.env.VITE_API_URL.replace('/api', '') : "http://localhost:5000";
+  const backendUrl = import.meta.env.VITE_API_URL
+    ? import.meta.env.VITE_API_URL.replace("/api", "")
+    : "http://localhost:5000";
 
   const fetchItems = () => {
     fetch(`${apiUrl}/floating/all`)
@@ -62,106 +65,150 @@ const AdminFloatingManager = () => {
   };
 
   return (
-    <div className="ui-editz-container" style={{ padding: '20px' }}>
-      <div style={{ display: 'flex', gap: '10px', marginBottom: '20px' }}>
-        <button 
+    <div className="ui-editz-container" style={{ padding: "20px" }}>
+      <div style={{ display: "flex", gap: "10px", marginBottom: "24px", flexWrap: "wrap" }}>
+        <button
+          onClick={() => setActiveTab("footer")}
+          style={{
+            padding: "10px 20px",
+            background: activeTab === "footer" ? "#2b3a2b" : "#f1f1f1",
+            color: activeTab === "footer" ? "#fff" : "#333",
+            border: "none",
+            borderRadius: "6px",
+            cursor: "pointer",
+            fontWeight: "600",
+            transition: "all 0.2s ease",
+          }}
+        >
+          Footer Manager
+        </button>
+        <button
           onClick={() => setActiveTab("floating")}
-          style={{ padding: '10px 20px', background: activeTab === 'floating' ? '#111' : '#f1f1f1', color: activeTab === 'floating' ? '#fff' : '#333', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
+          style={{
+            padding: "10px 20px",
+            background: activeTab === "floating" ? "#2b3a2b" : "#f1f1f1",
+            color: activeTab === "floating" ? "#fff" : "#333",
+            border: "none",
+            borderRadius: "6px",
+            cursor: "pointer",
+            fontWeight: "600",
+            transition: "all 0.2s ease",
+          }}
         >
           Floating Animation
         </button>
-        <button 
+        <button
           onClick={() => setActiveTab("blog")}
-          style={{ padding: '10px 20px', background: activeTab === 'blog' ? '#111' : '#f1f1f1', color: activeTab === 'blog' ? '#fff' : '#333', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
+          style={{
+            padding: "10px 20px",
+            background: activeTab === "blog" ? "#2b3a2b" : "#f1f1f1",
+            color: activeTab === "blog" ? "#fff" : "#333",
+            border: "none",
+            borderRadius: "6px",
+            cursor: "pointer",
+            fontWeight: "600",
+            transition: "all 0.2s ease",
+          }}
         >
           Blog Manager
         </button>
       </div>
 
+      {activeTab === "footer" && <AdminFooterManager />}
+
       {activeTab === "floating" && (
         <div className="admin-floating-container">
           <h2>Manage Floating Animation Items</h2>
 
-      <form onSubmit={handleSubmit} className="admin-floating-form">
-        <input
-          type="text"
-          placeholder="Title (e.g. Spring Blossom)"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          required
-        />
+          <form onSubmit={handleSubmit} className="admin-floating-form">
+            <input
+              type="text"
+              placeholder="Title (e.g. Spring Blossom)"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              required
+            />
 
-        <select value={type} onChange={(e) => setType(e.target.value)}>
-          <option value="emoji">Emoji</option>
-          
-        </select>
+            <select value={type} onChange={(e) => setType(e.target.value)}>
+              <option value="emoji">Emoji</option>
+            </select>
 
-        {type === "emoji" ? (
-          <input
-            type="text"
-            placeholder="Paste Emoji (e.g. 🌸)"
-            value={content}
-            onChange={(e) => setContent(e.target.value)}
-            required
-          />
-        ) : (
-          <input type="file" accept="image/*" onChange={(e) => setFile(e.target.files[0])} required />
-        )}
+            {type === "emoji" ? (
+              <input
+                type="text"
+                placeholder="Paste Emoji (e.g. 🌸)"
+                value={content}
+                onChange={(e) => setContent(e.target.value)}
+                required
+              />
+            ) : (
+              <input
+                type="file"
+                accept="image/*"
+                onChange={(e) => setFile(e.target.files[0])}
+                required
+              />
+            )}
 
-        <input
-          type="text"
-          placeholder="Click Particle Effect Symbol (Default ✨)"
-          value={particleSymbol}
-          onChange={(e) => setParticleSymbol(e.target.value)}
-        />
+            <input
+              type="text"
+              placeholder="Click Particle Effect Symbol (Default ✨)"
+              value={particleSymbol}
+              onChange={(e) => setParticleSymbol(e.target.value)}
+            />
 
-        <button type="submit">Add Animation Item</button>
-      </form>
+            <button type="submit">Add Animation Item</button>
+          </form>
 
-      <div className="admin-items-list">
-        <h3>Existing Floating Items</h3>
-        <table>
-          <thead>
-            <tr>
-              <th>Title</th>
-              <th>Type</th>
-              <th>Preview</th>
-              <th>Status</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {items.map((item) => (
-              <tr key={item._id}>
-                <td>{item.title}</td>
-                <td>{item.type}</td>
-                <td>
-                  {item.type === "image" ? (
-                    <img src={`${backendUrl}${item.content}`} alt="" className="admin-preview-img" />
-                  ) : (
-                    item.content
-                  )}
-                </td>
-                <td>{item.isActive ? "Active" : "Disabled"}</td>
-                <td>
-                  <button onClick={() => handleToggle(item._id)}>
-                    {item.isActive ? "Disable" : "Enable"}
-                  </button>
-                  <button onClick={() => handleDelete(item._id)} className="btn-delete">
-                    Delete
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+          <div className="admin-items-list">
+            <h3>Existing Floating Items</h3>
+            <table>
+              <thead>
+                <tr>
+                  <th>Title</th>
+                  <th>Type</th>
+                  <th>Preview</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {items.map((item) => (
+                  <tr key={item._id}>
+                    <td>{item.title}</td>
+                    <td>{item.type}</td>
+                    <td>
+                      {item.type === "image" ? (
+                        <img
+                          src={`${backendUrl}${item.content}`}
+                          alt=""
+                          className="admin-preview-img"
+                        />
+                      ) : (
+                        item.content
+                      )}
+                    </td>
+                    <td>{item.isActive ? "Active" : "Disabled"}</td>
+                    <td>
+                      <button onClick={() => handleToggle(item._id)}>
+                        {item.isActive ? "Disable" : "Enable"}
+                      </button>
+                      <button
+                        onClick={() => handleDelete(item._id)}
+                        className="btn-delete"
+                      >
+                        Delete
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       )}
 
-      {activeTab === "blog" && (
-        <AdminBlogManager />
-      )}
+      {activeTab === "blog" && <AdminBlogManager />}
     </div>
   );
 };

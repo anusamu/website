@@ -30,13 +30,9 @@ import BlogDetail from "./Retail/RetailPage/Blog/BlogDetail";
 
 import SessionTimeout from "./components/SessionTimeout/SessionTimeout";
 
-// Global premium cursor
-import CustomCursor from "./components/CustomCursor/CustomCursor";
-
 function App() {
   return (
       <>
-      <CustomCursor />
       <SessionTimeout />
       <Routes>
         {/* Authentication */}
