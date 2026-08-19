@@ -207,8 +207,7 @@ const AdminSidebar = ({
 
                   {isExpanded && (
                     <ListItemText 
-                      primary={item.text} 
-                      primaryTypographyProps={{ className: "admin-menu-item-text" }}
+                      primary={<span className="admin-menu-item-text">{item.text}</span>}
                     />
                   )}
                 </ListItemButton>
@@ -252,8 +251,7 @@ const AdminSidebar = ({
 
           {isExpanded && (
             <ListItemText 
-              primary="Logout" 
-              primaryTypographyProps={{ className: "admin-menu-item-logout-text" }}
+              primary={<span className="admin-menu-item-logout-text">Logout</span>}
             />
           )}
         </ListItemButton>

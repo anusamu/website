@@ -30,6 +30,15 @@ router.post("/floating/create", floatingUpload.single("imageFile"), createFloati
 router.patch("/floating/toggle/:id", toggleItemStatus);
 router.delete("/floating/delete/:id", deleteFloatingItem);
 
+// ===================== WEAVING STORIES =====================
+const weavingStoryController = require("../controllers/weavingStoryController");
+router.get("/weaving-stories/active", weavingStoryController.getActiveStories);
+router.post("/weaving-stories/like/:id", weavingStoryController.likeStory);
+router.get("/weaving-stories/all", protect, authorize("SuperAdmin", "admin"), weavingStoryController.getAllStories);
+router.post("/weaving-stories/create", protect, authorize("SuperAdmin", "admin"), upload.single("imageFile"), weavingStoryController.createStory);
+router.patch("/weaving-stories/toggle/:id", protect, authorize("SuperAdmin", "admin"), weavingStoryController.toggleStoryStatus);
+router.delete("/weaving-stories/delete/:id", protect, authorize("SuperAdmin", "admin"), weavingStoryController.deleteStory);
+
 // ===================== AUTH =====================
 router.post("/register", auth.register);
 router.post("/login", auth.login);

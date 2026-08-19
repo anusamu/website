@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import "./AdminFloatingManager.css";
 import AdminBlogManager from "../AdminBlogManager/AdminBlogManager";
 import AdminFooterManager from "./AdminFooterManager";
+import AdminWeavingStoriesManager from "./AdminWeavingStoriesManager";
 
 const AdminFloatingManager = () => {
   const [activeTab, setActiveTab] = useState("footer"); // 'footer', 'floating', or 'blog'
@@ -112,9 +113,25 @@ const AdminFloatingManager = () => {
         >
           Blog Manager
         </button>
+        <button
+          onClick={() => setActiveTab("weaving-stories")}
+          style={{
+            padding: "10px 20px",
+            background: activeTab === "weaving-stories" ? "#2b3a2b" : "#f1f1f1",
+            color: activeTab === "weaving-stories" ? "#fff" : "#333",
+            border: "none",
+            borderRadius: "6px",
+            cursor: "pointer",
+            fontWeight: "600",
+            transition: "all 0.2s ease",
+          }}
+        >
+          Weaving Stories
+        </button>
       </div>
 
       {activeTab === "footer" && <AdminFooterManager />}
+      {activeTab === "weaving-stories" && <AdminWeavingStoriesManager />}
 
       {activeTab === "floating" && (
         <div className="admin-floating-container">

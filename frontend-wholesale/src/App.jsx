@@ -1,6 +1,5 @@
-import React, { useState } from 'react';
-import { Routes, Route } from "react-router-dom";
-import { AnimatePresence } from 'framer-motion';
+import React from 'react';
+import { Routes, Route, useNavigate } from "react-router-dom";
 
 import SplashLanding from './WholesaleUI/SplashLanding/SplashLanding';
 import SessionTimeout from "./components/SessionTimeout/SessionTimeout";
@@ -21,23 +20,20 @@ import Blog from "./WholesalePage/Blog/Blog";
 import BlogDetail from "./WholesalePage/Blog/BlogDetail";
 
 import './App.css';
+import ScrollToTop from "./components/ScrollToTop";
 
 function App() {
-  const [showSplash, setShowSplash] = useState(true);
+  const navigate = useNavigate();
 
   return (
     <>
+      <ScrollToTop />
       <SessionTimeout />
-      <AnimatePresence>
-        {showSplash && (
-          <SplashLanding key="splash" onDismiss={() => setShowSplash(false)} />
-        )}
-      </AnimatePresence>
-      
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<RegisterForm/>} />
-        <Route path="/" element={<Home />} />
+        <Route path="/" element={<SplashLanding onDismiss={() => navigate('/home')} />} />
+        <Route path="/home" element={<Home />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/category-products" element={<CategoryProducts/>} />
         <Route path="/shop" element={<ShopPage/>} />

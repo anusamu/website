@@ -9,6 +9,7 @@ import ShopByPattern from "../.././WholesaleUI/ShopByPattern/ShopByPattern";
 import HandloomHero from "../.././WholesaleUI/HandloomHero/HandloomHero";
 import TestimonialSlider from "../.././WholesaleUI/TestimonialSlider/TestimonialSlider";
 import WeavingStories from "../.././WholesaleUI/WeavingStories/WeavingStories";
+import CustomCursor from "../.././components/CustomCursor/CustomCursor";
 
 // Reusable animation wrapper for seamless scroll reveals
 const FadeInSection = ({ children, delay = 0, style }) => (
@@ -26,6 +27,7 @@ const FadeInSection = ({ children, delay = 0, style }) => (
 const Home = () => {
   return (
     <div className="home-page-wrapper" style={styles.pageWrapper}>
+      <CustomCursor />
       <header style={styles.header}>
         <Navbar />
       </header>
@@ -33,9 +35,9 @@ const Home = () => {
       {/* Main viewport is compacted but uses FadeInSection for premium reveals */}
       <main style={styles.mainContent}>
         {/* Main Banner usually needs to render immediately without delay */}
-        <motion.div 
-          initial={{ opacity: 0 }} 
-          animate={{ opacity: 1 }} 
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
           transition={{ duration: 1 }}
         >
           <MainBanner />
@@ -51,19 +53,19 @@ const Home = () => {
         </FadeInSection>
 
         <FadeInSection>
-          <ShopByPattern/>
+          <ShopByPattern />
         </FadeInSection>
 
         <FadeInSection>
-          <HandloomHero/>
+          <HandloomHero />
         </FadeInSection>
 
         <FadeInSection>
-          <TestimonialSlider/>
+          <TestimonialSlider />
         </FadeInSection>
 
         <FadeInSection>
-          <WeavingStories/>
+          <WeavingStories />
         </FadeInSection>
       </main>
 

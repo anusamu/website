@@ -1,8 +1,10 @@
 import React, { useRef } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
 import './HandloomHero.css';
 
 export default function HandloomHero() {
+  const navigate = useNavigate();
   const containerRef = useRef(null);
 
   // Parallax scroll effect for background
@@ -52,7 +54,7 @@ export default function HandloomHero() {
             stories behind every weave.
           </p>
 
-          <button className="hero-action-btn" onClick={() => (window.location.href = '/shop')}>
+          <button className="hero-action-btn" onClick={() => navigate('/shop')}>
             Explore Now
           </button>
         </div>

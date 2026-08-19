@@ -45,8 +45,10 @@
   z-index: 2;
   display: grid;
   grid-template-columns: repeat(5, 1fr);
-  gap: 1px; /* Emulating ultra-sharp minimal layout lines */
-  background-color: var(--white); /* Forms clean 1px lines automatically */
+  gap: 1px;
+  /* Emulating ultra-sharp minimal layout lines */
+  background-color: var(--white);
+  /* Forms clean 1px lines automatically */
   width: 100%;
   max-width: 1440px;
   border: 1px solid var(--white);
@@ -57,7 +59,8 @@
 .story-card {
   position: relative;
   width: 100%;
-  aspect-ratio: 0.76 / 1; /* Retaining vertical portrait rules for high-end fashion/textiles */
+  aspect-ratio: 0.76 / 1;
+  /* Retaining vertical portrait rules for high-end fashion/textiles */
   cursor: pointer;
   overflow: hidden;
   background-color: #e5e0d5;
@@ -139,7 +142,7 @@
 .burst-heart {
   font-size: 4rem;
   color: var(--white);
-  filter: drop-shadow(0 4px 12px rgba(0,0,0,0.3));
+  filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.3));
   animation: heartPulseBurst 0.75s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
 }
 
@@ -148,14 +151,17 @@
     transform: scale(0);
     opacity: 0;
   }
+
   30% {
     transform: scale(1.2);
     opacity: 0.9;
   }
+
   50% {
     transform: scale(1);
     opacity: 1;
   }
+
   100% {
     transform: scale(1.4);
     opacity: 0;
@@ -187,14 +193,16 @@
 .instagram-icon-mock {
   font-size: 1.2rem;
   background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
-  
+
   /* 1. Clips the background layout to the text boundaries */
   -webkit-background-clip: text;
-  background-clip: text; /* Standard syntax for modern updates */
+  background-clip: text;
+  /* Standard syntax for modern updates */
 
   /* 2. CRITICAL: Makes the text fill transparent so the background gradient shows through */
-  -webkit-text-fill-color: transparent; 
-  color: transparent; /* Fallback */
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  /* Fallback */
 }
 
 .instagram-handle {
@@ -211,6 +219,7 @@
   .stories-grid-container {
     grid-template-columns: repeat(3, 1fr);
   }
+
   .stories-section {
     padding-top: 100px;
   }
@@ -220,15 +229,19 @@
   .stories-grid-container {
     grid-template-columns: repeat(2, 1fr);
   }
+
   .stories-section {
     padding-top: 80px;
   }
+
   .story-overlay {
-    opacity: 1; /* Keeps context details readable directly without touch gestures on mobile devices */
-    background: linear-gradient(to top, rgba(0,0,0,0.6) 0%, transparent 40%);
+    opacity: 1;
+    /* Keeps context details readable directly without touch gestures on mobile devices */
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.6) 0%, transparent 40%);
     align-items: flex-end;
     padding: 12px;
   }
+
   .story-like-stats {
     font-size: 0.8rem;
   }

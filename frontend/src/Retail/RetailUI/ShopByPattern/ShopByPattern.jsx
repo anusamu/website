@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import "./ShopByPattern.css";
 import api from "../../../api";
 
@@ -16,14 +16,21 @@ function FeaturesBar() {
           { icon: <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />, poly: true, title: "Secure Payments", desc: "100% Secure checkout" },
           { icon: <path d="M3 18v-6a9 9 0 0 1 18 0v6M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3M3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3" />, title: "24/7 Support", desc: "We're here to help" }
         ].map((feat, index) => (
-          <div className="feature-item" key={index}>
+          <motion.div
+            className="feature-item"
+            key={index}
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: index * 0.1, duration: 0.5 }}
+          >
             <div className="feature-icon-box">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
                 {feat.icon}
                 {feat.dots && (
                   <>
-                    <circle cx="6.5" cy="16.5" r="1.5"/>
-                    <circle cx="14.5" cy="16.5" r="1.5"/>
+                    <circle cx="6.5" cy="16.5" r="1.5" />
+                    <circle cx="14.5" cy="16.5" r="1.5" />
                   </>
                 )}
                 {feat.poly && <polyline points="22 4 12 14.01 9 11.01" />}
@@ -33,7 +40,7 @@ function FeaturesBar() {
               <h4 className="feature-title">{feat.title}</h4>
               <p className="feature-desc">{feat.desc}</p>
             </div>
-          </div>
+          </motion.div>
         ))}
       </div>
     </div>
@@ -46,7 +53,7 @@ function ShopByPattern() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [centerIndex, setCenterIndex] = useState(0);
-  
+
   // Touch coordinates tracking state hooks for smooth mobile swiping
   const touchStart = useRef(0);
   const touchEnd = useRef(0);
@@ -70,7 +77,7 @@ function ShopByPattern() {
             uniqueMaterialMap[matKey] = prod;
           }
         });
-        
+
         const filteredPatterns = Object.values(uniqueMaterialMap);
         setPatterns(filteredPatterns.length > 0 ? filteredPatterns : productsArray.slice(0, 6));
         setError(null);
@@ -131,15 +138,6 @@ function ShopByPattern() {
     );
   }
 
-  // Calculate distance for CoverFlow
-  const getIndexDistance = (index) => {
-    let diff = index - centerIndex;
-    const len = patterns.length;
-    if (diff > len / 2) diff -= len;
-    if (diff < -len / 2) diff += len;
-    return diff;
-  };
-
   return (
     <>
       <FeaturesBar />
@@ -147,85 +145,93 @@ function ShopByPattern() {
       <section className="pattern-section">
         {/* LEFT PANEL: Content Controls and Carousel Wrapper */}
         <div className="pattern-left-panel">
-          <header className="pattern-header">
+          <motion.header
+            className="pattern-header"
+            initial={{ opacity: 0, x: -30 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8 }}
+          >
             <p className="pattern-sub-tagline">Shop by Pattern</p>
             <h2 className="pattern-main-title">Patterns That Speak Tradition</h2>
-          </header>
+          </motion.header>
 
-          <div 
+          <motion.div
             className="pattern-carousel-viewport"
             onTouchStart={handleTouchStart}
             onTouchMove={handleTouchMove}
             onTouchEnd={handleTouchEnd}
-            style={{ position: 'relative', overflow: 'hidden', height: '400px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8, delay: 0.2 }}
           >
-            <AnimatePresence initial={false}>
-              {patterns.map((item, index) => {
-                const diff = getIndexDistance(index);
-                // Only render items that are close to the center to save DOM nodes
-                if (Math.abs(diff) > 2) return null;
+            <div className="pattern-grid">
+              {(() => {
+                const len = patterns.length;
+                if (len === 0) return null;
 
-                const patternValue = item.material || item.pattern || "Pattern";
-                const displayImage = item.materialImage || item.image || item.imageUrl || (item.images && item.images[0]) || 'https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&q=80&w=400';
-                const isCenter = diff === 0;
+                const norm = (i) => ((i % len) + len) % len;
+                const left = norm(centerIndex - 1);
+                const mid = norm(centerIndex);
+                const right = norm(centerIndex + 1);
 
-                return (
-                  <motion.div 
-                    key={item._id || index}
-                    onClick={() => {
-                      if (isCenter) handlePatternClick(patternValue);
-                      else if (diff > 0) handleNext();
-                      else handlePrev();
-                    }}
-                    initial={{ opacity: 0, x: diff * 120 + "%", scale: 0.8 }}
-                    animate={{
-                      opacity: Math.abs(diff) > 1 ? 0 : 1,
-                      x: diff * 110 + "%",
-                      scale: 1 - Math.abs(diff) * 0.15,
-                      zIndex: 10 - Math.abs(diff),
-                      filter: Math.abs(diff) > 0 ? "brightness(0.6)" : "brightness(1)",
-                    }}
-                    exit={{ opacity: 0 }}
-                    transition={{ type: "spring", stiffness: 200, damping: 25 }}
-                    style={{ position: 'absolute', width: '250px', cursor: 'pointer' }}
-                  >
-                    <div className="pattern-image-frame" style={{ borderRadius: '16px', overflow: 'hidden', boxShadow: isCenter ? '0 20px 40px rgba(0,0,0,0.2)' : 'none' }}>
-                      <img src={displayImage} alt={patternValue} loading="lazy" style={{ width: '100%', height: '350px', objectFit: 'cover' }} />
-                      <div className={`pattern-overlay ${isCenter ? "active-overlay" : ""}`} style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(0,0,0,0.8), transparent)', display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', padding: '1.5rem', opacity: isCenter ? 1 : 0, transition: 'opacity 0.3s' }}>
-                        <span className="pattern-card-title" style={{ color: 'white', fontSize: '1.25rem', fontFamily: 'Playfair Display, serif' }}>{patternValue}</span>
-                        {isCenter && (
-                          <button className="pattern-card-btn" style={{ marginTop: '0.5rem', alignSelf: 'flex-start', background: 'white', color: 'black', border: 'none', padding: '0.5rem 1rem', borderRadius: '4px', fontWeight: 'bold' }}>Shop Now</button>
-                        )}
+                const windowItems = len === 1 ? [patterns[mid]] : len === 2 ? [patterns[left], patterns[mid]] : [patterns[left], patterns[mid], patterns[right]];
+
+                return windowItems.map((item, wi) => {
+                  const patternValue = item.material || item.pattern || "Pattern";
+                  const displayImage = item.materialImage || item.image || item.imageUrl || (item.images && item.images[0]) || 'https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&q=80&w=400';
+                  const isFeaturedCard = (windowItems.length === 3 && wi === 1) || (windowItems.length === 2 && wi === 1) || windowItems.length === 1;
+
+                  return (
+                    <motion.div
+                      key={item._id || `pattern-${wi}`}
+                      className={`pattern-card ${isFeaturedCard ? "featured" : ""}`}
+                      onClick={() => handlePatternClick(patternValue)}
+                      whileHover={{ scale: 1.05, rotateY: 5, rotateX: 5, zIndex: 10 }}
+                      whileTap={{ scale: 0.95 }}
+                      style={{ transformStyle: "preserve-3d" }}
+                    >
+                      <div className="pattern-image-frame" style={{ transform: "translateZ(20px)" }}>
+                        <img src={displayImage} alt={patternValue} loading="lazy" />
+                        <div className={`pattern-overlay ${isFeaturedCard ? "active-overlay" : ""}`}>
+                          <span className="pattern-card-title">{patternValue}</span>
+                          {isFeaturedCard && (
+                            <button className="pattern-card-btn">Shop Now</button>
+                          )}
+                        </div>
                       </div>
-                    </div>
-                  </motion.div>
-                );
-              })}
-            </AnimatePresence>
-          </div>
+                    </motion.div>
+                  );
+                });
+              })()}
+            </div>
+          </motion.div>
 
-          <div className="pattern-controls" style={{ marginTop: '1rem', display: 'flex', gap: '1rem', justifyContent: 'center' }}>
-            <button className="ctrl-arrow-btn" aria-label="Previous pattern" onClick={handlePrev} style={{ background: '#f0f0f0', border: 'none', width: '40px', height: '40px', borderRadius: '50%', cursor: 'pointer', transition: 'background 0.2s' }} onMouseEnter={(e) => e.currentTarget.style.background = '#e0e0e0'} onMouseLeave={(e) => e.currentTarget.style.background = '#f0f0f0'}>
+          <div className="pattern-controls">
+            <button className="ctrl-arrow-btn" aria-label="Previous pattern" onClick={handlePrev}>
               <span className="arrow-icon">&larr;</span>
             </button>
-            <button className="ctrl-arrow-btn" aria-label="Next pattern" onClick={handleNext} style={{ background: '#f0f0f0', border: 'none', width: '40px', height: '40px', borderRadius: '50%', cursor: 'pointer', transition: 'background 0.2s' }} onMouseEnter={(e) => e.currentTarget.style.background = '#e0e0e0'} onMouseLeave={(e) => e.currentTarget.style.background = '#f0f0f0'}>
+            <button className="ctrl-arrow-btn" aria-label="Next pattern" onClick={handleNext}>
               <span className="arrow-icon">&rarr;</span>
             </button>
           </div>
         </div>
 
         {/* RIGHT PANEL: Layout Editorial Viewport */}
-        <div className="pattern-right-panel" style={{ overflow: 'hidden' }}>
-          <motion.img
-            initial={{ scale: 1.1 }}
-            whileInView={{ scale: 1 }}
-            transition={{ duration: 1.5, ease: "easeOut" }}
-            viewport={{ once: true }}
-            src="https://i.postimg.cc/y87YZM1Y/ba11dc928c38b978d1ca8da124aa9e66.jpg" 
+        <motion.div
+          className="pattern-right-panel"
+          initial={{ opacity: 0, scale: 0.95 }}
+          whileInView={{ opacity: 1, scale: 1 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.8, delay: 0.4 }}
+        >
+          <img
+            src="https://i.postimg.cc/y87YZM1Y/ba11dc928c38b978d1ca8da124aa9e66.jpg"
             alt="Models showcasing traditional drapes"
             className="editorial-img"
           />
-        </div>
+        </motion.div>
       </section>
     </>
   );

@@ -1,8 +1,11 @@
 import React from 'react';
 import { motion } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
 import './HandloomHero.css';
 
 export default function HandloomHero() {
+  const navigate = useNavigate();
+
   return (
     <section className="handloom-hero">
       {/* Background image overlay container */}
@@ -49,7 +52,7 @@ export default function HandloomHero() {
             className="hero-action-btn"
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            onClick={() => (window.location.href = '/shop')}
+            onClick={() => navigate('/shop')}
           >
             Explore Now
           </motion.button>
