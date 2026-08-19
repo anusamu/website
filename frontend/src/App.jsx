@@ -1,4 +1,6 @@
+import React, { useState } from 'react';
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { AnimatePresence } from 'framer-motion';
 
 import Login from "./components/Login/Login";
 import RegisterForm from "./components/Register/Register";
@@ -29,11 +31,21 @@ import Blog from "./Retail/RetailPage/Blog/Blog";
 import BlogDetail from "./Retail/RetailPage/Blog/BlogDetail";
 
 import SessionTimeout from "./components/SessionTimeout/SessionTimeout";
+import SplashLanding from './Retail/RetailUI/SplashLanding/SplashLanding';
 
 function App() {
+  const [showSplash, setShowSplash] = useState(true);
+
   return (
       <>
       <SessionTimeout />
+      
+      <AnimatePresence>
+        {showSplash && (
+          <SplashLanding key="splash" onDismiss={() => setShowSplash(false)} />
+        )}
+      </AnimatePresence>
+
       <Routes>
         {/* Authentication */}
         <Route path="/login" element={<Login />} />
@@ -43,15 +55,15 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/category-products" element={<CategoryProducts/>} />
-      <Route path="/shop" element={<ShopPage/>} />
-      <Route path="/product/:id" element={<ProductDetails/>} />
-      <Route path="/cart" element={<Cart/>} />
-       <Route path="/myWishlist" element={<Wishlist/>} />
-       <Route path="/checkout" element={<Checkout/>} />
-       <Route path="/lookbook" element={<LuxuryLookbook/>} />
-       <Route path="/about" element={<About/>} />
-       <Route path="/blog" element={<Blog />} />
-       <Route path="/blog/:id" element={<BlogDetail />} />
+        <Route path="/shop" element={<ShopPage/>} />
+        <Route path="/product/:id" element={<ProductDetails/>} />
+        <Route path="/cart" element={<Cart/>} />
+        <Route path="/myWishlist" element={<Wishlist/>} />
+        <Route path="/checkout" element={<Checkout/>} />
+        <Route path="/lookbook" element={<LuxuryLookbook/>} />
+        <Route path="/about" element={<About/>} />
+        <Route path="/blog" element={<Blog />} />
+        <Route path="/blog/:id" element={<BlogDetail />} />
 
         {/* Admin */}
         <Route element={<AdminLayout/>}>
@@ -70,10 +82,4 @@ function App() {
   );
 }
 
-export default App;
-
-  {/* Wholesale Customer */}
-        {/* <Route
-          path="/wholesalehome"
-          element={<WholesaleDashboard />}
-        /> */}
+export default App;

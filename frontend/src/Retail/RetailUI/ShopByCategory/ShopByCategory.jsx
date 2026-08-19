@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
 import "./ShopByCategory.css";
 import api from "../../../api";
 
@@ -56,11 +57,31 @@ function ShopByCategory() {
     };
   }, []);
 
-  // LOGIC FIX: Added the missing '?category=' query indicator so your router and useLocation can parse it
   const handleCategoryClick = (categoryName) => {
     if (!categoryName) return;
-
     navigate(`/category-products?category=${encodeURIComponent(categoryName.trim())}`);
+  };
+
+  // Animation variants
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    show: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.15,
+        delayChildren: 0.2
+      }
+    }
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 30, scale: 0.95 },
+    show: { 
+      opacity: 1, 
+      y: 0, 
+      scale: 1,
+      transition: { duration: 0.6, ease: [0.16, 1, 0.3, 1] }
+    }
   };
 
   if (loading) {
@@ -93,7 +114,13 @@ function ShopByCategory() {
           <h2 className="main-title">Shop by Category</h2>
         </header>
 
-        <div className="category-grid">
+        <motion.div 
+          className="category-grid"
+          variants={containerVariants}
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: true, margin: "-100px" }}
+        >
           {categories.map((cat, index) => {
             const title = cat.name || cat.title || `Collection ${index + 1}`;
 
@@ -103,21 +130,30 @@ function ShopByCategory() {
               fallbackImages[index % fallbackImages.length];
 
             return (
-              <div
+              <motion.div
+                variants={itemVariants}
                 key={cat._id || index}
                 className="category-card"
                 onClick={() => handleCategoryClick(title)}
                 style={{ cursor: "pointer" }}
+                whileHover={{ y: -5 }}
               >
                 <div className="image-frame">
-                  <img src={displayImage} alt={title} loading="lazy" />
+                  <motion.img 
+                    src={displayImage} 
+                    alt={title} 
+                    loading="lazy" 
+                    whileHover={{ scale: 1.05 }}
+                    transition={{ duration: 0.4 }}
+                  />
+                  <div className="category-overlay"></div>
                 </div>
 
                 <h3 className="card-label">{title}</h3>
-              </div>
+              </motion.div>
             );
           })}
-        </div>
+        </motion.div>
 
         <div className="cta-wrapper">
           <button

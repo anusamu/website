@@ -14,18 +14,35 @@
 /* ── Animations ────────────────────────────────── */
 
 @keyframes spinSlow {
-  from { transform: rotate(0deg); }
-  to   { transform: rotate(360deg); }
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 @keyframes floatPulse {
-  0%, 100% { transform: scale(1) translate(0, 0); }
-  50%      { transform: scale(1.08) translate(-15px, 15px); }
+
+  0%,
+  100% {
+    transform: scale(1) translate(0, 0);
+  }
+
+  50% {
+    transform: scale(1.08) translate(-15px, 15px);
+  }
 }
 
 @keyframes shimmer {
-  0%   { background-position: -200% 0; }
-  100% { background-position: 200% 0; }
+  0% {
+    background-position: -200% 0;
+  }
+
+  100% {
+    background-position: 200% 0;
+  }
 }
 
 .animate-spin-slow {
@@ -35,7 +52,7 @@
 /* ── Wrapper (shared) ──────────────────────────── */
 
 .lookbook-wrapper {
-  background: #f5f2d9;
+  background: #f5f4ea;
   color: #1E293B;
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
   /* Prevent header overlap when auto-scrolling */
@@ -268,7 +285,8 @@
 .lookbook-mobile-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 8px; /* Reduced gap between cards */
+  gap: 8px;
+  /* Reduced gap between cards */
   padding: 0 10px;
 }
 
@@ -276,7 +294,7 @@
 .lookbook-mobile-card-wrapper:has(.lookbook-mobile-card--active) {
   grid-column: 1 / -1;
   /* Scroll offset for fixed navbar */
-  scroll-margin-top: 80px; 
+  scroll-margin-top: 80px;
 }
 
 /* ── Mobile Card ───────────────────────────────── */
@@ -371,8 +389,17 @@
 }
 
 @keyframes pulse-hint {
-  0%, 100% { transform: translateY(0); opacity: 0.7; }
-  50%      { transform: translateY(3px); opacity: 1; }
+
+  0%,
+  100% {
+    transform: translateY(0);
+    opacity: 0.7;
+  }
+
+  50% {
+    transform: translateY(3px);
+    opacity: 1;
+  }
 }
 
 /* ── Mobile Detail Panel (tightly beneath active card) ──────────── */
@@ -380,15 +407,18 @@
 .lookbook-mobile-detail {
   overflow: hidden;
   border-radius: 16px;
-  margin-top: 8px; /* Tight distance between image card and details */
-  scroll-margin-top: 80px; /* Safe distance under navigation bar */
+  margin-top: 8px;
+  /* Tight distance between image card and details */
+  scroll-margin-top: 80px;
+  /* Safe distance under navigation bar */
 }
 
 .lookbook-mobile-detail-inner {
   background: #FFFFFF;
   border: 1px solid #E2E8F0;
   border-radius: 16px;
-  padding: 12px 14px; /* Reduced internal padding to tighten height */
+  padding: 12px 14px;
+  /* Reduced internal padding to tighten height */
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
 }
 

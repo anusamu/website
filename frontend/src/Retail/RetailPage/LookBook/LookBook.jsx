@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
-import { ShoppingBag, X, Move, ExternalLink, Loader2 } from 'lucide-react';
+import { motion, AnimatePresence, useMotionValue, useSpring, useTransform } from 'framer-motion';
+import { ShoppingBag, X, Move, Loader2 } from 'lucide-react';
 import API from '../../../api'; // Import your configured axios instance
 import './LookBook.css';
 import Navbar from '../../../components/Navbar/Navbar';
@@ -53,10 +53,25 @@ function LookBook() {
 
   const [activeIndex, setActiveIndex] = useState(null);
   const [hoveredIndex, setHoveredIndex] = useState(null);
-  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+  
   const containerRef = useRef(null);
-
   const isMobile = useIsMobile();
+
+  // Hardware Accelerated Parallax tracking (avoids React re-renders)
+  const mouseX = useMotionValue(0);
+  const mouseY = useMotionValue(0);
+  
+  // Smooth out the raw mouse values
+  const smoothMouseX = useSpring(mouseX, { stiffness: 60, damping: 20 });
+  const smoothMouseY = useSpring(mouseY, { stiffness: 60, damping: 20 });
+
+  // Transforms for the ambient background
+  const ambientX = useTransform(smoothMouseX, (v) => v * -40);
+  const ambientY = useTransform(smoothMouseY, (v) => v * -40);
+
+  // Transforms for the 3D stage rotation
+  const rotateX = useTransform(smoothMouseY, (v) => (activeIndex !== null || isMobile ? 0 : v * -16));
+  const rotateY = useTransform(smoothMouseX, (v) => (activeIndex !== null || isMobile ? 0 : v * 16));
 
   // Fetch active products from backend
   useEffect(() => {
@@ -104,12 +119,13 @@ function LookBook() {
   }, [rawProducts, isMobile]);
 
   const handleMouseMove = (e) => {
-    // Disable mouse parallax on mobile or when a card is focused
+    // Update motion values directly without triggering a React re-render
     if (!containerRef.current || activeIndex !== null || isMobile) return;
     const rect = containerRef.current.getBoundingClientRect();
     const x = (e.clientX - rect.left) / rect.width - 0.5;
     const y = (e.clientY - rect.top) / rect.height - 0.5;
-    setMousePos({ x, y });
+    mouseX.set(x);
+    mouseY.set(y);
   };
 
   const isFocused = activeIndex !== null;
@@ -157,25 +173,35 @@ function LookBook() {
         }}
         className="lookbook-wrapper relative w-full min-h-screen overflow-hidden font-sans select-none"
       >
+        {/* Responsive, Neat Title Header */}
+        <div className="absolute top-20 md:top-28 left-0 w-full z-40 flex flex-col items-center justify-center pointer-events-none text-center px-4">
+          <h1 className="font-serif text-3xl md:text-5xl text-gray-800 tracking-wider mb-2" style={{ textShadow: '0 2px 10px rgba(255,255,255,0.8)' }}>
+            Rajagopal Handloom
+          </h1>
+          <p className="font-sans text-[10px] md:text-xs text-gray-600 uppercase tracking-[0.3em]" style={{ textShadow: '0 1px 5px rgba(255,255,255,0.8)' }}>
+            The Signature Look Book
+          </p>
+        </div>
+
         {/* Ambient Lighting Background */}
-        <div 
+        <motion.div 
           className="ambient-mesh absolute inset-0 pointer-events-none opacity-80 z-0"
-          style={{ transform: isMobile ? 'none' : `translate3d(${mousePos.x * -40}px, ${mousePos.y * -40}px, 0)` }}
+          style={{ x: isMobile ? 0 : ambientX, y: isMobile ? 0 : ambientY }}
         >
           <div className="mesh-orb orb-1 absolute top-1/4 left-1/4 w-[400px] md:w-[650px] h-[400px] md:h-[650px] rounded-full blur-[100px] md:blur-[160px] pointer-events-none" />
           <div className="mesh-orb orb-2 absolute bottom-1/4 right-1/4 w-[300px] md:w-[550px] h-[300px] md:h-[550px] rounded-full blur-[80px] md:blur-[140px] pointer-events-none" />
-        </div>
+        </motion.div>
 
         {/* 3D Stage Container */}
         <main className="relative w-full h-screen flex items-center justify-center z-10 pointer-events-none">
           <motion.div 
-            className="stage-canvas relative w-full max-w-6xl h-full flex items-center justify-center pointer-events-none"
-            style={{ perspective: isMobile ? 800 : 1200, transformStyle: 'preserve-3d' }}
-            animate={{
-              rotateX: isFocused || isMobile ? 0 : mousePos.y * -16,
-              rotateY: isFocused || isMobile ? 0 : mousePos.x * 16,
+            className="stage-canvas relative w-full max-w-6xl h-full flex items-center justify-center pointer-events-none mt-16 md:mt-0"
+            style={{ 
+              perspective: isMobile ? 800 : 1200, 
+              transformStyle: 'preserve-3d',
+              rotateX,
+              rotateY
             }}
-            transition={{ type: 'spring', stiffness: 45, damping: 25 }}
           >
             {products.map((look, index) => {
               const isActive = activeIndex === index;
@@ -213,7 +239,7 @@ function LookBook() {
                     scale: targetScale,
                     rotateZ: targetR,
                     opacity: targetOpacity,
-                    filter: isOther ? 'blur(100px)' : 'blur(0px)'
+                    filter: isOther ? 'blur(4px)' : 'blur(0px)'
                   }}
                   transition={{ 
                     type: 'spring', 

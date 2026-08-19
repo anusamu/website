@@ -15,7 +15,7 @@ connectDB();
 // Middleware
 
 const allowedOrigins = [
-  "http://localhost:5173",
+  "http://localhost:5173", "http://localhost:5174",
   process.env.CLIENT_URL,
 ];
 

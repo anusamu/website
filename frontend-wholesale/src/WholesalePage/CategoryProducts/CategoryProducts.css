@@ -1,0 +1,376 @@
+/* ==========================================================================
+   Structural Wrapper & Ambient Animation (Fixed Overlap Issue)
+   ========================================================================== */
+.cat-products-section {
+  position: relative;
+  width: 100%;
+  background-color: #fcfcfc;
+  /* Top padding ensures content sits safely below the fixed header (110px total height) */
+  padding: 130px 24px 80px 24px;
+  box-sizing: border-box;
+  overflow: hidden; /* Clips background glow to prevent layout spillage */
+}
+
+.cat-ambient-bg-glow {
+  position: absolute;
+  /* Reset top offset so radial glow doesn't drift under fixed navbar */
+  top: 0%;
+  left: 25%;
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, rgba(136, 160, 105, 0.06) 0%, rgba(255,255,255,0) 70%);
+  border-radius: 50%;
+  z-index: 1;
+  pointer-events: none;
+  animation: driftAmbient 12s ease-in-out infinite alternate;
+}
+
+@keyframes driftAmbient {
+  0% { transform: translate(0, 0) scale(1); }
+  100% { transform: translate(40px, 30px) scale(1.15); }
+}
+
+.cat-products-container {
+  position: relative;
+  z-index: 2;
+  max-width: 1400px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ==========================================================================
+   Header Layout
+   ========================================================================== */
+.cat-grid-header {
+  text-align: center;
+  margin-bottom: 48px;
+}
+
+.cat-grid-title {
+  font-family: "Playfair Display", "Didot", "Georgia", serif;
+  font-size: 2.75rem;
+  font-weight: 400;
+  color: #111111;
+  margin: 0 0 10px 0;
+  letter-spacing: -0.01em;
+  text-transform: capitalize;
+}
+
+.cat-grid-subtitle {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-size: 0.95rem;
+  color: #71717a;
+  margin: 0;
+}
+
+.cat-error-message {
+  text-align: center;
+  color: #e53e3e;
+  font-size: 0.95rem;
+  margin-bottom: 20px;
+}
+
+/* ==========================================================================
+   Product Grid (Uniform Heights)
+   ========================================================================== */
+.cat-products-layout-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 24px;
+  width: 100%;
+  align-items: stretch;
+}
+
+/* ==========================================================================
+   Card Component
+   ========================================================================== */
+.cat-product-display-card {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background-color: #ffffff;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid #f0f0f0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  cursor: pointer;
+}
+
+.cat-product-display-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.07);
+}
+
+/* Image Wrapper */
+.cat-product-image-container {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 0.75 / 1;
+  overflow: hidden;
+  background-color: #f7f7f8;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.cat-product-display-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.6s cubic-bezier(0.25, 1, 0.3, 1);
+}
+
+.cat-product-display-card:hover .cat-product-display-img {
+  transform: scale(1.04);
+}
+
+/* Add to Cart Floating Button */
+.cat-action-add-to-cart-btn {
+  position: absolute;
+  bottom: 12px;
+  width: 90%;
+  left: 5%;
+  border-radius: 0px;
+  border: none;
+  outline: none;
+  box-sizing: border-box;
+  background-color: rgba(255, 255, 255, 0.95);
+  color: #111111;
+  padding: 12px 8px;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-align: center;
+  cursor: pointer;
+  opacity: 0;
+  transform: translateY(8px);
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+              opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+              background-color 0.2s ease,
+              color 0.2s ease;
+  z-index: 5;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.cat-action-add-to-cart-btn:disabled {
+  background-color: rgba(230, 230, 230, 0.9);
+  color: #888888;
+  cursor: not-allowed;
+}
+
+@media (hover: hover) {
+  .cat-product-display-card:hover .cat-action-add-to-cart-btn {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .cat-action-add-to-cart-btn:hover:not(:disabled) {
+    background-color: #88a069;
+    color: #ffffff;
+  }
+}
+
+/* ==========================================================================
+   Elevated Luxury Meta & Action Area (Refined Typography & Spacing)
+   ========================================================================== */
+
+.cat-product-meta-details {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  padding: 18px 16px;
+  background-color: #faf7e9;
+}
+
+/* Subtle Minimalist Title */
+.cat-product-meta-title {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #2b2b2b;
+  letter-spacing: 0.02em;
+  margin: 0 0 6px 0;
+  line-height: 1.4;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-transform: uppercase;
+}
+
+/* Luxury Editorial Serif Price */
+.cat-product-meta-price {
+  font-family: "Playfair Display", "Didot", "Georgia", serif;
+  font-size: 1.15rem;
+  font-weight: 500;
+  color: #111111;
+  letter-spacing: -0.01em;
+  margin: 0;
+}
+
+/* Elegant & Transparent Size Selector Row */
+.cat-product-sizes-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 14px;
+  padding-top: 10px;
+  border-top: 1px solid rgba(0, 0, 0, 0.04); /* Ultra-soft divider */
+}
+
+.cat-product-sizes-placeholder {
+  height: 26px;
+  margin-top: 14px;
+}
+
+/* Translucent Glassmorphic Size Pills */
+.cat-size-badge-btn {
+  min-width: 30px;
+  height: 26px;
+  padding: 0 10px;
+  font-size: 0.7rem;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  border-radius: 9999px; /* Seamless Oval Pill */
+  border: 1px solid rgba(134, 74, 74, 0.08);
+  background-color: rgba(255, 255, 255, 0.6);
+  color: #666666;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(4px);
+}
+
+.cat-size-badge-btn:hover {
+  border-color: rgba(0, 0, 0, 0.4);
+  color: #111111;
+  background-color: #ffffff;
+  transform: translateY(-1px);
+}
+
+.cat-size-badge-btn.active {
+  border-color: #efeaea;
+  background-color: #88a069;
+  color: #ffffff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+}
+/* ==========================================================================
+   Status & Fallbacks
+   ========================================================================== */
+.cat-grid-status-box {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 50vh;
+  width: 100%;
+}
+
+.cat-status-message,
+.cat-empty-text {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-size: 0.95rem;
+  color: #71717a;
+}
+
+.cat-empty-state-box {
+  text-align: center;
+  padding: 80px 0;
+  width: 100%;
+}
+
+/* ==========================================================================
+   Responsive Breakpoints
+ /* ==========================================================================
+   Responsive Breakpoints (Fixed Mobile Navbar Overlap)
+   ========================================================================== */
+@media (max-width: 1200px) {
+  .cat-products-layout-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+  }
+}
+
+@media (max-width: 840px) {
+  .cat-products-section {
+    /* Pushed down further to 140px for tablets/small laptops */
+    padding: 140px 16px 40px 16px;
+  }
+  .cat-grid-header {
+    margin-bottom: 32px;
+  }
+  .cat-grid-title {
+    font-size: 2.1rem;
+  }
+  .cat-products-layout-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+  }
+}
+
+@media (max-width: 550px) {
+  .cat-products-section {
+    /* Pushed down further to 160px specifically for mobile devices */
+    padding: 130px 16px 32px 16px;
+  }
+
+  .cat-grid-title {
+    font-size: 1.8rem;
+  }
+
+  .cat-grid-subtitle {
+    font-size: 0.85rem;
+  }
+
+  /* One card per row */
+  .cat-products-layout-grid {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+
+  .cat-product-meta-details {
+    padding: 16px;
+  }
+
+  .cat-product-sizes-placeholder {
+    display: block;
+  }
+
+  .cat-product-image-container {
+    position: relative;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .cat-action-add-to-cart-btn {
+    position: absolute;
+    bottom: 12px;
+    left: 5%;
+    width: 90%;
+    margin-top: 0;
+    padding: 12px 8px;
+    font-size: 0.85rem;
+    background-color: rgba(255, 255, 255, 0.95);
+    color: #111111;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(12px);
+    transition: opacity 0.25s ease, transform 0.25s ease, background-color 0.2s ease, color 0.2s ease;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    z-index: 10;
+  }
+
+  .cat-product-display-card:focus-within .cat-action-add-to-cart-btn,
+  .cat-product-display-card:active .cat-action-add-to-cart-btn,
+  .cat-product-display-card:hover .cat-action-add-to-cart-btn {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0);
+    background-color: #88a069;
+    color: #ffffff;
+  }
+}

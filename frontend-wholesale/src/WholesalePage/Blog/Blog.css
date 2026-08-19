@@ -1,0 +1,94 @@
+.blog-page-wrapper {
+  background-color: #fff;
+  min-height: 100vh;
+}
+
+.blog-hero {
+  padding: 120px 20px 40px;
+  text-align: center;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.blog-hero-title {
+  font-family: "Georgia", serif;
+  font-size: 2.5rem;
+  font-weight: 400;
+  color: #111;
+  letter-spacing: 0.5px;
+}
+
+.blog-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px 80px;
+}
+
+.blog-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 40px;
+}
+
+.blog-card {
+  cursor: pointer;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+  display: flex;
+  flex-direction: column;
+}
+
+.blog-card:hover {
+  opacity: 0.9;
+}
+
+.blog-card-image-wrapper {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+  background-color: #e5e5e5;
+  margin-bottom: 20px;
+}
+
+.blog-card-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.blog-card-title {
+  font-family: "Georgia", serif;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #111;
+  margin-bottom: 12px;
+  line-height: 1.4;
+}
+
+.blog-card-snippet {
+  font-size: 0.95rem;
+  color: #555;
+  line-height: 1.6;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.no-blogs {
+  text-align: center;
+  font-size: 1.1rem;
+  color: #777;
+  padding: 40px 0;
+}
+
+@media (max-width: 768px) {
+  .blog-hero {
+    padding: 120px 20px 30px;
+  }
+  .blog-hero-title {
+    font-size: 2rem;
+  }
+  .blog-grid {
+    gap: 30px;
+  }
+}

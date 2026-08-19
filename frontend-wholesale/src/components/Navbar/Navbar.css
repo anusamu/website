@@ -1,0 +1,409 @@
+/* --- Global Theme & Navigation Token Variables --- */
+:root {
+  --color-primary-accent: #99ce80;
+  --color-dark-accent: #899d6e;
+  --color-text-main: #000000;
+  --color-admin-blue: #bec4d3;
+  --color-danger: #7f1d1d;
+  --color-border-light: rgba(0, 0, 0, 0.06);
+}
+
+/* --- Structural Base Elements --- */
+.nav-top-accent-line {
+ 
+  width: 100%;
+  height: 40px;
+background-color: var(--color-dark-accent);
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1201;
+}
+
+/* Master AppBar Reset Setup Styles */
+.navbar-appbar {
+  top: 40px !important;
+  left: 0;
+  width: 100%;
+  height: 70px;
+  box-shadow: none !important;
+  /* Premium Hardware Accelerated Transition Properties */
+  transition: background-color 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+              backdrop-filter 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+              border-color 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+              box-shadow 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) !important;
+}
+
+/* ==========================================================================
+   STATE A: TOP OF PAGE STATE (Transparent Layer Style Over Hero Image)
+   ========================================================================== */
+.navbar-appbar.nav-transparent {
+  background-color: transparent !important;
+  border-bottom: 1px solid rgba(83, 21, 21, 0.08) !important;
+}
+
+/* Dark subtle contrast anchors for default links when sitting on the cream page layout top */
+.navbar-appbar.nav-transparent .nav-item-link {
+  color: var(--color-text-main);
+}
+
+.navbar-appbar.nav-transparent .nav-icon-button {
+  color: var(--color-text-main) !important;
+}
+
+.navbar-appbar.nav-transparent .nav-auth-login-btn {
+  color: var(--color-text-main);
+}
+
+/* ==========================================================================
+   STATE B: ACTIVE SCROLLED STATE (Solid Blur Sheet Floating Layer)
+   ========================================================================== */
+.navbar-appbar.nav-scrolled {
+  background-color: rgba(255, 255, 255, 0.92) !important;
+  backdrop-filter: blur(12px); /* Delivers deep translucent modern appearance */
+  border-bottom: 1px solid var(--color-border-light) !important;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.03) !important;
+}
+
+.navbar-appbar.nav-scrolled .nav-item-link {
+  color: #000000;
+}
+
+.navbar-appbar.nav-scrolled .nav-icon-button {
+  color: #000000 !important;
+}
+
+.navbar-appbar.nav-scrolled .nav-auth-login-btn {
+  color: #000000;
+}
+
+/* --- Central Navigation Route Link Items --- */
+.nav-links-container {
+  flex: 3;
+  display: flex;
+  justify-content: center;
+  gap: 3.5rem;
+  align-items: center;
+}
+
+.nav-item-link {
+  text-decoration: none;
+  font-size: 0.85rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding-bottom: 3px;
+   padding-top: 12px;
+  border-bottom: 2px solid transparent;
+  transition: color 0.25s ease, border-color 0.25s ease;
+}
+
+.nav-item-link:hover {
+  color: var(--color-primary-accent) !important;
+}
+
+/* Active Page Highlights */
+.nav-item-link.link-active {
+  color: var(--color-primary-accent) !important;
+  border-bottom: 2px solid var(--color-primary-accent);
+}
+
+.nav-admin-dashboard {
+  color: var(--color-admin-blue) !important;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* --- Right Action Tray Tools --- */
+.nav-action-tray {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.nav-icon-button {
+  transition: transform 0.2s ease, color 0.2s ease !important;
+}
+
+.nav-icon-button:hover {
+  transform: scale(1.05);
+  color: var(--color-primary-accent) !important;
+}
+
+.nav-logout-button {
+  color: var(--color-danger) !important;
+  transition: transform 0.2s ease !important;
+}
+
+.nav-logout-button:hover {
+  transform: scale(1.05);
+}
+
+.nav-badge-override .MuiBadge-badge {
+  background-color: var(--color-primary-accent) !important;
+  color: #ffffff !important;
+  font-size: 0.65rem !important;
+  height: 16px !important;
+  min-width: 16px !important;
+}
+
+.nav-auth-login-btn {
+  background: none;
+  border: none;
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  cursor: pointer;
+  padding: 0 8px;
+  font-weight: 500;
+  transition: color 0.2s ease;
+}
+
+.nav-auth-login-btn:hover {
+  color: var(--color-primary-accent);
+}
+/* --- Mobile Viewport Breakpoint Adjustments --- */
+@media (max-width: 900px) {
+  .nav-links-container {
+    display: none !important;
+  }
+}
+/* ==========================================================================
+   Search Input Container Unit (Exact Image Form Component Replication)
+   ========================================================================== */
+
+.nav-search-popdown-container {
+  overflow: hidden;
+  max-height: 0;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-10px);
+  background: transparent; /* Full transparency */
+  
+  /* Smooth hardware-accelerated transitions */
+  transition: 
+    max-height 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+    opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+    visibility 0.4s;
+}
+
+/* Active Expanded State */
+.nav-search-popdown-container.expanded {
+  max-height: 120px; 
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+  padding: 50px 20px;
+}
+
+/* ==========================================================================
+   Transparent Oval Search Bar Wrapper & Controls
+   ========================================================================== */
+.nav-search-inner-wrapper {
+  max-width: 760px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+/* Outer Unified Transparent Oval Shell */
+.nav-search-input-field-box {
+  position: relative;
+  display: flex;
+  align-items: center;
+  flex: 1;
+  background-color: rgba(255, 255, 255, 0.15); /* Light translucent tint */
+  backdrop-filter: blur(12px); /* Glassmorphism effect for readability */
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(208, 22, 22, 0.3); /* Subtle outer border */
+  border-radius: 9999px; /* Oval shape */
+  padding: 4px 6px 4px 18px;
+  height: 50px;
+  box-sizing: border-box;
+  transition: 
+    border-color 0.25s ease,
+    background-color 0.25s ease,
+    box-shadow 0.25s ease;
+}
+
+/* Focused State Glow */
+.nav-search-input-field-box:focus-within {
+  background-color: rgba(255, 255, 255, 0.25);
+  border-color: #88a069;
+  box-shadow: 0 0 0 4px rgba(136, 160, 105, 0.2);
+}
+
+/* Left Search Icon */
+.nav-search-inside-icon {
+  color: #555555;
+  margin-right: 10px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  transition: color 0.2s ease;
+}
+
+.nav-search-input-field-box:focus-within .nav-search-inside-icon {
+  color: #88a069;
+}
+
+/* Text Input Field */
+.nav-search-text-input {
+  width: 100%;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #111111;
+  padding: 0;
+}
+
+.nav-search-text-input::placeholder {
+  color: #777777;
+  font-weight: 400;
+}
+
+/* Oval Action Button Inside the Shell */
+.nav-search-submit-action-btn {
+  background-color: #88a069;
+  color: #ffffff;
+  border: none;
+  outline: none;
+  border-radius: 9999px; /* Oval style */
+  height: 40px;
+  padding: 0 26px;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-size: 0.9rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: 
+    background-color 0.2s ease,
+    transform 0.15s ease,
+    box-shadow 0.2s ease;
+}
+
+.nav-search-submit-action-btn:hover {
+  background-color: #768d5a;
+  box-shadow: 0 4px 14px rgba(118, 141, 90, 0.35);
+}
+
+.nav-search-submit-action-btn:active {
+  transform: scale(0.96);
+}
+
+/* ==========================================================================
+   Responsive Mobile Adjustments
+   ========================================================================== */
+
+   /* Ensure proper spacing on mobile headers */
+@media (max-width: 900px) {
+  /* Prevent header items from squeezing together */
+  .navbar-appbar {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    padding-left: 16px !important;
+    padding-right: 16px !important;
+  }
+
+  /* Keep the right-side icons contained */
+  .nav-action-tray {
+    display: flex;
+    align-items: center;
+    gap: 12px; /* Standard spacing between tray icons */
+    margin-left: auto; /* Pushes tray cleanly to the right */
+  }
+}
+@media (max-width: 640px) {
+  .nav-search-popdown-container.expanded {
+    padding: 12px;
+  }
+
+  .nav-search-input-field-box {
+    height: 44px;
+    padding-left: 14px;
+  }
+
+  .nav-search-submit-action-btn {
+    height: 34px;
+    padding: 0 16px;
+    font-size: 0.85rem;
+  }
+
+  .nav-search-text-input {
+    font-size: 0.875rem;
+  }
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .nav-main-bar {
+    height: 75px;
+  }
+  .nav-links-menu {
+    display: none; /* Collapses menu items on tablet/mobile screens */
+  }
+  .nav-search-popdown-container.expanded {
+    max-height: 80px;
+    padding: 16px;
+  }
+  .nav-search-input-field-box, .nav-search-submit-action-btn {
+    height: 42px;
+  }
+}
+
+@media (max-width: 480px) {
+  .nav-search-popdown-container.expanded {
+    max-height: 250px; /* Increase height */
+    overflow: visible;
+    padding: 10px;
+  }
+
+  .nav-search-inner-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+    width: 100%;
+  }
+
+  .navbar-appbar {
+    padding-left: 8px !important;
+    padding-right: 12px !important;
+  }
+
+  .nav-action-tray {
+    gap: 3px; /* Slightly tighter gap on very small phones */
+  }
+
+  .nav-search-input-field-box {
+    width: 100%;
+    max-width: 100%;
+    border-right: none;
+    border: 1px solid #d8d3c9;
+    border-radius: 4px;
+    box-sizing: border-box;
+  }
+
+  .nav-search-input-field-box input {
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .nav-search-submit-action-btn {
+    width: 100%;
+    border-radius: 4px;
+  }
+}

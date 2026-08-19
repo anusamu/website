@@ -1,12 +1,25 @@
-import React from 'react';
+import React, { useRef } from 'react';
+import { motion, useScroll, useTransform } from 'framer-motion';
 import './HandloomHero.css';
 
 export default function HandloomHero() {
+  const containerRef = useRef(null);
+
+  // Parallax scroll effect for background
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+    offset: ["start end", "end start"]
+  });
+
+  // Background moves slightly down as user scrolls down
+  const y = useTransform(scrollYProgress, [0, 1], ["-20%", "20%"]);
+
   return (
-    <section className="handloom-hero">
+    <section ref={containerRef} className="handloom-hero" style={{ overflow: "hidden" }}>
       {/* Background image overlay container */}
       <div className="hero-bg-container">
-        <img 
+        <motion.img 
+          style={{ y, scale: 1.2 }}
           src="https://i.postimg.cc/QxXRkhTq/Chat-GPT-Image-Jul-10-2026-10-46-17-AM.png" 
           alt="Traditional Indian Handloom Weaving" 
           className="hero-bg-image"
@@ -15,7 +28,13 @@ export default function HandloomHero() {
       </div>
 
       {/* Editorial Content Frame */}
-      <div className="hero-content-wrapper">
+      <motion.div 
+        className="hero-content-wrapper"
+        initial={{ opacity: 0, y: 50 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: "-100px" }}
+        transition={{ duration: 0.8, ease: "easeOut" }}
+      >
         <header className="hero-header">
           <span className="hero-brand-sub">Rajagopal</span>
           <h1 className="hero-brand-main">Handlooms</h1>
@@ -37,7 +56,7 @@ export default function HandloomHero() {
             Explore Now
           </button>
         </div>
-      </div>
+      </motion.div>
     </section>
   );
 }

@@ -1,0 +1,167 @@
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Lora:ital,wght@0,400;0,500;0,600;1,400&display=swap');
+
+/* --- Global Reset for Box Model Protection --- */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+/* Main Page Container - Expanded to full-width desktop layout */
+.about-container {
+  width: 100%;
+  max-width: 1800px;
+  margin: 0 auto;
+  padding: clamp(110px, 10vh, 120px) 32px 60px 32px; 
+  background-color: #ffffff;
+  color: #333333;
+  overflow: hidden;
+}
+
+/* --- Section 1: Tagline & First Image --- */
+.tagline-section {
+  text-align: center;
+  margin-bottom: 70px;
+}
+
+.main-tagline {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: clamp(2rem, 3.5vw, 3.25rem);
+  font-weight: 400;
+  line-height: 1.35;
+  color: #1a1a1a;
+  margin: 0 auto 40px auto;
+  max-width: 1200px;
+  letter-spacing: 0.2px;
+}
+
+.hero-image-wrapper {
+  max-width: 1200px;
+  margin: 0 auto;
+  overflow: hidden;
+  border-radius: 4px;
+}
+
+.hero-image {
+  width: 100%;
+  height: auto;
+  display: block;
+  object-fit: cover;
+}
+
+/* --- Section 2: Text Content --- */
+.content-section {
+  max-width: 1400px;
+  margin: 0 auto 70px auto;
+  text-align: center;
+}
+
+.section-title {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: clamp(2.2rem, 4vw, 4rem);
+  font-weight: 400;
+  margin-bottom: 40px;
+  letter-spacing: 0.5px;
+}
+
+.text-dark {
+  color: #111111;
+}
+
+.text-olive {
+  color: #bece8e;
+  font-weight: 400;
+}
+
+/* --- Justified Text Body Configuration --- */
+.text-body {
+  text-align: justify;
+  text-justify: inter-word; /* Distributes word gaps evenly */
+  hyphens: auto;           /* Automatically breaks long words on small screens to prevent huge gaps */
+  -webkit-hyphens: auto;
+  -ms-hyphens: auto;
+  font-family: 'Lora', Georgia, serif;
+  font-size: clamp(1rem, 1.1vw, 1.15rem);
+  line-height: 1.85;
+  color: #444444;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.text-body p {
+  margin-bottom: 28px;
+}
+
+.text-body strong {
+  color: #111111;
+  font-weight: 600;
+}
+
+/* --- Section 3: Bottom Banner Image --- */
+.brand-image-section {
+  width: 100%;
+  margin-top: 60px;
+}
+
+.brand-image-wrapper {
+  width: 100%;
+  max-width: 1600px;
+  margin: 0 auto;
+}
+
+.brand-image {
+  width: 100%;
+  height: auto;
+  display: block;
+  border-radius: 4px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+/* --- Responsive Adjustments --- */
+
+/* Laptops & Standard Desktops */
+@media (max-width: 1400px) {
+  .about-container {
+    max-width: 100%;
+    padding-left: 24px;
+    padding-right: 24px;
+  }
+}
+
+/* Tablets & Small Laptops */
+@media (max-width: 768px) {
+  .about-container {
+    padding-top: 80px;
+    padding-bottom: 40px;
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+
+  .tagline-section,
+  .content-section {
+    margin-bottom: 45px;
+  }
+
+  .text-body {
+    text-align: justify;
+    text-justify: inter-word;
+    font-size: 0.95rem;
+    line-height: 1.7;
+  }
+
+  .text-body p {
+    margin-bottom: 20px;
+  }
+}
+
+/* Mobile Devices */
+@media (max-width: 480px) {
+  .about-container {
+    padding-top: 110px;
+  }
+
+  .text-body {
+    text-align: justify;
+    text-justify: inter-word;
+    font-size: 0.9rem;
+    line-height: 1.6;
+  }
+}

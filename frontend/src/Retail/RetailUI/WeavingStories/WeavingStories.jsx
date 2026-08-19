@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { motion } from 'framer-motion';
 import './WeavingStories.css';
 
 const initialGalleryData = [
@@ -30,20 +31,49 @@ export default function WeavingStories() {
     setTimeout(() => setLikedId(null), 800);
   };
 
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    show: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1
+      }
+    }
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, scale: 0.8 },
+    show: { opacity: 1, scale: 1, transition: { duration: 0.5, ease: "easeOut" } }
+  };
+
   return (
     <section className="stories-section">
       {/* Background/Watermark Section Title */}
-      <div className="stories-watermark-bg">
+      <motion.div 
+        initial={{ opacity: 0, x: -50 }}
+        whileInView={{ opacity: 1, x: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 1 }}
+        className="stories-watermark-bg"
+      >
         OUR WEAVING STORIES
-      </div>
+      </motion.div>
 
       {/* Grid Canvas */}
-      <div className="stories-grid-container">
+      <motion.div 
+        className="stories-grid-container"
+        variants={containerVariants}
+        initial="hidden"
+        whileInView="show"
+        viewport={{ once: true, margin: "-100px" }}
+      >
         {items.map((item) => (
-          <div 
+          <motion.div 
+            variants={itemVariants}
             key={item.id} 
             className="story-card"
             onClick={() => handleCardClick(item.id)}
+            whileHover={{ scale: 1.05 }}
           >
             <div className="story-image-frame">
               <img src={item.image} alt="Handloom showcase" className="story-img" />
@@ -62,9 +92,9 @@ export default function WeavingStories() {
                 <span className="burst-heart">♥</span>
               </div>
             )}
-          </div>
+          </motion.div>
         ))}
-      </div>
+      </motion.div>
 
       {/* Social Footer Anchor */}
       <footer className="stories-footer">
