@@ -55,3 +55,51 @@
   animation: spin 1s linear infinite;
   margin: 0 auto 12px;
 }
+
+.ws-status-cell-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: flex-start;
+}
+
+.ws-tracking-summary-card {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  background-color: #fff7ed;
+  border: 1px solid #fed7aa;
+  border-radius: 6px;
+  padding: 6px 8px;
+  font-size: 0.73rem;
+  max-width: 170px;
+}
+
+.ws-operations-cell-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 140px;
+}
+
+.ws-edit-tracking-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  background-color: #fff7ed;
+  color: #c2410c;
+  border: 1px solid #fed7aa;
+  border-radius: 6px;
+  padding: 4px 8px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  width: 100%;
+}
+
+.ws-edit-tracking-btn:hover {
+  background-color: #ffedd5;
+  border-color: #fdba74;
+}

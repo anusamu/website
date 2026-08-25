@@ -70,7 +70,7 @@ function Login() {
       if (role === "admin" || role === "superadmin") {
         navigate("/admindashboard");
       } else {
-        navigate("/");
+        navigate("/home");
       }
     } catch (error) {
       console.log("OTP Verify Error:", error.response?.data);
@@ -102,7 +102,7 @@ function Login() {
       if (role === "admin" || role === "superadmin") {
         navigate("/admindashboard");
       } else {
-        navigate("/");
+        navigate("/home");
       }
     } catch (error) {
       console.error("Google login error:", error.response?.data || error);

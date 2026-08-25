@@ -95,7 +95,7 @@ const Navbar = () => {
     clearCartOnLogout();
     clearWishlistOnLogout();
     window.dispatchEvent(new Event('authChange'));
-    navigate("/");
+    navigate("/home");
   };
 
   const handleProfileMenuOpen = (event) => {
@@ -107,6 +107,9 @@ const Navbar = () => {
   };
 
   const getLinkClass = (path) => {
+    if (path === "/home" && (location.pathname === "/home" || location.pathname === "/")) {
+      return "nav-item-link link-active";
+    }
     return `nav-item-link ${location.pathname === path ? "link-active" : ""}`;
   };
 
@@ -149,7 +152,7 @@ const executeSearch = () => {
             </IconButton>
           </Box>
 
-          <Link to="/" >
+          <Link to="/home" >
         <img
   src={RajagopalLogo}
   alt="Rajagopal Handloom Logo"
@@ -170,7 +173,7 @@ const executeSearch = () => {
               </>
             ) : (
               <>
-                <Link to="/" className={getLinkClass("/")}>Home</Link>
+                <Link to="/home" className={getLinkClass("/home")}>Home</Link>
                 <Link to="/shop" className={getLinkClass("/shop")}>Shop</Link>
                 <Link to="/blog" className={getLinkClass("/blog")}>Blog</Link>
                 <Link to="/about" className={getLinkClass("/about")}>About</Link>
@@ -281,7 +284,7 @@ const executeSearch = () => {
                 </>
               ) : (
                 <>
-                  <ListItem component={Link} to="/" onClick={() => setMobileOpen(false)}>
+                  <ListItem component={Link} to="/home" onClick={() => setMobileOpen(false)}>
                     <ListItemText primary="Home" />
                   </ListItem>
                   <ListItem component={Link} to="/shop" onClick={() => setMobileOpen(false)}>

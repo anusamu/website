@@ -1,5 +1,6 @@
-import React from "react";
-import { motion } from "framer-motion";
+import React, { useState, useEffect } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+import { motion, AnimatePresence } from "framer-motion";
 import Navbar from "../../../components/Navbar/Navbar";
 import MainBanner from "../../../components/MainBanner/MainBanner";
 import ScrollCard from "../.././RetailUI/ScrollCard/ScrollCard";
@@ -10,6 +11,7 @@ import HandloomHero from "../.././RetailUI/HandloomHero/HandloomHero";
 import TestimonialSlider from "../.././RetailUI/TestimonialSlider/TestimonialSlider";
 import WeavingStories from "../.././RetailUI/WeavingStories/WeavingStories";
 import CustomCursor from "../../../components/CustomCursor/CustomCursor";
+import SplashLanding from "../../RetailUI/SplashLanding/SplashLanding";
 
 // Reusable animation wrapper for seamless scroll reveals
 const FadeInSection = ({ children, delay = 0, style }) => (
@@ -25,54 +27,97 @@ const FadeInSection = ({ children, delay = 0, style }) => (
 );
 
 const Home = () => {
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  // Show splash only when on root path "/"
+  const [showSplash, setShowSplash] = useState(() => location.pathname === "/");
+  const [isTransitioning, setIsTransitioning] = useState(false);
+
+  useEffect(() => {
+    if (location.pathname === "/" && !isTransitioning) {
+      setShowSplash(true);
+    } else if (location.pathname !== "/" && !isTransitioning) {
+      setShowSplash(false);
+    }
+  }, [location.pathname, isTransitioning]);
+
+  const handleStartTransition = () => {
+    setIsTransitioning(true);
+  };
+
+  const handleDismissSplash = () => {
+    setShowSplash(false);
+    setIsTransitioning(false);
+    // Smoothly update browser address bar to /home once the slow cross-fade completes
+    navigate("/home", { replace: true });
+  };
+
+  // Home is active when not on splash or when actively transitioning
+  const isHomeActive = !showSplash || isTransitioning;
+
   return (
-    <div className="home-page-wrapper" style={styles.pageWrapper}>
-      <CustomCursor />
-      <header style={styles.header}>
-        <Navbar />
-      </header>
+    <>
+      <AnimatePresence>
+        {showSplash && (
+          <SplashLanding 
+            onStartTransition={handleStartTransition} 
+            onDismiss={handleDismissSplash} 
+          />
+        )}
+      </AnimatePresence>
 
-      {/* Main viewport is compacted but uses FadeInSection for premium reveals */}
-      <main style={styles.mainContent}>
-        {/* Main Banner usually needs to render immediately without delay */}
-        <motion.div 
-          initial={{ opacity: 0 }} 
-          animate={{ opacity: 1 }} 
-          transition={{ duration: 1 }}
-        >
+      <motion.div 
+        className="home-page-wrapper" 
+        style={styles.pageWrapper}
+        initial={{ opacity: showSplash ? 0 : 1, scale: showSplash ? 0.985 : 1 }}
+        animate={{ 
+          opacity: isHomeActive ? 1 : 0, 
+          scale: isHomeActive ? 1 : 0.985 
+        }}
+        transition={{ duration: 1.35, ease: [0.25, 1, 0.5, 1] }}
+      >
+        <CustomCursor />
+        <header style={styles.header}>
+          <Navbar />
+        </header>
+
+        {/* Main viewport is compacted but uses FadeInSection for premium reveals */}
+        <main style={styles.mainContent}>
+          {/* Main Banner rendered cleanly in-place */}
           <MainBanner />
-        </motion.div>
 
-        {/* Subsequent sections animate in as they scroll into view */}
-        <FadeInSection>
-          <ScrollCard />
-        </FadeInSection>
+          {/* Subsequent sections animate in as they scroll into view */}
+          <FadeInSection>
+            <ScrollCard />
+          </FadeInSection>
 
-        <FadeInSection>
-          <ShopByCategory />
-        </FadeInSection>
+          <FadeInSection>
+            <ShopByCategory />
+          </FadeInSection>
 
-        <FadeInSection>
-          <ShopByPattern/>
-        </FadeInSection>
+          <FadeInSection>
+            <ShopByPattern/>
+          </FadeInSection>
 
-        <FadeInSection>
-          <HandloomHero/>
-        </FadeInSection>
+          <FadeInSection>
+            <HandloomHero/>
+          </FadeInSection>
 
-        <FadeInSection>
-          <TestimonialSlider/>
-        </FadeInSection>
+          <FadeInSection>
+            <TestimonialSlider/>
+          </FadeInSection>
 
-        <FadeInSection>
-          <WeavingStories/>
-        </FadeInSection>
-      </main>
+          <FadeInSection>
+            <WeavingStories/>
+          </FadeInSection>
+        </main>
 
-      <footer style={styles.footerPush}>
-        <Footer />
-      </footer>
-    </div>
+        <footer style={styles.footerPush}>
+          <Footer />
+        </footer>
+      </motion.div>
+    </>
   );
 };
 
@@ -85,8 +130,10 @@ const styles = {
     flexDirection: "column",
     minHeight: "100vh",
     paddingTop: "0",
-    backgroundColor: "#FAFAFA", // A premium soft background instead of harsh white
+    backgroundColor: "#FAFAFA",
     overflowX: "hidden",
+    transformOrigin: "center top",
+    willChange: "transform, opacity",
   },
   header: {
     position: "relative",
@@ -96,7 +143,7 @@ const styles = {
     flex: 1,
     display: "flex",
     flexDirection: "column",
-    gap: "0px", // Maintained gap: 0px to prevent breaking edge-to-edge designs
+    gap: "0px",
     position: "relative",
     zIndex: 5,
   },

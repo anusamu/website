@@ -105,7 +105,7 @@ const AdminSidebar = ({
     localStorage.removeItem("token");
     localStorage.removeItem("user");
     sessionStorage.clear();
-    navigate("/", { replace: true });
+    navigate("/home", { replace: true });
   };
 
   const isExpanded = isMobile || desktopOpen;
@@ -219,7 +219,7 @@ const AdminSidebar = ({
         {/* Brand Logo placed inside scroll path */}
         {isExpanded && (
           <Box sx={{ display: "flex", justifyContent: "center", pt: 2 }} className="admin-menu-item-logo">
-            <RouterLink to="/">
+            <RouterLink to="/home">
               <img src={RajagopalLogo} alt="Rajagopal Handloom Logo" style={{ maxWidth: "100%", height: "auto" }} />
             </RouterLink>
           </Box>

@@ -73,7 +73,7 @@ const Cart = () => {
           </Typography>
           <Button
             variant="contained"
-            onClick={() => navigate("/")}
+            onClick={() => navigate("/home")}
             sx={{
               bgcolor: "#111",
               color: "#fff",
@@ -226,7 +226,7 @@ const Cart = () => {
               Proceed to Checkout
             </button>
 
-            <button className="cart-continue-shopping-btn" onClick={() => navigate("/")}>
+            <button className="cart-continue-shopping-btn" onClick={() => navigate("/home")}>
               Continue Shopping
             </button>
           </div>

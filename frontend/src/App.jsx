@@ -1,5 +1,4 @@
-import React from 'react';
-import { Routes, Route, useNavigate } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 
 import Login from "./components/Login/Login";
 import RegisterForm from "./components/Register/Register";
@@ -30,12 +29,9 @@ import Blog from "./Retail/RetailPage/Blog/Blog";
 import BlogDetail from "./Retail/RetailPage/Blog/BlogDetail";
 
 import SessionTimeout from "./components/SessionTimeout/SessionTimeout";
-import SplashLanding from './Retail/RetailUI/SplashLanding/SplashLanding';
 import ScrollToTop from "./components/ScrollToTop";
 
 function App() {
-  const navigate = useNavigate();
-
   return (
       <>
       <ScrollToTop />
@@ -47,7 +43,7 @@ function App() {
         <Route path="/register" element={<RegisterForm/>} />
 
         {/* Retail Customer */}
-        <Route path="/" element={<SplashLanding onDismiss={() => navigate('/home')} />} />
+        <Route path="/" element={<Home />} />
         <Route path="/home" element={<Home />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/category-products" element={<CategoryProducts/>} />

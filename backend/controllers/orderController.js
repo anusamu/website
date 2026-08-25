@@ -2,6 +2,8 @@ const crypto = require('crypto');
 const Order = require('../models/Order');
 const User = require('../models/User');
 const Product = require('../models/Product');
+const sendMail = require('../utils/sendMail');
+const { generateShippingEmail } = require('../utils/emailTemplates');
 
 /**
  * Verify Razorpay signature, then create the order in the DB
@@ -174,9 +176,9 @@ exports.createOrder = async (req, res) => {
 exports.updateOrderStatus = async (req, res) => {
   try {
     const { orderId } = req.params;
-    const { status, trackingCode } = req.body;
+    const { status, trackingCode, trackingUrl, courierName, sendEmail, recipientEmail: customRecipientEmail } = req.body;
 
-    // Validate status input against allowed schema values
+    // Validate status input against allowed schema values if provided
     const allowedStatuses = ['Paid', 'Packing', 'Shipped', 'Delivered', 'Cancelled'];
     if (status && !allowedStatuses.includes(status)) {
       return res.status(400).json({ 
@@ -188,14 +190,24 @@ exports.updateOrderStatus = async (req, res) => {
     // Build the dynamic update object
     const updateFields = {};
     if (status) updateFields.status = status;
-    if (trackingCode !== undefined) updateFields.trackingCode = trackingCode;
+    if (trackingCode !== undefined) updateFields.trackingCode = typeof trackingCode === 'string' ? trackingCode.trim() : '';
+    if (trackingUrl !== undefined) updateFields.trackingUrl = typeof trackingUrl === 'string' ? trackingUrl.trim() : '';
+    if (courierName !== undefined) updateFields.courierName = typeof courierName === 'string' ? courierName.trim() : '';
+    if (customRecipientEmail && typeof customRecipientEmail === 'string' && customRecipientEmail.trim()) {
+      updateFields['shippingAddress.email'] = customRecipientEmail.trim();
+    }
 
     // Find and update the order
     const updatedOrder = await Order.findByIdAndUpdate(
       orderId,
       { $set: updateFields },
       { new: true, runValidators: true }
-    ).populate('items.product');
+    )
+      .populate('userId', 'role firstName lastName email phoneNumber')
+      .populate({
+        path: 'items.product',
+        select: 'productName name title images image price wholesalePrice'
+      });
 
     if (!updatedOrder) {
       return res.status(404).json({ 
@@ -204,19 +216,62 @@ exports.updateOrderStatus = async (req, res) => {
       });
     }
 
-    if (status === 'Shipped' && trackingCode) {
-      console.log(`[Notification System] Order #${updatedOrder._id} marked as Shipped. Tracking code: ${trackingCode}`);
+    let emailSent = false;
+    let emailError = null;
+    const targetRecipient = (customRecipientEmail && customRecipientEmail.trim()) || 
+      updatedOrder.shippingAddress?.email || 
+      updatedOrder.userId?.email;
+
+    // Trigger email notification if admin enabled it
+    const shouldSendEmail = Boolean(sendEmail === true || sendEmail === 'true');
+    if (shouldSendEmail) {
+      if (targetRecipient) {
+        try {
+          const shortId = updatedOrder._id.toString().slice(-8).toUpperCase();
+          const emailSubject = `🚚 Your Order #${shortId} Has Been Shipped - RAJAGOPAL HANDLOOMS`;
+          const emailHtml = generateShippingEmail({
+            order: updatedOrder,
+            trackingCode: updatedOrder.trackingCode,
+            trackingUrl: updatedOrder.trackingUrl,
+            courierName: updatedOrder.courierName
+          });
+
+          await sendMail(targetRecipient, emailSubject, emailHtml);
+          emailSent = true;
+          console.log(`✅ Shipping notification email successfully sent to ${targetRecipient} for Order #${updatedOrder._id}`);
+        } catch (mailErr) {
+          console.error(`❌ Failed to send shipping notification email to customer:`, mailErr.message || mailErr);
+          emailError = mailErr.message || "Failed to deliver email to customer.";
+        }
+      } else {
+        emailError = "No valid customer email address found for this order.";
+        console.warn(`⚠️ Cannot send shipping email: Order #${updatedOrder._id} has no customer email.`);
+      }
     }
 
-    res.status(200).json({ 
+    let feedbackMessage = "Order updated successfully.";
+    if (status === 'Shipped') {
+      if (shouldSendEmail && emailSent) {
+        feedbackMessage = `Order marked as Shipped & tracking email sent to ${targetRecipient}.`;
+      } else if (shouldSendEmail && !emailSent) {
+        feedbackMessage = `Order marked as Shipped. Tracking email failed: ${emailError || 'Unknown error'}`;
+      } else {
+        feedbackMessage = "Order marked as Shipped (Email notification skipped).";
+      }
+    }
+
+    return res.status(200).json({ 
       success: true, 
-      message: "Order status updated successfully.", 
-      order: updatedOrder 
+      message: feedbackMessage, 
+      order: updatedOrder,
+      emailSent,
+      emailError,
+      recipientEmail: targetRecipient
     });
 
   } catch (error) {
     console.error("Error updating order status:", error);
-    res.status(500).json({ 
+    return res.status(500).json({ 
       success: false, 
       message: "Server error updating order status.", 
       error: error.message 
@@ -232,15 +287,13 @@ exports.updateOrderStatus = async (req, res) => {
 exports.getRetailOrders = async (req, res) => {
   try {
     // 1. Fetch retail orders directly using query filtering
-    // (Matches either explicitly marked orderType OR users with retail/default roles)
     const orders = await Order.find({
       $or: [
         { orderType: "retail" },
         { orderType: { $exists: false } }
       ]
     })
-      .populate("userId", "role firstName lastName email")
-      // CRITICAL FIX: Ensure 'productName' is included in select
+      .populate("userId", "role firstName lastName email phoneNumber")
       .populate({
         path: "items.product",
         select: "productName name title images image price wholesalePrice"
@@ -273,8 +326,11 @@ exports.getRetailOrders = async (req, res) => {
 exports.getWholesaleOrders = async (req, res) => {
   try {
     const orders = await Order.find()
-      .populate('userId', 'role firstName lastName email')
-      .populate({ path: 'items.product', select: 'name title images image price' })
+      .populate('userId', 'role firstName lastName email phoneNumber')
+      .populate({ 
+        path: 'items.product', 
+        select: 'productName name title images image price wholesalePrice' 
+      })
       .sort({ createdAt: -1 });
 
     // Filter for wholesale users
@@ -282,8 +338,8 @@ exports.getWholesaleOrders = async (req, res) => {
       (order) => order.userId?.role === 'wholesale'
     );
 
-    res.status(200).json({ success: true, orders: wholesaleOrders });
+    return res.status(200).json({ success: true, orders: wholesaleOrders });
   } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
+    return res.status(500).json({ success: false, message: error.message });
   }
 };
