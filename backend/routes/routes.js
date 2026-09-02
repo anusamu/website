@@ -45,6 +45,9 @@ router.post("/login", auth.login);
 router.post("/login/google", auth.googleLogin);
 router.post("/verify-login-otp", auth.verifyLoginOtp);
 router.get("/users/saved-address", protect, auth.getSavedAddress);
+router.get("/profile", protect, auth.myProfile);
+router.put("/profile", protect, auth.updateProfile);
+router.get("/MyOrders", protect, auth.myorders);
 
 // ===================== PUBLIC =====================
 router.get("/products", getProducts);

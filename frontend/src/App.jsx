@@ -27,7 +27,8 @@ import Contact from "./Retail/RetailPage/Contact/Contact";
 import AdminFeedbackPage from "./Admin/AdminPage/Feedback/AdminFeedbackPage";
 import Blog from "./Retail/RetailPage/Blog/Blog";
 import BlogDetail from "./Retail/RetailPage/Blog/BlogDetail";
-
+import MyProfile from "./Retail/RetailUI/MyProfile/MyProfile"; 
+import MyOrders from "./Retail/RetailUI/MyOrders/MyOrders"; 
 import SessionTimeout from "./components/SessionTimeout/SessionTimeout";
 import ScrollToTop from "./components/ScrollToTop";
 
@@ -41,6 +42,8 @@ function App() {
         {/* Authentication */}
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<RegisterForm/>} />
+          <Route path="/profile" element={<MyProfile/>} /> 
+        <Route path="/MyOrders" element={<MyOrders/>} /> 
 
         {/* Retail Customer */}
         <Route path="/" element={<Home />} />
@@ -74,4 +77,4 @@ function App() {
   );
 }
 
-export default App;
+export default App;

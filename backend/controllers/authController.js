@@ -430,3 +430,167 @@ exports.getSavedAddress = async (req, res) => {
     res.status(500).json({ success: false, error: error.message });
   }
 };
+
+exports.myProfile = async (req, res) => {
+  try {
+    // req.user.id comes from the 'protect' middleware after decoding the JWT token
+    const user = await User.findById(req.user.id).select("-password");
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      user: {
+        _id: user._id,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        email: user.email,
+        phoneNumber: user.phoneNumber,
+        avatar: user.avatar || "",
+        role: user.role,
+        savedAddress: user.savedAddress || null,
+        createdAt: user.createdAt,
+        lastLogin: user.lastLogin,
+      },
+    });
+  } catch (error) {
+    console.error("Profile Fetch Error:", error);
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+exports.updateProfile = async (req, res) => {
+  try {
+    const { firstName, lastName, phoneNumber } = req.body;
+
+    // Check for empty required fields
+    if (!firstName || !firstName.trim()) {
+      return res.status(400).json({
+        success: false,
+        message: "First name cannot be empty",
+      });
+    }
+
+    const normalizedPhoneNumber = normalizePhoneNumber(phoneNumber);
+
+    // Validate phone number if provided (must be numbers only and at least 10 digits)
+    if (normalizedPhoneNumber) {
+      const phoneRegex = /^\d{10}$/; // Exactly 10 digits
+      if (!phoneRegex.test(normalizedPhoneNumber)) {
+        return res.status(400).json({
+          success: false,
+          message: "Phone number must be exactly 10 digits",
+        });
+      }
+    }
+
+    const updatedUser = await User.findByIdAndUpdate(
+      req.user.id,
+      { 
+        firstName: firstName.trim(), 
+        lastName: lastName ? lastName.trim() : "", 
+        phoneNumber: normalizedPhoneNumber 
+      },
+      { new: true, runValidators: true }
+    ).select("-password");
+
+    if (!updatedUser) {
+      return res.status(404).json({ 
+        success: false, 
+        message: "User not found" 
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Profile updated successfully",
+      user: {
+        _id: updatedUser._id,
+        firstName: updatedUser.firstName,
+        lastName: updatedUser.lastName,
+        email: updatedUser.email,
+        phoneNumber: updatedUser.phoneNumber,
+        avatar: updatedUser.avatar || "",
+        role: updatedUser.role,
+        savedAddress: updatedUser.savedAddress || null,
+        createdAt: updatedUser.createdAt,
+        lastLogin: updatedUser.lastLogin,
+      },
+    });
+  } catch (error) {
+    console.error("Profile Update Error:", error);
+    res.status(500).json({ 
+      success: false, 
+      message: error.message 
+    });
+  }
+};
+
+
+//Myorders
+// const Order = require("../models/Order"); 
+
+// exports.myorders = async (req, res) => {
+//   try {
+//     // req.user is set by your 'protect' authentication middleware
+//     const userId = req.user._id || req.user.id;
+
+//     // Find all orders belonging to the logged-in user and populate product details inside items
+//     const orders = await Order.find({ userId })
+//       .populate({
+//         path: "items.product",
+//         select: "productName description price images collect stockStatus"
+//       })
+//       .sort({ createdAt: -1 });
+
+//     res.status(200).json({
+//       success: true,
+//       count: orders.length,
+//       orders
+//     });
+//   } catch (error) {
+//     console.error("Error fetching user orders:", error);
+//     res.status(500).json({ 
+//       success: false, 
+//       message: "Server error while fetching orders." 
+//     });
+//   }
+// };
+
+// Backend Controller: auth.myorders
+// Inside controllers/authController.js
+const Order = require("../models/Order"); // Adjust path to your Order model if needed
+
+exports.myorders = async (req, res) => {
+  try {
+    const userId = req.user._id || req.user.id;
+    console.log("Fetching orders for User ID:", userId);
+
+    const orders = await Order.find({ userId })
+      .populate({
+        path: "items.product",
+        select: "productName description price images collect stockStatus"
+      })
+      .sort({ createdAt: -1 });
+
+    res.status(200).json({
+      success: true,
+      count: orders.length,
+      orders
+    });
+  } catch (error) {
+    console.error("Error fetching user orders:", error);
+    res.status(500).json({ 
+      success: false, 
+      message: "Server error while fetching orders." 
+    });
+  }
+};
