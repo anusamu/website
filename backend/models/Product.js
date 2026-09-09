@@ -114,6 +114,17 @@ const productSchema = new mongoose.Schema(
       default: "active",
     },
 
+    offerPercentage: {
+      type: Number,
+      default: 0,
+      min: 0,
+      max: 100,
+    },
+
+    discountedPrice: {
+      type: Number,
+    },
+
     reviewsEnabled: {
       type: Boolean,
       default: true,
@@ -147,6 +158,13 @@ productSchema.pre("save", async function () {
     this.stockStatus = "Few Stock Available";
   } else {
     this.stockStatus = "In Stock";
+  }
+
+  // 3. Calculate discounted price
+  if (this.offerPercentage && this.offerPercentage > 0) {
+    this.discountedPrice = Math.round(this.price - (this.price * (this.offerPercentage / 100)));
+  } else {
+    this.discountedPrice = this.price;
   }
 });
 

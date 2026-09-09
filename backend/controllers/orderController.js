@@ -70,7 +70,7 @@ exports.createOrder = async (req, res) => {
 
     // 4. Save Address to User Profile if requested
     if (saveAddress && shippingAddress) {
-      await User.findByIdAndUpdate(userId, { address: shippingAddress }).catch((err) => {
+      await User.findByIdAndUpdate(userId, { addresses: [shippingAddress] }).catch((err) => {
         console.warn("Could not save address to user document:", err.message);
       });
     }

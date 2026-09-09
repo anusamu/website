@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
 import "./CategoryProducts.css";
 import Navbar from "../../../components/Navbar/Navbar";
 import api from "../../../api";
@@ -231,13 +232,37 @@ const CategoryProducts = () => {
                     onClick={() => handleCardClick(productId)}
                   >
                     {/* Image & Quick Add Button */}
-                    <div className="cat-product-image-container">
+                    <div className="cat-product-image-container" style={{ position: 'relative' }}>
                       <img
                         src={displayImage}
                         alt={title}
                         className="cat-product-display-img"
                         loading="lazy"
                       />
+
+                      {product.offerPercentage > 0 && (
+                        <motion.div
+                          initial={{ opacity: 0, scale: 0.5, rotate: -10 }}
+                          animate={{ opacity: 1, scale: 1, rotate: 0 }}
+                          transition={{ type: "spring", stiffness: 300, damping: 20 }}
+                          style={{
+                            position: 'absolute',
+                            top: '10px',
+                            left: '10px',
+                            background: 'linear-gradient(135deg, #ff4d4f 0%, #ff7875 100%)',
+                            color: 'white',
+                            padding: '6px 10px',
+                            borderRadius: '20px',
+                            fontWeight: 'bold',
+                            fontSize: '12px',
+                            zIndex: 10,
+                            boxShadow: '0 4px 6px rgba(255, 77, 79, 0.3)',
+                            textTransform: 'uppercase',
+                            letterSpacing: '0.5px'
+                          }}>
+                          {product.offerPercentage}% OFF
+                        </motion.div>
+                      )}
 
                       <button
                         type="button"
@@ -258,7 +283,21 @@ const CategoryProducts = () => {
                       <h3 className="cat-product-meta-title" title={title}>
                         {title}
                       </h3>
-                      <p className="cat-product-meta-price">{price}</p>
+                      
+                      <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px', marginBottom: '8px' }}>
+                        {product.offerPercentage > 0 ? (
+                          <>
+                            <p className="cat-product-meta-price" style={{ color: '#ff4d4f', fontWeight: 'bold', margin: 0 }}>
+                              ₹ {product.discountedPrice}
+                            </p>
+                            <p style={{ textDecoration: 'line-through', color: '#999', fontSize: '0.9em', margin: 0 }}>
+                              ₹ {product.price}
+                            </p>
+                          </>
+                        ) : (
+                          <p className="cat-product-meta-price" style={{ margin: 0 }}>{price}</p>
+                        )}
+                      </div>
 
                       {/* Render Size Selector Badges */}
                       {availableSizes.length > 0 && !hasOnlyOtherSize ? (

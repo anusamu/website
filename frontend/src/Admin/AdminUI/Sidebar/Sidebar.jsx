@@ -17,7 +17,8 @@ import {
   ChevronLeft,
   ChevronRight,
   LogOut,
-  Palette
+  Palette,
+  Tag
 } from "lucide-react";
 import {
   Box,
@@ -80,16 +81,16 @@ const AdminSidebar = ({
 
   const menuItems = [
     { text: "Dashboard", icon: <LayoutDashboard size={20} />, path: "/admindashboard" },
- 
     { text: "Add Product", icon: <PackagePlus size={20} />, path: "/addproduct" },
     { text: "Product List", icon: <Package size={20} />, path: "/productlist" },
     { text: "Inactive Products", icon: <Ban size={20} />, path: "/inactiveproducts" },
+    { text: "Offers", icon: <Tag size={20} />, path: "/offers" },
     { text: "Customers", icon: <Users size={20} />, path: "/customers" },
     { text: "Orders", icon: <ShoppingBag size={20} />, path: "/orders" },
     { text: "Payments", icon: <CreditCard size={20} />, path: "/payments" },
     { text: "Reports", icon: <BarChart3 size={20} />, path: "/reports" },
-   { text: "Add Admin user", icon: <UserPlus size={20} />, path: "/addAdmin" },
- { text: "UI Editz", icon: <Palette size={20} />, path: "/ui" },
+    { text: "Add Admin user", icon: <UserPlus size={20} />, path: "/addAdmin" },
+    { text: "UI Editz", icon: <Palette size={20} />, path: "/ui" },
     { text: "Feedbacks", icon: <MessageSquareMore size={20} />, path: "/feedbacks" },
   ];
 

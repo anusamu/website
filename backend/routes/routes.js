@@ -152,4 +152,12 @@ router.delete("/blogs/:id", protect, authorize("SuperAdmin", "admin"), blogContr
 router.get("/footer", footerController.getFooterConfig);
 router.put("/admin/footer", protect, authorize("SuperAdmin", "admin"), footerController.updateFooterConfig);
 
+// ===================== OFFERS =====================
+const offerController = require('../controllers/offerController');
+router.post("/offers/apply", protect, authorize("SuperAdmin", "admin"), offerController.applyOffer);
+router.post("/offers/remove", protect, authorize("SuperAdmin", "admin"), offerController.removeOffer);
+router.get("/offers/banner", offerController.getBanner);
+router.post("/offers/banner", protect, authorize("SuperAdmin", "admin"), upload.single("bannerImage"), offerController.updateBanner);
+router.get("/offers/active-products", protect, authorize("SuperAdmin", "admin"), offerController.getActiveOfferProducts);
+
 module.exports = router;

@@ -45,8 +45,16 @@ const Checkout = () => {
   // 1. Check direct navigation ("Buy It Now") first, fallback to Cart Context
   const checkoutItems = location.state?.checkoutItems || cartItems || [];
 
+  // Helper to accurately get the active price (Discounted or Original)
+  const getProductPrice = (item) => {
+    const p = item.product || item;
+    return p.offerPercentage > 0 && p.discountedPrice 
+      ? Number(p.discountedPrice) 
+      : Number(p.price || item.price || 0);
+  };
+
   const subtotal = checkoutItems.reduce(
-    (acc, item) => acc + (item.product?.price || item.price || 0) * item.quantity, 
+    (acc, item) => acc + getProductPrice(item) * item.quantity, 
     0
   );
   const shippingFee = subtotal > 699 || subtotal === 0 ? 0 : 150;
@@ -89,7 +97,7 @@ const Checkout = () => {
   useEffect(() => {
     const fetchSavedAddress = async () => {
       try {
-        const res = await api.get('/users/profile');
+        const res = await api.get('/profile');
         if (res.data?.success && res.data?.user) {
           const user = res.data.user;
           setFormData((prev) => ({
@@ -160,7 +168,7 @@ const Checkout = () => {
         product: item.product?._id || item.product || item._id,
         size: item.size || 'OS',
         quantity: Number(item.quantity || 1),
-        price: Number(item.product?.price || item.price || 0)
+        price: getProductPrice(item)
       }));
 
       const options = {
@@ -398,7 +406,7 @@ const Checkout = () => {
                   Size: {item.size || "OS"} | Qty: {item.quantity}
                 </Typography>
                 <Typography variant="subtitle2">
-                  ₹ {((itemProduct?.price || item.price || 0) * item.quantity).toLocaleString("en-IN")}
+                  ₹ {(getProductPrice(item) * item.quantity).toLocaleString("en-IN")}
                 </Typography>
               </div>
             </div>

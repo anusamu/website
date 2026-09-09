@@ -25,6 +25,7 @@ import AdminFloatingManager from "./Admin/AdminPage/AdminFloatingManager/AdminFl
 import ReportSection from "./Admin/AdminPage/ReportSection/ReportSection";
 import Contact from "./Retail/RetailPage/Contact/Contact";
 import AdminFeedbackPage from "./Admin/AdminPage/Feedback/AdminFeedbackPage";
+import OfferManagement from "./Admin/AdminPage/OfferManagement/OfferManagement";
 import Blog from "./Retail/RetailPage/Blog/Blog";
 import BlogDetail from "./Retail/RetailPage/Blog/BlogDetail";
 import MyProfile from "./Retail/RetailUI/MyProfile/MyProfile"; 
@@ -68,9 +69,10 @@ function App() {
            <Route path="/inactiveproducts" element={<InactiveProduct/>} />
            <Route path="/addAdmin" element={<AddAdmin/>} />
            <Route path="/orders" element={<MainOrder/>} />
-           <Route path="/ui" element={<AdminFloatingManager/>} />
+          <Route path="/ui" element={<AdminFloatingManager/>} />
           <Route path="/reports" element={<ReportSection/>} />
           <Route path="/feedbacks" element={<AdminFeedbackPage/>} />
+          <Route path="/offers" element={<OfferManagement/>} />
         </Route>
       </Routes>
       </>

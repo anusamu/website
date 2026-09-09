@@ -22,8 +22,9 @@ const Cart = () => {
 
   // Price calculations
   const subtotal = cartItems.reduce((acc, item) => {
-    const price = item.product?.price || 0;
-    return acc + price * (item.quantity || 0);
+    const product = item.product || {};
+    const price = product.offerPercentage > 0 ? product.discountedPrice : product.price;
+    return acc + (price || 0) * (item.quantity || 0);
   }, 0);
 
   const shippingThreshold = 699;
@@ -181,8 +182,15 @@ const Cart = () => {
                           </button>
                         </div>
 
-                        <span className="cart-item-price">
-                          ₹ {((product.price || 0) * (item.quantity || 0)).toLocaleString("en-IN")}
+                        <span className="cart-item-price" style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
+                          {product.offerPercentage > 0 && (
+                            <span style={{ textDecoration: 'line-through', color: '#999', fontSize: '13px' }}>
+                              ₹ {((product.price || 0) * (item.quantity || 0)).toLocaleString("en-IN")}
+                            </span>
+                          )}
+                          <span style={{ color: product.offerPercentage > 0 ? '#ff4d4f' : 'inherit' }}>
+                            ₹ {(((product.offerPercentage > 0 ? product.discountedPrice : product.price) || 0) * (item.quantity || 0)).toLocaleString("en-IN")}
+                          </span>
                         </span>
                       </div>
                     </div>

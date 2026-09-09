@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
 import { Typography, Button, Box, CircularProgress, IconButton, LinearProgress, Chip } from "@mui/material";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
@@ -302,10 +303,37 @@ const ProductDetails = () => {
             </span>
             <h1 className="pdp-title">{product.productName}</h1>
 
-            <div className="pdp-pricing-row" style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-              <span className="pdp-price">
-                ₹ {product.price?.toLocaleString("en-IN")}
-              </span>
+            <div className="pdp-pricing-row" style={{ display: "flex", alignItems: "center", gap: "12px", flexWrap: 'wrap' }}>
+              {product.offerPercentage > 0 ? (
+                <>
+                  <span className="pdp-price" style={{ color: '#ff4d4f', fontWeight: 'bold' }}>
+                    ₹ {product.discountedPrice?.toLocaleString("en-IN")}
+                  </span>
+                  <span style={{ textDecoration: 'line-through', color: '#999', fontSize: '1.2rem' }}>
+                    ₹ {product.price?.toLocaleString("en-IN")}
+                  </span>
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.8, x: -10 }}
+                    animate={{ opacity: 1, scale: 1, x: 0 }}
+                    transition={{ type: "spring", stiffness: 300, damping: 20 }}
+                    style={{
+                      background: 'linear-gradient(135deg, #ff4d4f 0%, #ff7875 100%)',
+                      color: 'white',
+                      padding: '4px 10px',
+                      borderRadius: '16px',
+                      fontWeight: 'bold',
+                      fontSize: '14px',
+                      boxShadow: '0 2px 4px rgba(255, 77, 79, 0.3)'
+                    }}
+                  >
+                    {product.offerPercentage}% OFF
+                  </motion.div>
+                </>
+              ) : (
+                <span className="pdp-price">
+                  ₹ {product.price?.toLocaleString("en-IN")}
+                </span>
+              )}
               <span className="pdp-tax-info">Tax included.</span>
 
               {/* Dynamic Stock Status Chip */}

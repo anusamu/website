@@ -240,7 +240,9 @@ function VariantCard({ variant, onCardClick, onAddToCartClick }) {
     : 'https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&q=80&w=600';
 
   const title = variant.productName || variant.type || "Borderless cloth item...";
-  const price = `₹ ${variant.price}`;
+  const hasOffer = variant.offerPercentage > 0;
+  const originalPrice = `₹ ${variant.price}`;
+  const displayPrice = hasOffer ? `₹ ${variant.discountedPrice}` : originalPrice;
 
   return (
     <div className="cat-product-display-card">
@@ -255,6 +257,31 @@ function VariantCard({ variant, onCardClick, onAddToCartClick }) {
           className="cat-product-display-img" 
           loading="lazy" 
         />
+
+        {hasOffer && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.5, rotate: -10 }}
+            animate={{ opacity: 1, scale: 1, rotate: 0 }}
+            transition={{ type: "spring", stiffness: 300, damping: 20 }}
+            style={{
+              position: 'absolute',
+              top: '10px',
+              left: '10px',
+              background: 'linear-gradient(135deg, #ff4d4f 0%, #ff7875 100%)',
+              color: 'white',
+              padding: '6px 10px',
+              borderRadius: '20px',
+              fontWeight: 'bold',
+              fontSize: '12px',
+              zIndex: 10,
+              boxShadow: '0 4px 6px rgba(255, 77, 79, 0.3)',
+              textTransform: 'uppercase',
+              letterSpacing: '0.5px'
+            }}>
+            {variant.offerPercentage}% OFF
+          </motion.div>
+        )}
+        
         
         <button 
           className="cat-action-add-to-cart-btn"
@@ -267,7 +294,14 @@ function VariantCard({ variant, onCardClick, onAddToCartClick }) {
 
       <div className="cat-product-meta-details">
         <h3 className="cat-product-meta-title">{title}</h3>
-        <p className="cat-product-meta-price">{price}</p>
+        <p className="cat-product-meta-price">
+          {hasOffer && (
+            <span style={{ textDecoration: 'line-through', color: '#999', marginRight: '8px', fontSize: '14px' }}>
+              {originalPrice}
+            </span>
+          )}
+          <span style={{ color: hasOffer ? '#ff4d4f' : 'inherit' }}>{displayPrice}</span>
+        </p>
       </div>
     </div>
   );

@@ -12,6 +12,7 @@ import TestimonialSlider from "../.././RetailUI/TestimonialSlider/TestimonialSli
 import WeavingStories from "../.././RetailUI/WeavingStories/WeavingStories";
 import CustomCursor from "../../../components/CustomCursor/CustomCursor";
 import SplashLanding from "../../RetailUI/SplashLanding/SplashLanding";
+import api from "../../../api";
 
 // Reusable animation wrapper for seamless scroll reveals
 const FadeInSection = ({ children, delay = 0, style }) => (
@@ -33,6 +34,21 @@ const Home = () => {
   // Show splash only when on root path "/"
   const [showSplash, setShowSplash] = useState(() => location.pathname === "/");
   const [isTransitioning, setIsTransitioning] = useState(false);
+  const [offerBanner, setOfferBanner] = useState(null);
+
+  useEffect(() => {
+    const fetchOfferBanner = async () => {
+      try {
+        const response = await api.get('/offers/banner');
+        if (response.data.success && response.data.banner && response.data.banner.isActive) {
+          setOfferBanner(response.data.banner.imageUrl);
+        }
+      } catch (error) {
+        console.error("Failed to fetch offer banner", error);
+      }
+    };
+    fetchOfferBanner();
+  }, []);
 
   useEffect(() => {
     if (location.pathname === "/" && !isTransitioning) {
@@ -91,6 +107,19 @@ const Home = () => {
           <FadeInSection>
             <ScrollCard />
           </FadeInSection>
+
+          {/* Offer Banner placed neatly after ScrollCard */}
+          {offerBanner && (
+            <FadeInSection>
+              <div style={{ width: '100%', maxWidth: '1400px', margin: '40px auto', overflow: 'hidden', borderRadius: '12px', padding: '0 20px' }}>
+                <img 
+                  src={offerBanner} 
+                  alt="Special Offer" 
+                  style={{ width: '100%', height: 'auto', display: 'block', objectFit: 'cover', borderRadius: '12px' }} 
+                />
+              </div>
+            </FadeInSection>
+          )}
 
           <FadeInSection>
             <ShopByCategory />

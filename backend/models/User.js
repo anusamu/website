@@ -31,6 +31,21 @@ const userSchema = new mongoose.Schema(
       default: undefined,
     },
 
+    addresses: [
+      {
+        email: String,
+        phone: String,
+        firstName: String,
+        lastName: String,
+        address: String,
+        apartment: String,
+        appartment: String,
+        city: String,
+        state: String,
+        pincode: String,
+      }
+    ],
+
     password: {
       type: String,
       select: false,
